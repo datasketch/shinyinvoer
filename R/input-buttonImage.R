@@ -33,14 +33,16 @@
 buttonImage <- function (id,
                          labels,
                          values = NULL,
-                         file = "img/btn/",
-                         format = "png",
+                         file = NULL,
+                         format = NULL,
                          width = NULL,
                          height = NULL,
                          class = "buttonStyle",
                          classImg = "imageStyle") {
 
-  ruta <- system.file("www/buttonImage/buttonImage-bindings.js", package = "dsAppWidgets")
+
+  format <- format %||% "png"
+  file <- file %||% "img/btn/"
 
   addResourcePath(
     prefix='buttonImage',
