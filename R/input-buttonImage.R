@@ -33,6 +33,7 @@
 buttonImage <- function (id,
                          labels,
                          values = NULL,
+                         active = NULL,
                          file = NULL,
                          format = NULL,
                          width = NULL,
@@ -49,6 +50,18 @@ buttonImage <- function (id,
     directoryPath=system.file("lib/buttonImage",
                               package='dsAppWidgets'))
 
+
+  l <- purrr::map(seq_along(labels), function (index) {
+    tags$button(
+      id = values[index],
+      class = class,
+      tags$img(src = paste0(file, labels[index], '.', format), class = classImg)
+    )
+  })
+  if (is.null(active)) active <- values[1]
+  active <- which(values == active)
+  l[[active]] <- HTML(gsub('"buttonStyle"', '"buttonStyle active"', l[[active]]))
+
   buttonImageTag <-
     tagList(
       singleton(tags$head(
@@ -57,19 +70,13 @@ buttonImage <- function (id,
                   href = 'buttonImage/buttonImage.css'),
         tags$script(src = 'buttonImage/buttonImage-bindings.js')
       )),
-    tags$div(
-      class = 'buttons-group',
-      id = id,
-      purrr::map(seq_along(labels), function (index) {
-        tags$button(
-          id = values[index],
-          class = class,
-          #style = paste0("width:30px; height:30px;"),
-          tags$img(src = paste0(file, labels[index], '.', format), class = classImg, style = paste0("width:30px; height:30px;"))
-        )
-      })
+      tags$div(
+        class = 'buttons-group',
+        id = id,
+        l
+      )
     )
-  )
+
   buttonImageTag
 
 }

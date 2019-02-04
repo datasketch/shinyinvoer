@@ -1,5 +1,27 @@
 /* CSS img btn */
 
-.buttonStyle {
-  padding: 0;
+.imageStyle {
+ width: 70px;
+ height: 70px;
 }
+
+.buttonStyle {
+ cursor: pointer;
+ padding: 0;
+ background: transparent;
+ position: relative;
+ width: 85px;
+ height: 85px;
+ vertical-align: middle;
+ text-align: center;
+ align-content: center;
+ box-shadow: none;
+ border: 1px solid #B70F7F;
+ margin: 3px 3px 3px 3px;
+ outline: none;
+}
+
+.buttonStyle.active, .buttonStyle:focus {
+ border: 1px solid #A6CEDE;
+}
+

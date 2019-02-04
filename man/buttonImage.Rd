@@ -4,8 +4,8 @@
 \alias{buttonImage}
 \title{Buttons Group Input Control with image}
 \usage{
-buttonImage(id, labels, values = NULL, file = "img/btn/",
-  format = "png", width = NULL, height = NULL,
+buttonImage(id, labels, values = NULL, active = NULL, file = NULL,
+  format = NULL, width = NULL, height = NULL,
   class = "buttonStyle", classImg = "imageStyle")
 }
 \arguments{

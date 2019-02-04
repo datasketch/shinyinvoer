@@ -1,5 +1,6 @@
 var buttonImageBinding = new Shiny.InputBinding();
-var buttonClicked = undefined;
+// Si siempre hay un boton activo
+var buttonClicked = undefined
 
 $.extend(buttonImageBinding, {
   find: function(scope) {
@@ -11,7 +12,7 @@ $.extend(buttonImageBinding, {
 		// Devuelve valor a R
  //return
   if (!buttonClicked) {
-    return null
+    buttonClicked = document.querySelector('.buttonStyle.active');
   }
   var id = buttonClicked.getAttribute('id')
   return id
@@ -25,10 +26,14 @@ $.extend(buttonImageBinding, {
 		  var target = event.target
 		  if (target.matches('button')) {
 		    // Si es boton
+		    buttonClicked.classList.remove('active')
 		    buttonClicked = target
+		    buttonClicked.classList.add('active')
 		  } else if (target.matches('button img')) {
 		    // Si es imagen
+		    buttonClicked.classList.remove('active')
 		    buttonClicked = target.parentNode
+		    buttonClicked.classList.add('active')
 		  } else if (!target.matches('button') && !target.matches('button img')) {
 		    // Ni boton, ni imagen
 		    return
