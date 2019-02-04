@@ -10,6 +10,7 @@ Imports:
     htmltools,
     purrr,
     jsonlite,
+    datafringe,
     grDevices,
     datafringe
 License: GPL-3 | file LICENSE
