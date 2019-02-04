@@ -36,8 +36,6 @@ buttonImage <- function (id,
                          active = NULL,
                          file = NULL,
                          format = NULL,
-                         width = NULL,
-                         height = NULL,
                          class = "buttonStyle",
                          classImg = "imageStyle") {
 
