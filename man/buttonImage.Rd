@@ -5,15 +5,14 @@
 \title{Buttons Group Input Control with image}
 \usage{
 buttonImage(id, labels, values = NULL, active = NULL, file = NULL,
-  format = NULL, width = NULL, height = NULL,
-  class = "buttonStyle", classImg = "imageStyle")
+  format = NULL, class = "buttonStyle", classImg = "imageStyle")
 }
 \arguments{
-\item{width}{The width of the input, e.g. '400px', or '100\%'.}
-
 \item{inputId}{The \code{input} slot that will be used to access the value.}
 
 \item{label}{Input label.}
+
+\item{width}{The width of the input, e.g. '400px', or '100\%'.}
 }
 \value{
 A buttons group control that can be added to a UI definition.
