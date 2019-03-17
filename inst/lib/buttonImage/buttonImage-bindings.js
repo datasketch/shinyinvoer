@@ -13,6 +13,7 @@ $.extend(buttonImageBinding, {
  //return
   if (!buttonClicked) {
     buttonClicked = document.querySelector('.buttonStyle.active');
+    console.log(buttonClicked)
   }
   var id = buttonClicked.getAttribute('id')
   return id

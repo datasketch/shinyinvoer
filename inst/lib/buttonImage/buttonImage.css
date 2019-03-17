@@ -1,4 +1,4 @@
-/* CSS img btn */
+/* CSS img btn
 
 .imageStyle {
  width: 35px;
@@ -16,12 +16,83 @@
  text-align: center;
  align-content: center;
  box-shadow: none;
- border: 1px solid #B70F7F;
+ border: 0px;
  margin: 3px 3px 3px 3px;
  outline: none;
 }
 
 .buttonStyle.active, .buttonStyle:focus {
- border: 1px solid #A6CEDE;
+ border: 0px;
 }
 
+
+
+.imageStyle.active {
+	filter: brightness(0) invert(0.7);
+	transition: all 0.3s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+}
+
+*/
+
+
+.buttons-group {
+	background-color: transparent;
+	display: grid;
+	grid-gap: 20px;
+	grid-template-columns: repeat(auto-fill, 40px);
+	padding: 15px 0;
+}
+
+
+.buttons-group .buttonStyle {
+	align-items: center;
+	background-color: #fffaaa;/*transparent;*/
+	border: none;
+	box-shadow: none;
+	cursor: pointer;
+	display: flex;
+	height: 40px;
+	justify-content: center;
+	outline: 0;
+	position: relative;
+	text-align: center;
+	width: 40px;
+}
+
+
+
+.buttons-group .buttonStyle:before {
+	background: url(/images/check.svg) no-repeat center;
+	background-color: #b70f7f;
+	background-size: cover;
+	border-radius: 50%;
+	content: '';
+	height: 10px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	transform: scale(0);
+	transition: all 0.3s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+	width: 10px;
+}
+
+
+.buttons-group .buttonStyle .imageStyle {
+	width: 35px;
+	filter: brightness(0) invert(0.7);
+	transition: all 0.3s cubic-bezier(0.680, -0.550, 0.265, 1.550);
+}
+
+
+.buttons-group .buttonStyle.active:before {
+	transform: scale(1)
+}
+
+.buttonStyle.active .imageStyle{
+ filter: brightness(1) invert(0) !important;
+}
+
+
+.buttons-group .buttonStyle.active:before {
+	transform: scale(1)
+}
