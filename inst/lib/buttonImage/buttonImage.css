@@ -21,13 +21,13 @@
  outline: none;
 }
 
-.buttonStyle.active, .buttonStyle:focus {
+.buttonStyle.active_btn, .buttonStyle:focus {
  border: 0px;
 }
 
 
 
-.imageStyle.active {
+.imageStyle.active_btn {
 	filter: brightness(0) invert(0.7);
 	transition: all 0.3s cubic-bezier(0.680, -0.550, 0.265, 1.550);
 }
@@ -81,15 +81,15 @@
 }
 
 
-.buttons-group .buttonStyle.active:before {
+.buttons-group .buttonStyle.active_btn:before {
 	transform: scale(1) !important;
 }
 
-.buttonStyle.active .imageStyle{
+.buttonStyle.active_btn .imageStyle{
  filter: brightness(1) invert(0) !important;
 }
 
 
-.buttons-group .buttonStyle.active:before {
+.buttons-group .buttonStyle.active_btn:before {
 	transform: scale(1) !important;
 }

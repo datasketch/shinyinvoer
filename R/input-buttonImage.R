@@ -58,7 +58,7 @@ buttonImage <- function (id,
   })
   if (is.null(active)) active <- values[1]
   active <- which(values == active)
-  l[[active]] <- HTML(gsub('"buttonStyle"', '"buttonStyle active"', l[[active]]))
+  l[[active]] <- HTML(gsub('"buttonStyle"', '"buttonStyle active_btn"', l[[active]]))
 
   buttonImageTag <-
     tagList(

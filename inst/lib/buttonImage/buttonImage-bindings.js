@@ -12,7 +12,7 @@ $.extend(buttonImageBinding, {
 		// Devuelve valor a R
  //return
   if (!buttonClicked) {
-    buttonClicked = document.querySelector('.buttonStyle.active');
+    buttonClicked = document.querySelector('.buttonStyle.active_btn');
     console.log(buttonClicked)
   }
   var id = buttonClicked.getAttribute('id')
@@ -27,14 +27,14 @@ $.extend(buttonImageBinding, {
 		  var target = event.target
 		  if (target.matches('button')) {
 		    // Si es boton
-		    buttonClicked.classList.remove('active')
+		    buttonClicked.classList.remove('active_btn')
 		    buttonClicked = target
-		    buttonClicked.classList.add('active')
+		    buttonClicked.classList.add('active_btn')
 		  } else if (target.matches('button img')) {
 		    // Si es imagen
-		    buttonClicked.classList.remove('active')
+		    buttonClicked.classList.remove('active_btn')
 		    buttonClicked = target.parentNode
-		    buttonClicked.classList.add('active')
+		    buttonClicked.classList.add('active_btn')
 		  } else if (!target.matches('button') && !target.matches('button img')) {
 		    // Ni boton, ni imagen
 		    return
