@@ -36,7 +36,7 @@
 
 
 .buttons-group {
-	background-color: transparent !important;
+	background-color: transparent;
 	display: grid;
 	grid-gap: 20px;
 	grid-template-columns: repeat(auto-fill, 40px);
@@ -46,7 +46,7 @@
 
 .buttons-group .buttonStyle {
 	align-items: center;
-	background-color: transparent !important;
+	background-color: transparent;
 	border: none !important;
 	box-shadow: none !important;
 	cursor: pointer !important;
