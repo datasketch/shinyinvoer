@@ -1,0 +1,22 @@
+.color {
+  border: none;
+  padding: 8px;
+  width: 100px;
+  text-transform: uppercase;
+  font-weight: 500;
+  position: relative;
+  margin-right: 1px;
+  box-sizing: border-box;
+}
+.dismiss-input {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: xx-small;
+  text-transform: uppercase;
+  font-weight: bold;
+  cursor: pointer;
+}
+.input-colors, .colors {
+  display: flex;
+}
