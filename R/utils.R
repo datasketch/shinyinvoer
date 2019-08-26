@@ -18,3 +18,16 @@ is.empty <- function (x)
 {
   !as.logical(length(x))
 }
+
+
+# dropNulls
+dropNulls <- function(x) {
+  x[!vapply(x, is.null, FUN.VALUE = logical(1))]
+}
+
+dropNullsOrNA <- function(x) {
+  x[!vapply(x, nullOrNA, FUN.VALUE = logical(1))]
+}
+nullOrNA <- function(x) {
+  is.null(x) || is.na(x)
+}

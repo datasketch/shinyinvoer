@@ -79,7 +79,24 @@ buttonImage <- function (id,
 
 }
 
-
+#' #' @export
+#' updateButtonImage <- function (session,
+#'                                id,
+#'                                labels,
+#'                                values = NULL,
+#'                                active = NULL,
+#'                                file = NULL,
+#'                                format = NULL,
+#'                                class = "buttonStyle",
+#'                                classImg = "imageStyle") {
+#'
+#'   message <- dropNulls(list(labels = labels,
+#'                             values = values,
+#'                             active = active,
+#'                             file = file,
+#'                             format = format))
+#'   session$sendInputMessage(id, message)
+#' }
 
 
 
