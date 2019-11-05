@@ -18,7 +18,7 @@
         var settings = {};
         settings.maxRows = 50;
         var rowsIdx = Array.from(new Array(settings.maxRows), function(val, index) { return index + 1 });
-        settings.availableCtypes = ['Num', 'Cat', 'Dat'];
+        settings.availableCtypes = ['Num', 'Cat', 'Dat', 'Gnm', 'Gcd'];
 
         // var hotElement = document.querySelector('#hot');
         // var hotElement = elid[0];

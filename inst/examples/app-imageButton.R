@@ -7,17 +7,38 @@ library(dsAppWidgets)
 
 ui <- fluidPage(
   uiOutput('texto'),
-  verbatimTextOutput('salida')
+  verbatimTextOutput('salida'),
+  uiOutput('test'),
+  verbatimTextOutput('vista')
 )
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   output$texto <- renderUI({
-    buttonImage('cosa', c("gato", "perro", "zorro"), c('uno', 'dos', 'tres'), file = "img/")
+    buttonImageInput('cosa', label = 'hola', c("gato", "perro", "zorro"), c('uno', 'dos', 'tres'), file = "img/")
   })
 
   output$salida <- renderPrint({
     input$cosa
   })
+
+  output$test <- renderUI({
+    #session$sendInputMessage
+   radioButtons('test_uno', 'ELige', c('Colombia', 'India', 'Pakistan'))
+  })
+
+
+  output$vista <- renderPrint({
+    session$sendInputMessage
+  })
+
+observe({
+  x <-  input$test_uno
+  if (is.null(x)) return()
+  if (x == 'India')
+    updateButtonImageInput(session, inputId = 'cosa', active = 'tres')
+})
+
+
 }
 
 shinyApp(ui, server)

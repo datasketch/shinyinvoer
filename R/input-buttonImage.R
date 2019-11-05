@@ -1,3 +1,4 @@
+
 #' @title Buttons Group Input Control with image
 #'
 #' @description
@@ -30,14 +31,14 @@
 #'
 #' @export
 
-buttonImage <- function (id,
-                         labels,
-                         values = NULL,
-                         active = NULL,
-                         file = NULL,
-                         format = NULL,
-                         class = "buttonStyle",
-                         classImg = "imageStyle") {
+buttonImageInput <- function (inputId,
+                              labels = NULL,
+                              values = NULL,
+                              active = NULL,
+                              file = NULL,
+                              format = NULL,
+                              class = "buttonStyle",
+                              classImg = "imageStyle") {
 
 
   format <- format %||% "png"
@@ -58,7 +59,9 @@ buttonImage <- function (id,
   })
   if (is.null(active)) active <- values[1]
   active <- which(values == active)
-  l[[active]] <- HTML(gsub('"buttonStyle"', '"buttonStyle active_btn"', l[[active]]))
+  l[[active]] <- purrr::map(active, function(a) {
+    HTML(gsub('"buttonStyle"', '"buttonStyle active_btn"', l[[a]]))
+  })
 
   buttonImageTag <-
     tagList(
@@ -70,41 +73,43 @@ buttonImage <- function (id,
       )),
       tags$div(
         class = 'buttons-group',
-        id = id,
+        id = inputId,
         l
       )
     )
 
-  buttonImageTag
+    shiny::div(
+      class = "form-group shiny-input-container",
+      `data-shiny-input-type` = "buttonImage",
+      buttonImageTag
+    )
+
 
 }
 
-#' #' @export
-#' updateButtonImage <- function (session,
-#'                                id,
-#'                                labels,
-#'                                values = NULL,
-#'                                active = NULL,
-#'                                file = NULL,
-#'                                format = NULL,
-#'                                class = "buttonStyle",
-#'                                classImg = "imageStyle") {
-#'
-#'   message <- dropNulls(list(labels = labels,
-#'                             values = values,
-#'                             active = active,
-#'                             file = file,
-#'                             format = format))
-#'   session$sendInputMessage(id, message)
-#' }
+#' @export
+updateButtonImageInput <- function(session,
+                                   inputId,
+                                   labels = NULL,
+                                   values = NULL,
+                                   active = NULL,
+                                   file = NULL,
+                                   format = NULL,
+                                   class = NULL,
+                                   classImg = NULL) {
+  message <- dropNulls(list(
+    labels = labels,
+    values = values,
+    active = active,
+    file = file,
+    format = format,
+    class = class,
+    classImg = classImg
+  ))
+  session$sendInputMessage(inputId, message)
+}
 
-
-
-
-
-
-
-
-
-
-
+# copied from shiny since it's not exported
+dropNulls <- function(x) {
+  x[!vapply(x, is.null, FUN.VALUE=logical(1))]
+}
