@@ -1,0 +1,40 @@
+
+    .input-autosuggest {
+      border: 1px solid #dddddd;
+      border-radius: 8px;
+      overflow: hidden;
+      padding: 8px 0;
+      background-color: #ffffff;
+    }
+    .input-autosuggest input {
+      background-color: #ffffff;
+      border: none;
+      display: block;
+      width: 100%;
+      padding: 4px 8px;
+      height: 100%;
+      outline: none;
+    }
+    .results-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      max-height: 150px;
+      overflow: auto;
+    }
+    .results-item {
+      padding: 4px 8px;
+      margin-top: 4px;
+    }
+
+    .results-item:focus,
+    .results-item:hover {
+      background-color: #eeeeee;
+      outline: none;
+      cursor: pointer;
+    }
+
+   .input-autosuggest input:focus {
+     outline: nonde;
+     border: none;
+   }
