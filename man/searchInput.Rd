@@ -2,10 +2,48 @@
 % Please edit documentation in R/input-search.R
 \name{searchInput}
 \alias{searchInput}
-\title{searchInput}
+\title{Search bar}
 \usage{
 searchInput(inputId, data, placeholder)
 }
+\arguments{
+\item{inputId}{The \code{input} slot that will be used to access the value.}
+
+\item{data}{Vector of values to .}
+
+\item{placeholder}{Placeholder}
+}
+\value{
+A search bar
+}
 \description{
-searchInput
+Search bar through which shiny can search the content of interest after a click or enter.
+}
+\examples{
+\dontrun{
+## Only run examples in interactive R sessions
+if (interactive()) {
+
+ui <- fluidPage(
+   suppressDependencies('bootstrap'),
+   uiOutput('search'),
+   verbatimTextOutput('test')
+)
+server <- function(input, output) {
+
+output$search <- renderUI({
+ searchInput('id_searching',
+             data = c('Anaconda', 'African darter', 'Fox', 'Wolf', 'Spider', 'Toad', 'Agouti'),
+             placeholder = 'Type a letter')
+})
+
+output$test <- renderPrint({
+ input$id_searching
+})
+}
+shinyApp(ui, server)
+}
+}
+
+
 }

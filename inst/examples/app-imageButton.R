@@ -6,37 +6,26 @@ library(dsAppWidgets)
 # devtools::install()
 
 ui <- fluidPage(
-  uiOutput('texto'),
-  verbatimTextOutput('salida'),
-  uiOutput('test'),
-  verbatimTextOutput('vista')
+  uiOutput('button'),
+  verbatimTextOutput('input_button')
 )
 
 server <- function(input, output, session) {
-  output$texto <- renderUI({
-    buttonImageInput('cosa', label = 'hola', c("gato", "perro", "zorro"), c('uno', 'dos', 'tres'), file = "img/")
+
+  # you must crate a file in www for save images (www/img/...)
+  output$button <- renderUI({
+    buttonImageInput(inputId = 'chosen_button',
+                     labels = c("cat", "dog", "fox"),
+                     values = c("cat", "dog", "fox"),
+                     active = 'dog',
+                     file = "img/")
   })
 
-  output$salida <- renderPrint({
-    input$cosa
+  # print input id of your click
+  output$input_button <- renderPrint({
+    input$chosen_button
   })
 
-  output$test <- renderUI({
-    #session$sendInputMessage
-   radioButtons('test_uno', 'ELige', c('Colombia', 'India', 'Pakistan'))
-  })
-
-
-  output$vista <- renderPrint({
-    session$sendInputMessage
-  })
-
-observe({
-  x <-  input$test_uno
-  if (is.null(x)) return()
-  if (x == 'India')
-    updateButtonImageInput(session, inputId = 'cosa', active = 'tres')
-})
 
 
 }

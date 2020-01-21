@@ -11,15 +11,23 @@ buttonImageInput(inputId, labels = NULL, values = NULL,
 \arguments{
 \item{inputId}{The \code{input} slot that will be used to access the value.}
 
-\item{label}{Input label.}
+\item{labels}{List of image names saved in a folder into www.}
 
-\item{width}{The width of the input, e.g. '400px', or '100\%'.}
+\item{values}{List of id input for each button.}
+
+\item{active}{Initial button selected.}
+
+\item{file}{Folder where the images that the button will contain are stored.}
+
+\item{class}{CSS class with button css style.}
+
+\item{classImg}{CSS class with image css style.}
 }
 \value{
 A buttons group control that can be added to a UI definition.
 }
 \description{
-Create buttons grouped with image.
+Create buttons grouped with image to choose a single button and get your id.
 }
 \examples{
 \dontrun{
@@ -27,14 +35,26 @@ Create buttons grouped with image.
 if (interactive()) {
 
 ui <- fluidPage(
-  codeButton....,
-  verbatimTextOutput("value")
+    uiOutput('button'),
+    verbatimTextOutput('input_button')
 )
 server <- function(input, output) {
-  output$value <- renderText({ input$somevalue })
+ # you must crate a file in www for save images (www/img/...)
+ output$button <- renderUI({
+                  buttonImageInput(inputId = 'chosen_button',
+                  labels = c("cat", "dog", "fox"),
+                  values = c("cat", "dog", "fox"),
+                  active = 'dog',
+                  file = "img/")
+                  })
+print input id of your click
+output$input_button <- renderPrint({
+                   input$chosen_button
+                  })
 }
 shinyApp(ui, server)
 }
 }
+
 
 }

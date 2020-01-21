@@ -5,15 +5,17 @@ library(dsAppWidgets)
 ui <-
   fluidPage(
    suppressDependencies('bootstrap'),
-   uiOutput('buscador'),
+   uiOutput('search'),
    verbatimTextOutput('test')
   )
 
 server <-
   function(input, output, session) {
 
-    output$buscador <- renderUI({
-      searchInput('id_searching', data = c('ardilla', 'Zorro', 'Elefante', 'araña'), placeholder = 'This is a placeholder')
+    output$search <- renderUI({
+      searchInput('id_searching',
+                  data = c('Anaconda', 'African darter', 'Fox', 'Wolf', 'Spider', 'Toad', 'Agouti'),
+                  placeholder = 'Type a letter')
     })
 
     output$test <- renderPrint({

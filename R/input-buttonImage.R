@@ -1,13 +1,17 @@
 
-#' @title Buttons Group Input Control with image
+#' @title Grouped buttons with image
 #'
 #' @description
-#' Create buttons grouped with image.
+#' Create grouped buttons with image to choose a single button and get its id.
 #'
 #' @param inputId The \code{input} slot that will be used to access the value.
-#' @param label Input label.
-#' @param width The width of the input, e.g. '400px', or '100\%'.
-#' @return A buttons group control that can be added to a UI definition.
+#' @param labels List of images´ names saved in a folder into www.
+#' @param values List of id inputs when pressing each button.
+#' @param active Initial button selected.
+#' @param file Folder where the images are stored.
+#' @param class Name of the class which contains the button´s style
+#' @param classImg class Name of the class which contains the images´ style.
+#' @return A group of buttons which can be controlled from the UI.
 #'
 #'
 #' @examples
@@ -16,18 +20,27 @@
 #' if (interactive()) {
 #'
 #' ui <- fluidPage(
-#'   codeButton....,
-#'   verbatimTextOutput("value")
+#'     uiOutput('button'),
+#'     verbatimTextOutput('input_button')
 #' )
 #' server <- function(input, output) {
-#'   output$value <- renderText({ input$somevalue })
+#'  # you must crate a file in www for saving images (www/img/...)
+#'  output$button <- renderUI({
+#'                   buttonImageInput(inputId = 'chosen_button',
+#'                   labels = c("cat", "dog", "fox"),
+#'                   values = c("cat", "dog", "fox"),
+#'                   active = 'dog',
+#'                   file = "img/")
+#'                   })
+#' # print input id when clicking
+#' output$input_button <- renderPrint({
+#'                    input$chosen_button
+#'                   })
 #' }
 #' shinyApp(ui, server)
 #' }
 #' }
 #'
-#' @importFrom shiny restoreInput
-#' @importFrom htmltools tags HTML validateCssUnit
 #'
 #' @export
 
@@ -78,38 +91,11 @@ buttonImageInput <- function (inputId,
       )
     )
 
-    shiny::div(
-      class = "form-group shiny-input-container",
-      `data-shiny-input-type` = "buttonImage",
-      buttonImageTag
-    )
+  shiny::div(
+    class = "form-group shiny-input-container",
+    `data-shiny-input-type` = "buttonImage",
+    buttonImageTag
+  )
 
 
-}
-
-#' @export
-updateButtonImageInput <- function(session,
-                                   inputId,
-                                   labels = NULL,
-                                   values = NULL,
-                                   active = NULL,
-                                   file = NULL,
-                                   format = NULL,
-                                   class = NULL,
-                                   classImg = NULL) {
-  message <- dropNulls(list(
-    labels = labels,
-    values = values,
-    active = active,
-    file = file,
-    format = format,
-    class = class,
-    classImg = classImg
-  ))
-  session$sendInputMessage(inputId, message)
-}
-
-# copied from shiny since it's not exported
-dropNulls <- function(x) {
-  x[!vapply(x, is.null, FUN.VALUE=logical(1))]
 }

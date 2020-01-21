@@ -1,4 +1,39 @@
-
+#' @title Handsontable wrapper
+#'
+#' @description
+#' Handsontable wrapper for database editing,  controlling configuration and merging data
+#'
+#' @param inputId The \code{input} slot that will be used to access the value.
+#' @param data A data frame object.
+#' @param dic  A data frame with labels of data names.
+#' @param options A list of initialization options.
+#' @return Editable data
+#'
+#'
+#' @examples
+#' \dontrun{
+#' ## Only run examples in interactive R sessions
+#' if (interactive()) {
+#'
+#' ui <- fluidPage(
+#'    uiOutput('dstable'),
+#'    verbatimTextOutput('test')
+#' )
+#' server <- function(input, output) {
+#'
+#'output$dstable <- renderUI({
+#'  dsHot("indata1", data = mtcars, options = list(height = 300))
+#'})
+#'
+#'output$test <- renderPrint({
+#'  input$indata1
+#'})
+#' }
+#' shinyApp(ui, server)
+#' }
+#' }
+#'
+#'
 #' @export
 dsHot <- function(inputId, data = NULL, dic = NULL,
                   options = NULL){
