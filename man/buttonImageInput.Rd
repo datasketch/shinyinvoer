@@ -2,7 +2,7 @@
 % Please edit documentation in R/input-buttonImage.R
 \name{buttonImageInput}
 \alias{buttonImageInput}
-\title{Buttons Group Input Control with image}
+\title{Grouped buttons with image}
 \usage{
 buttonImageInput(inputId, labels = NULL, values = NULL,
   active = NULL, file = NULL, format = NULL, class = "buttonStyle",
@@ -11,23 +11,23 @@ buttonImageInput(inputId, labels = NULL, values = NULL,
 \arguments{
 \item{inputId}{The \code{input} slot that will be used to access the value.}
 
-\item{labels}{List of image names saved in a folder into www.}
+\item{labels}{List of images´ names saved in a folder into www.}
 
-\item{values}{List of id input for each button.}
+\item{values}{List of id inputs when pressing each button.}
 
 \item{active}{Initial button selected.}
 
-\item{file}{Folder where the images that the button will contain are stored.}
+\item{file}{Folder where the images are stored.}
 
-\item{class}{CSS class with button css style.}
+\item{class}{Name of the class which contains the button´s style}
 
-\item{classImg}{CSS class with image css style.}
+\item{classImg}{class Name of the class which contains the images´ style.}
 }
 \value{
-A buttons group control that can be added to a UI definition.
+A group of buttons which can be controlled from the UI.
 }
 \description{
-Create buttons grouped with image to choose a single button and get your id.
+Create grouped buttons with image to choose a single button and get its id.
 }
 \examples{
 \dontrun{
@@ -39,7 +39,7 @@ ui <- fluidPage(
     verbatimTextOutput('input_button')
 )
 server <- function(input, output) {
- # you must crate a file in www for save images (www/img/...)
+ # you must crate a file in www for saving images (www/img/...)
  output$button <- renderUI({
                   buttonImageInput(inputId = 'chosen_button',
                   labels = c("cat", "dog", "fox"),
@@ -47,7 +47,7 @@ server <- function(input, output) {
                   active = 'dog',
                   file = "img/")
                   })
-print input id of your click
+# print input id when clicking
 output$input_button <- renderPrint({
                    input$chosen_button
                   })

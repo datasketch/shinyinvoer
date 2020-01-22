@@ -11,8 +11,7 @@ Imports:
     purrr,
     jsonlite,
     datafringe,
-    grDevices,
-    datafringe
+    grDevices
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true

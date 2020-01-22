@@ -9,15 +9,15 @@ searchInput(inputId, data, placeholder)
 \arguments{
 \item{inputId}{The \code{input} slot that will be used to access the value.}
 
-\item{data}{Vector of values to .}
+\item{data}{Vector of values entered in the searching bar .}
 
-\item{placeholder}{Placeholder}
+\item{placeholder}{Character, word, or string of characters that temporarily takes the place of the final data.}
 }
 \value{
-A search bar
+A searching bar
 }
 \description{
-Search bar through which shiny can search the content of interest after a click or enter.
+Searching bar where shiny can search the content of interest after a click or enter.
 }
 \examples{
 \dontrun{
