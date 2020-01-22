@@ -35,7 +35,7 @@ $.extend(colorInputBinding, {
     $(el).find('#add-color').click(function () {
       var input = document.createElement('input');
       input.setAttribute('type', 'color');
-      input.value = '#000000';
+      input.value = '#FFFFFF';
       el.insertBefore(input, this)
     });
   },

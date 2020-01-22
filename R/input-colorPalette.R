@@ -11,15 +11,14 @@ colorPalette <- function(inputId, colors) {
 
   tagList(
     singleton(tags$head(
-      # tags$link(rel = 'stylesheet',
-      #           type = 'text/css',
-      #           href = 'libAutoSuggest/search/searchBinding.css'),
-      # tags$script(src = 'libAutoSuggest/search/search.js'),
+      tags$link(rel = 'stylesheet',
+                type = 'text/css',
+                href = 'colorInput/colorInput-bindings.css'),
       tags$script(src = 'colorInput/colorInput-bindings.js')
     )),
     tags$div( id = inputId, class = 'input-color-palette',
               map(colors, function(color) {
-                tags$input(type = "color", `data-color` = color, value = color)
+                tags$input(type = "color",  value = color)
               }),
               tags$button(id="add-color", '+')
     )
