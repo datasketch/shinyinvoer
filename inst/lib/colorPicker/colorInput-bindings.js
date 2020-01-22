@@ -28,7 +28,7 @@ $.extend(colorInputBinding, {
        color: input.value
      });
      // Enlazar evento a input
-      $(input).on('change', handleInputColorChange)
+      $(input).on('change', handleInputColorChange);
     });
 
     // Enlazar boton para agregar color
@@ -48,7 +48,7 @@ $.extend(colorInputBinding, {
   },
   subscribe: function(el, callback) {
    // Enlaza evento a contenedor padre
-   $(el).click(function (event) {
+   $(el).on('change', function (event) {
      $(this).find("input").each(function (index, input) {
        if (input.dataset.index) {
          return; // early return
