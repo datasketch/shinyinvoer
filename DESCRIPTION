@@ -1,18 +1,21 @@
 Package: dsAppWidgets
 Title: Custom Inputs Widgets for Shiny
 Version: 0.1
-Author: Datasketch
+Authors@R: c(
+   person("Camila", "Achuri", email = "camila@randommonkey.io", role = c("aut", "cre")),
+   person("David", "Daza", email = "david@randommonkey.io", role = "aut"),
+   person("Juan Pablo", "Marín", email = "jpmarindiaz@randommonkey.io", role = "aut"))
 Description: Some custom inputs widgets to use in Shiny applications.
 Depends:
     R (>= 3.1.0)
 Imports:
+    testthat,
     shiny (>= 0.14),
     htmltools,
-    purrr,
     jsonlite,
-    datafringe,
-    grDevices
+    grDevices,
+    datafringe
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2

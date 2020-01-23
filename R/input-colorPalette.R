@@ -9,22 +9,25 @@ colorPalette <- function(inputId, colors) {
 
 
 
-  tagList(
-    singleton(tags$head(
-      tags$link(rel = 'stylesheet',
-                type = 'text/css',
-                href = 'colorInput/colorInput-bindings.css'),
-      tags$script(src = 'colorInput/colorInput-bindings.js')
-    )),
-    tags$div( id = inputId, class = 'input-color-palette',
-              map(colors, function(color) {
-                tags$input(type = "color",  value = color)
-              }),
-              tags$button(id="add-color", '+')
-    )
+  l <- shiny::tagList(
+    shiny::singleton(
+      shiny::tags$head(
+        shiny::tags$link(rel = 'stylesheet',
+                         type = 'text/css',
+                         href = 'colorInput/colorInput-bindings.css'),
+        shiny::tags$script(src = 'colorInput/colorInput-bindings.js')
+      ))
   )
 
-    #l
+  shiny::div(
+    l,
+    id = inputId,
+    class = 'input-color-palette',
+    purrr::map(colors, function(color) {
+      shiny::tags$input(type = "color",  value = color)
+    }),
+    shiny::tags$button(id="add-color", '+')
+  )
 
 
 

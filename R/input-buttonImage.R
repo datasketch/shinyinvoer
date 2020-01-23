@@ -64,27 +64,28 @@ buttonImageInput <- function (inputId,
 
 
   l <- purrr::map(seq_along(labels), function (index) {
-    tags$button(
+    shiny::tags$button(
       id = values[index],
       class = class,
-      tags$img(src = paste0(file, labels[index], '.', format), class = classImg)
+      shiny::tags$img(src = paste0(file, labels[index], '.', format), class = classImg)
     )
   })
   if (is.null(active)) active <- values[1]
   active <- which(values == active)
   l[[active]] <- purrr::map(active, function(a) {
-    HTML(gsub('"buttonStyle"', '"buttonStyle active_btn"', l[[a]]))
+    htmltools::HTML(gsub('"buttonStyle"', '"buttonStyle active_btn"', l[[a]]))
   })
 
   buttonImageTag <-
-    tagList(
-      singleton(tags$head(
-        tags$link(rel = 'stylesheet',
+    shiny::tagList(
+      shiny::singleton(
+       shiny::tags$head(
+        shiny::tags$link(rel = 'stylesheet',
                   type = 'text/css',
                   href = 'buttonImage/buttonImage.css'),
-        tags$script(src = 'buttonImage/buttonImage-bindings.js')
+        shiny::tags$script(src = 'buttonImage/buttonImage-bindings.js')
       )),
-      tags$div(
+      shiny::tags$div(
         class = 'buttons-group',
         id = inputId,
         l

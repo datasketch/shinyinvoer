@@ -49,7 +49,7 @@ dsHot <- function(inputId, data = NULL, dic = NULL,
   )
   if(is.reactive(data))
     data <- data()
-  f <- fringe(data)
+  f <- datafringe::fringe(data)
 
   options <- modifyList(defaultOpts, options %||% list())
 
@@ -75,26 +75,25 @@ dsHot <- function(inputId, data = NULL, dic = NULL,
   json_opts <- jsonlite::toJSON(options, auto_unbox = TRUE)
   json_table <- jsonlite::toJSON(data, auto_unbox = TRUE)
   json_dic <- jsonlite::toJSON(dic, auto_unbox = TRUE)
-  tagList(
+  l <- tagList(
     singleton(tags$head(
       tags$link(rel = 'stylesheet',
                 type = 'text/css',
                 href = 'handsontable/handsontable.full.min.css'),
       tags$script(src = 'handsontable/handsontable.full.min.js')
     )),
-    # div(class="hot-container",
-    div(id = id, class = "hot",
-        `data-hotOpts` = HTML(json_opts),
-        `data-table` = HTML(json_table),
-        `data-dic` = HTML(json_dic)),
-    # ),
-    # tags$style(HTML(paste0(readLines(css),collapse="\n"))),
-    # tags$script(HTML(paste0(readLines(js),collapse="\n"))),
     tags$link(rel = 'stylesheet',
               type = 'text/css',
               href = 'dsHot/dsHot.css'),
     tags$script(src = 'dsHot/dsHotHelpers.js'),
     tags$script(src = 'dsHot/dsHot.js')
   )
+
+  shiny::div(l,
+             id = id,
+             class = "hot",
+             `data-hotOpts` = HTML(json_opts),
+             `data-table` = HTML(json_table),
+             `data-dic` = HTML(json_dic))
 }
 

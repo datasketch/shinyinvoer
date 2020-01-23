@@ -40,6 +40,9 @@
 
 searchInput <- function(inputId, data, placeholder) {
 
+
+  if (is.null(inputId)) inputId <- paste0("search_", sample.int(1e9, 1))
+
   addResourcePath(
     prefix = 'libAutoSuggest',
     directoryPath = system.file('lib', package='dsAppWidgets')
@@ -47,25 +50,24 @@ searchInput <- function(inputId, data, placeholder) {
 
 
   l <-
-    tagList(
-      singleton(tags$head(
-        tags$link(rel = 'stylesheet',
-                  type = 'text/css',
-                  href = 'libAutoSuggest/search/searchBinding.css'),
-        tags$script(src = 'libAutoSuggest/search/search.js'),
-        tags$script(src = 'libAutoSuggest/search/searchBinding.js')
-      )),
-      tags$div(
-        id = inputId,
-        class = 'input-autosuggest',
-        "data-top"= jsonlite::toJSON(data),
-        "data-placeholder" = placeholder
-      )
+    shiny::tagList(
+      shiny::singleton(
+        shiny::tags$head(
+          shiny::tags$link(rel = 'stylesheet',
+                           type = 'text/css',
+                           href = 'libAutoSuggest/search/searchBinding.css'),
+          shiny::tags$script(src = 'libAutoSuggest/search/search.js'),
+          shiny::tags$script(src = 'libAutoSuggest/search/searchBinding.js')
+        ))
     )
 
   shiny::div(
+    l,
     `data-shiny-input-type` = "searchInput",
-    l
+    id = inputId,
+    class = 'input-autosuggest',
+    "data-top"= jsonlite::toJSON(data),
+    "data-placeholder" = placeholder
   )
 
 
