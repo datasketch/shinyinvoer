@@ -76,26 +76,21 @@ buttonImageInput <- function (inputId,
     htmltools::HTML(gsub('"buttonStyle"', '"buttonStyle active_btn"', l[[a]]))
   })
 
-  buttonImageTag <-
-    shiny::tagList(
-      shiny::singleton(
-       shiny::tags$head(
-        shiny::tags$link(rel = 'stylesheet',
-                  type = 'text/css',
-                  href = 'buttonImage/buttonImage.css'),
-        shiny::tags$script(src = 'buttonImage/buttonImage-bindings.js')
-      )),
-      shiny::tags$div(
-        class = 'buttons-group',
-        id = inputId,
-        l
-      )
-    )
 
   shiny::div(
-    class = "form-group shiny-input-container",
     `data-shiny-input-type` = "buttonImage",
-    buttonImageTag
+    shiny::tagList(
+      shiny::singleton(
+        shiny::tags$head(
+          shiny::tags$link(rel = 'stylesheet',
+                           type = 'text/css',
+                           href = 'buttonImage/buttonImage.css'),
+          shiny::tags$script(src = 'buttonImage/buttonImage-bindings.js')
+        ))
+    ),
+      class = 'buttons-group',
+      id = inputId,
+      l
   )
 
 

@@ -61,10 +61,6 @@ dsHot <- function(inputId, data = NULL, dic = NULL,
     prefix='dsHot',
     directoryPath=system.file("lib/dsHot",
                               package='dsAppWidgets'))
-  #js <- system.file("lib/dsHot/dsHot.js", package = "dsAppWidgets")
-  #css <- system.file("lib/dsHot/dsHot.css", package = "dsAppWidgets")
-  #js <- "../lib/dsHot/dsHot.js"
-  #css <- "../lib/dsHot/dsHot.css"
 
   id <- inputId
 
@@ -75,25 +71,28 @@ dsHot <- function(inputId, data = NULL, dic = NULL,
   json_opts <- jsonlite::toJSON(options, auto_unbox = TRUE)
   json_table <- jsonlite::toJSON(data, auto_unbox = TRUE)
   json_dic <- jsonlite::toJSON(dic, auto_unbox = TRUE)
-  l <- tagList(
-    singleton(tags$head(
-      tags$link(rel = 'stylesheet',
-                type = 'text/css',
-                href = 'handsontable/handsontable.full.min.css'),
-      tags$script(src = 'handsontable/handsontable.full.min.js')
-    )),
-    tags$link(rel = 'stylesheet',
-              type = 'text/css',
-              href = 'dsHot/dsHot.css'),
-    tags$script(src = 'dsHot/dsHotHelpers.js'),
-    tags$script(src = 'dsHot/dsHot.js')
+  l <- shiny::tagList(
+    shiny::singleton(
+      shiny::tags$head(
+        shiny::tags$link(rel = 'stylesheet',
+                         type = 'text/css',
+                         href = 'handsontable/handsontable.full.min.css'),
+        shiny::tags$script(src = 'handsontable/handsontable.full.min.js')
+      )),
+    shiny::tags$link(rel = 'stylesheet',
+                     type = 'text/css',
+                     href = 'dsHot/dsHot.css'),
+    shiny::tags$script(src = 'dsHot/dsHotHelpers.js'),
+    shiny::tags$script(src = 'dsHot/dsHot.js')
   )
 
   shiny::div(l,
              id = id,
+             nrow = nrow(data),
+             ncol = ncol(data),
              class = "hot",
-             `data-hotOpts` = HTML(json_opts),
-             `data-table` = HTML(json_table),
-             `data-dic` = HTML(json_dic))
+             `data-hotOpts` = htmltools::HTML(json_opts),
+             `data-table` = htmltools::HTML(json_table),
+             `data-dic` = htmltools::HTML(json_dic))
 }
 
