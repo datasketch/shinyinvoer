@@ -4,9 +4,16 @@
 \alias{buttonImageInput}
 \title{Grouped buttons with image}
 \usage{
-buttonImageInput(inputId, labels = NULL, values = NULL,
-  active = NULL, file = NULL, format = NULL, class = "buttonStyle",
-  classImg = "imageStyle")
+buttonImageInput(
+  inputId,
+  labels = NULL,
+  values = NULL,
+  active = NULL,
+  file = NULL,
+  format = NULL,
+  class = "buttonStyle",
+  classImg = "imageStyle"
+)
 }
 \arguments{
 \item{inputId}{The \code{input} slot that will be used to access the value.}

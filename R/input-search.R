@@ -45,7 +45,7 @@ searchInput <- function(inputId, data, placeholder) {
 
   addResourcePath(
     prefix = 'libAutoSuggest',
-    directoryPath = system.file('lib', package='dsAppWidgets')
+    directoryPath = system.file('lib', package='shinyinvoer')
   )
 
 

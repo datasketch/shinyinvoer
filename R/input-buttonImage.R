@@ -60,7 +60,7 @@ buttonImageInput <- function (inputId,
   addResourcePath(
     prefix='buttonImage',
     directoryPath=system.file("lib/buttonImage",
-                              package='dsAppWidgets'))
+                              package='shinyinvoer'))
 
 
   l <- purrr::map(seq_along(labels), function (index) {

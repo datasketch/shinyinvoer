@@ -4,7 +4,7 @@ colorPalette <- function(inputId, colors) {
 
   addResourcePath(
     prefix = 'colorInput',
-    directoryPath = system.file('lib/colorPicker', package='dsAppWidgets')
+    directoryPath = system.file('lib/colorPicker', package='shinyinvoer')
   )
 
 

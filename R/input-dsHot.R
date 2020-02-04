@@ -56,11 +56,11 @@ dsHot <- function(inputId, data = NULL, dic = NULL,
   addResourcePath(
     prefix='handsontable',
     directoryPath=system.file("lib/handsontable",
-                              package='dsAppWidgets'))
+                              package='shinyinvoer'))
   addResourcePath(
     prefix='dsHot',
     directoryPath=system.file("lib/dsHot",
-                              package='dsAppWidgets'))
+                              package='shinyinvoer'))
 
   id <- inputId
 

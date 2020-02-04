@@ -1,11 +1,13 @@
-Package: dsAppWidgets
-Title: Custom Inputs Widgets for Shiny
+Package: shinyinvoer
+Title: More Input Widgets for Shiny
 Version: 0.1
 Authors@R: c(
    person("Camila", "Achuri", email = "camila@randommonkey.io", role = c("aut", "cre")),
    person("David", "Daza", email = "david@randommonkey.io", role = "aut"),
    person("Juan Pablo", "Marín", email = "jpmarindiaz@randommonkey.io", role = "aut"))
-Description: Some custom inputs widgets to use in Shiny applications.
+Description: Some more Shiny input widgets built with javascript
+    bindings to provide new input functionalites in Shiny applications, including
+    color palette pickers, image button inputs and predictive search box.
 Depends:
     R (>= 3.1.0)
 Imports:

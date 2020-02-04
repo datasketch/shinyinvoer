@@ -1,5 +1,5 @@
 library(testthat)
-library(dsAppWidgets)
+library(shinyenvoir)
 library(datafringe)
 #shinyExtras
-test_check("dsAppWidgets")
+test_check("shinyenvoir")

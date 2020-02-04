@@ -1,5 +1,5 @@
 library(shiny)
-library(dsAppWidgets)
+library(shinyinvoer)
 
 
 ui <-
