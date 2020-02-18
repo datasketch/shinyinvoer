@@ -2,7 +2,6 @@
 
 export(buttonImageInput)
 export(colorPalette)
-export(dsHot)
 export(searchInput)
 importFrom(shiny,addResourcePath)
 importFrom(shiny,registerInputHandler)
