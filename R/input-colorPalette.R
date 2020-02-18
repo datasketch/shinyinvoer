@@ -23,8 +23,16 @@ colorPalette <- function(inputId, colors) {
     l,
     id = inputId,
     class = 'input-color-palette',
-    purrr::map(colors, function(color) {
-      shiny::tags$input(type = "color",  value = color)
+    purrr::imap(colors, function(color, i) {
+      idx <- i - 1
+      shiny::div(
+        shiny::tags$input(type = "color",  value = color),
+        if (idx != 0) {
+          shiny::tags$button(index = idx, "x")
+        } else {
+          NULL
+        }, class = "input-color-container"
+      )
     }),
     shiny::tags$button(id="add-color", '+')
   )
