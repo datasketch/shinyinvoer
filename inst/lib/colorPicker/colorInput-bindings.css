@@ -18,3 +18,8 @@
 .input-color-palette input[type="color"]::-webkit-color-swatch {
   border: none;
 }
+
+.input-color-container {
+  flex-direction: column-reverse;
+  display: flex;
+}
