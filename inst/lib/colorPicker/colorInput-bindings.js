@@ -92,15 +92,10 @@ $.extend(colorInputBinding, {
   },
   subscribe: function(el, callback) {
    // Enlaza evento a contenedor padre
-   $(el).on('change', function (event) {
-     $(this).find("input").each(function (index, input) {
-       if (input.dataset.index) {
-         return; // early return
-       }
-       $(input).on('change', handleInputColorChange);
-     });
-     callback();
+   $(el).find('button').each(function (index, button) {
+     $(button).on('click', function(event) {callback()});
    });
+   $(el).on('change', function (event) {callback()});
   },
   unsubscribe: function(el) {
   }
