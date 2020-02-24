@@ -3,5 +3,6 @@
 export(buttonImageInput)
 export(colorPalette)
 export(searchInput)
+export(withImage)
 importFrom(shiny,addResourcePath)
 importFrom(shiny,registerInputHandler)
