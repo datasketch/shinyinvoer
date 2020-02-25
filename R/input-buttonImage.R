@@ -48,6 +48,7 @@ buttonImageInput <- function (inputId,
                               labels = NULL,
                               values = NULL,
                               active = NULL,
+                              tooltip = NULL,
                               file = NULL,
                               format = NULL,
                               class = "buttonStyle",
@@ -56,6 +57,8 @@ buttonImageInput <- function (inputId,
 
   format <- format %||% "png"
   file <- file %||% "img/btn/"
+
+  if (is.null(tooltip)) tooltip <- labels
 
   addResourcePath(
     prefix='buttonImage',
@@ -67,6 +70,8 @@ buttonImageInput <- function (inputId,
     shiny::tags$button(
       id = values[index],
       class = class,
+      type="submit",
+      title= tooltip[index],
       shiny::tags$img(src = paste0(file, labels[index], '.', format), class = classImg)
     )
   })
