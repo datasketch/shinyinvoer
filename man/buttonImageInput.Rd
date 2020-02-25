@@ -9,6 +9,7 @@ buttonImageInput(
   labels = NULL,
   values = NULL,
   active = NULL,
+  tooltip = NULL,
   file = NULL,
   format = NULL,
   class = "buttonStyle",
