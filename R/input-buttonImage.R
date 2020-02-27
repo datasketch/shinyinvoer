@@ -5,10 +5,10 @@
 #' Create grouped buttons with image to choose a single button and get its id.
 #'
 #' @param inputId The \code{input} slot that will be used to access the value.
-#' @param labels List of images´ names saved in a folder into www.
-#' @param values List of id inputs when pressing each button.
+#' @param images List of images´ names saved in a folder into www.
+#' @param images List of id inputs when pressing each button.
 #' @param active Initial button selected.
-#' @param file Folder where the images are stored.
+#' @param path Folder where the images are stored.
 #' @param class Name of the class which contains the button´s style
 #' @param classImg class Name of the class which contains the images´ style.
 #' @return A group of buttons which can be controlled from the UI.
@@ -24,13 +24,13 @@
 #'     verbatimTextOutput('input_button')
 #' )
 #' server <- function(input, output) {
-#'  # you must crate a file in www for saving images (www/img/...)
+#'  # you must crate a path in www for saving images (www/img/...)
 #'  output$button <- renderUI({
 #'                   buttonImageInput(inputId = 'chosen_button',
-#'                   labels = c("cat", "dog", "fox"),
-#'                   values = c("cat", "dog", "fox"),
+#'                   images = c("cat", "dog", "fox"),
+#'                   images = c("cat", "dog", "fox"),
 #'                   active = 'dog',
-#'                   file = "img/")
+#'                   path = "img/")
 #'                   })
 #' # print input id when clicking
 #' output$input_button <- renderPrint({
@@ -45,20 +45,21 @@
 #' @export
 
 buttonImageInput <- function (inputId,
-                              labels = NULL,
-                              values = NULL,
+                              label = NULL,
+                              images = NULL,
                               active = NULL,
-                              tooltip = NULL,
-                              file = NULL,
+                              tooltips = NULL,
+                              path = NULL,
                               format = NULL,
                               class = "buttonStyle",
                               classImg = "imageStyle") {
 
 
   format <- format %||% "png"
-  file <- file %||% "img/btn/"
+  path <- path %||% "img/btn/"
+  label <- label %||% " "
 
-  if (is.null(tooltip)) tooltip <- labels
+  if (is.null(tooltips)) tooltips <- images
 
   addResourcePath(
     prefix='buttonImage',
@@ -66,17 +67,18 @@ buttonImageInput <- function (inputId,
                               package='shinyinvoer'))
 
 
-  l <- purrr::map(seq_along(labels), function (index) {
+  l <- purrr::map(seq_along(images), function (index) {
     shiny::tags$button(
-      id = values[index],
+      id = images[index],
       class = class,
       type="submit",
-      title= tooltip[index],
-      shiny::tags$img(src = paste0(file, labels[index], '.', format), class = classImg)
+      title= tooltips[index],
+      shiny::tags$img(src = paste0(path, images[index], '.', format), class = classImg)
     )
   })
-  if (is.null(active)) active <- values[1]
-  active <- which(values == active)
+  if (is.null(active)) active <- images[1]
+  active <- which(images == active)
+
   l[[active]] <- purrr::map(active, function(a) {
     htmltools::HTML(gsub('"buttonStyle"', '"buttonStyle active_btn"', l[[a]]))
   })
@@ -95,7 +97,7 @@ buttonImageInput <- function (inputId,
     ),
       class = 'buttons-group',
       id = inputId,
-      l
+      div(label ,l)
   )
 
 

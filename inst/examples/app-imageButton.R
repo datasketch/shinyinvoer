@@ -15,11 +15,11 @@ server <- function(input, output, session) {
   # you must crate a file in www for save images (www/img/...)
   output$button <- renderUI({
     buttonImageInput(inputId = 'chosen_button',
-                     labels = c("cat", "dog", "fox"),
-                     values = c("cat", "dog", "fox"),
-                     tooltip = c("Gato", "Perro", "Zorro"),
+                     label = "Elige un animal",
+                     images = c("cat", "dog", "fox"),
+                     tooltips = c("Gato", "Perro", "Zorro"),
                      active = 'dog',
-                     file = "img/")
+                     path = "img/")
   })
 
   # print input id of your click
