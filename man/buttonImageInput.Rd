@@ -6,11 +6,11 @@
 \usage{
 buttonImageInput(
   inputId,
-  labels = NULL,
-  values = NULL,
+  label = NULL,
+  images = NULL,
   active = NULL,
-  tooltip = NULL,
-  file = NULL,
+  tooltips = NULL,
+  path = NULL,
   format = NULL,
   class = "buttonStyle",
   classImg = "imageStyle"
@@ -19,13 +19,11 @@ buttonImageInput(
 \arguments{
 \item{inputId}{The \code{input} slot that will be used to access the value.}
 
-\item{labels}{List of images´ names saved in a folder into www.}
-
-\item{values}{List of id inputs when pressing each button.}
+\item{images}{List of id inputs when pressing each button.}
 
 \item{active}{Initial button selected.}
 
-\item{file}{Folder where the images are stored.}
+\item{path}{Folder where the images are stored.}
 
 \item{class}{Name of the class which contains the button´s style}
 
@@ -47,13 +45,13 @@ ui <- fluidPage(
     verbatimTextOutput('input_button')
 )
 server <- function(input, output) {
- # you must crate a file in www for saving images (www/img/...)
+ # you must crate a path in www for saving images (www/img/...)
  output$button <- renderUI({
                   buttonImageInput(inputId = 'chosen_button',
-                  labels = c("cat", "dog", "fox"),
-                  values = c("cat", "dog", "fox"),
+                  images = c("cat", "dog", "fox"),
+                  images = c("cat", "dog", "fox"),
                   active = 'dog',
-                  file = "img/")
+                  path = "img/")
                   })
 # print input id when clicking
 output$input_button <- renderPrint({

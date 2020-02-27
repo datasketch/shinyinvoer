@@ -85,6 +85,8 @@ buttonImageInput <- function (inputId,
 
 
   shiny::div(
+    label,
+  shiny::div(
     `data-shiny-input-type` = "buttonImage",
     shiny::tagList(
       shiny::singleton(
@@ -97,7 +99,8 @@ buttonImageInput <- function (inputId,
     ),
       class = 'buttons-group',
       id = inputId,
-      div(label ,l)
+      l
+  )
   )
 
 
