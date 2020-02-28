@@ -1,0 +1,72 @@
+
+
+#' Add images to dropdown options
+#'
+#' This function works only with bootstrap for now
+#'
+#' @param inputId The input slot that will be used to access the value.
+#' @param choices List of values to select from, when named the names are
+#'   appended to the right of the image.
+#' @param images List of image location that can be put in a src attribute.
+#' @param placeholder HTML to render as placeholder, defaults to empty div.
+#' @param width width in of input.
+#'
+#' @export
+selectImageInput <- function(inputId, label, choices, images = NULL,
+                             placeholder = NULL,
+                             width = 120) {
+
+  addResourcePath(
+    prefix='selectImage',
+    directoryPath=system.file("lib/selectImage",
+                              package='shinyinvoer')
+  )
+
+  if(is.null(placeholder)){
+    placeholder <- div(style = paste0("width:",width,";"))
+  }
+
+  choices_list <- lapply(seq_along(choices), function(x){
+    list(id = choices[x],
+         image = images[x],
+         label = names(choices[x])
+    )
+  })
+
+  l <- lapply(choices_list, function(x){
+    tags$li(class = "selectImage",
+            tags$a(href="#", title = "Select", class = "selectImage", id = x$id,
+                   img(src=x$image), x$label
+            )
+    )
+  })
+
+  shiny::div(
+    label,
+    shiny::div(
+      `data-shiny-input-type` = "selectImage",
+      shiny::tagList(
+        shiny::singleton(
+          shiny::tags$head(
+            shiny::tags$link(rel = 'stylesheet',
+                             type = 'text/css',
+                             href = 'selectImage/selectImage.css'),
+            shiny::tags$script(src = 'selectImage/selectImage-bindings.js')
+          ))
+      ),
+      div(class = "btn-group", id = inputId,
+          tags$button(type = "button", class = "btn btn-default dropdown-toggle selectImage",
+                      style = "display: flex;align-items: center;",
+                      `data-toggle`="dropdown", `aria-haspopup`="true",  `aria-expanded`="false",
+                      div(class = "buttonInner selectImage",
+                          placeholder
+                      ),
+                      span(class="glyphicon glyphicon-chevron-down", style = "padding-left: 10px;")
+          ),
+          tags$ul( class="dropdown-menu",
+                   l
+          )
+      )
+    )
+  )
+}
