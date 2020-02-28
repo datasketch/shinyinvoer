@@ -1,3 +1,5 @@
+# this is copied from shiny since it's not exported
+
 is.reactive <- function(obj){
   all(class(obj) %in% c("reactiveExpr","reactive"))
 }

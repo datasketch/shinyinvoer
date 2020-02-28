@@ -105,3 +105,20 @@ buttonImageInput <- function (inputId,
 
 
 }
+
+
+
+#' @export
+updateButtonImageInput <- function(session,
+                                   inputId,
+                                   label = NULL,
+                                   images = NULL,
+                                   active = NULL,
+                                   tooltips = NULL,
+                                   path = NULL,
+                                   format = NULL) {
+
+  message <- dropNulls(list(active = active))
+  session$sendInputMessage(inputId, message)
+
+}

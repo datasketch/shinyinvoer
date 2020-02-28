@@ -4,7 +4,7 @@
 \alias{selectizeInputWithImage}
 \title{Add images to the dropdown options}
 \usage{
-selectizeInputWithImage(inputId, choices, images, ...)
+selectizeInputWithImage(inputId, label, choices, images, ...)
 }
 \arguments{
 \item{inputId}{The input slot that will be used to access the value.}
@@ -16,5 +16,5 @@ selectizeInputWithImage(inputId, choices, images, ...)
 \item{...}{Arguments that are passed to `selectizeInput()`}
 }
 \description{
-Add images to the dropdown options
+This function will overwrite any render function defined in the options list.
 }

@@ -7,7 +7,8 @@ library(shinyinvoer)
 
 ui <- fluidPage(
   uiOutput('button'),
-  verbatimTextOutput('input_button')
+  verbatimTextOutput('input_button'),
+  uiOutput("test")
 )
 
 server <- function(input, output, session) {
@@ -27,7 +28,18 @@ server <- function(input, output, session) {
     input$chosen_button
   })
 
+ output$test <- renderUI({
+   selectInput("country_id", "Elige un país", c("colombia", "mexico", "la india"))
+ })
 
+
+ observe({
+   if (is.null(input$country_id)) return()
+
+   if (input$country_id == "mexico") {
+     updateButtonImageInput(session, "chosen_button", active = "fox")
+   }
+ })
 
 }
 
