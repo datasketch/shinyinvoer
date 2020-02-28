@@ -3,6 +3,7 @@
 export(buttonImageInput)
 export(colorPalette)
 export(searchInput)
+export(selectImageInput)
 export(selectizeInputWithImage)
 export(updateButtonImageInput)
 export(withImage)
