@@ -1,104 +1,132 @@
-var colorInputBinding = new Shiny.InputBinding();
-var state = [];
-var handleInputColorChange = function (event) {
-  var input = event.target;
-  var index = parseInt(input.dataset.index);
+let colorInputBinding = new Shiny.InputBinding();
 
-  // Remove old value from state
-  state = state.filter(function(color) {
-    return color.id != index;
-  });
-
-  // Add new value to state
-  state.push({
-    id: index,
-    input: input,
-    color: input.value
-  });
-  state.sort(function(a, b){return a.id - b.id});
+const typedArray = new Uint32Array(1);
+const createRandomIndex = function() {
+  return crypto.getRandomValues(typedArray)[0];
 };
 
-var remove_color = function(event) {
-  var index = parseInt(event.target.getAttribute("index"));
+const getColorsState = function(el) {
+  return JSON.parse(el.dataset.colors);
+};
 
-  // Remove from state
-  state = state.filter(function(color) {
-    return color.id != index;
-  });
+const setColorsState = function(el, state) {
+  el.dataset.colors = JSON.stringify(state);
+};
 
+const handleInputColorChange = function(event, el) {
+  const input = event.target;
+  const index = parseInt(input.dataset.index, 10);
+  // Get state
+  const colors = getColorsState(el);
+  const inputIndex = colors.findIndex(item => item.id === Number(index));
+  // Update state
+  colors.splice(
+    inputIndex,
+    1,
+    Object.assign(colors[inputIndex], { color: input.value })
+  );
+  // Set state
+  setColorsState(el, colors);
+};
+
+const removeColor = function(event, el) {
+  const parent = event.target.parentNode;
+  const input = parent.querySelector('input');
+  const index = parseInt(input.dataset.index, 10);
+  // Get state
+  let colors = getColorsState(el);
+  // Update/remove from state
+  colors = colors.filter(color => color.id !== index);
+  // Set state
+  setColorsState(el, colors);
   // Remove from DOM
-  var div = event.target.parentNode;
+  const div = event.target.parentNode;
   div.remove();
 };
 
 $.extend(colorInputBinding, {
   find: function(scope) {
-		// Encuentra el elemento que se ha creado
-	  return $(scope).find(".input-color-palette");
+    return $(scope).find('.input-color-palette');
   },
-  initialize: function(el){
-    $(el).find('input').each(function (index, input) {
-      // Guardar referencia al id en el elemento
-      input.dataset.index = index;
-      // Guardar en el estado global
-      state.push({
-        id: index,
-        input: input,
-        color: input.value
+  initialize: function(el) {
+    setColorsState(el, []);
+    const self = this;
+    $(el)
+      .find('input')
+      .each(function(index, input) {
+        const idx = createRandomIndex();
+        // Save reference to idx in the element
+        input.dataset.index = idx;
+        // Get state
+        const colors = getColorsState(el);
+        // Update state
+        colors.push({
+          id: idx,
+          color: input.value
+        });
+        // Set state
+        setColorsState(el, colors);
+        // Bind event to input element
+        $(input).on('change', e => handleInputColorChange.call(self, e, el));
       });
-      state.sort(function(a, b){return a.id - b.id});
 
-      $(input).on('change', handleInputColorChange);
-    });
+    // Bind event to add color button
+    $(el)
+      .find('#add-color')
+      .click(function() {
+        const index = createRandomIndex();
+        const div = document.createElement('div');
+        div.setAttribute('class', 'input-color-container');
 
-    // Enlazar boton para agregar color
-    $(el).find('#add-color').click(function () {
-      var div = document.createElement('div');
-      div.setAttribute('class', "input-color-container");
-      var index = state[state.length-1].id + 1;
+        // Create color picker
+        const input = document.createElement('input');
+        input.setAttribute('type', 'color');
+        input.value = '#FFFFFF';
+        input.dataset.index = index;
 
-      //create color picker
-      var input = document.createElement('input');
-      input.setAttribute('type', 'color');
-      input.value = '#FFFFFF';
-      input.dataset.index = index;
+        // Bind event to new input
+        $(input).on('change', e => handleInputColorChange.call(self, e, el));
 
-      // call handleInputColorChange to update state
-      handleInputColorChange({'target': input});
-      $(input).on('change', handleInputColorChange);
+        // create remove color button
+        const button = document.createElement('button');
+        button.textContent = 'x';
+        button.addEventListener('click', e => removeColor.call(self, e, el));
 
-      // create remove color button
-      var button = document.createElement('button');
-      button.setAttribute('index', index);
-      button.innerHTML = "x";
-      button.onclick = remove_color;
-      div.appendChild(input);
-      div.appendChild(button);
-      el.insertBefore(div, this);
-    });
+        div.appendChild(input);
+        div.appendChild(button);
+        el.insertBefore(div, this);
 
-    // Add remove_color onclick top all except the add-color button
-    $(el).find('button').each(function(index, button) {
-      if (button.id !== "add-color") {
-        button.onclick = remove_color;
-      }
-    });
+        // Get state
+        const colors = getColorsState(el);
+        // Update state
+        colors.push({
+          id: index,
+          color: input.value
+        });
+        // Set state
+        setColorsState(el, colors);
+      });
+
+    // Bind removeColor event to buttons inside .input-color-container divs
+    $(el)
+      .find('.input-color-container button')
+      .each(function(index, button) {
+        button.addEventListener('click', e => removeColor.call(self, e, el));
+      });
   },
   getValue: function(el) {
-    return state.map(item => item.color);
-  },
-  setValue: function(el, value) {
-   //console.log(el)
+    return getColorsState(el).map(item => item.color);
   },
   subscribe: function(el, callback) {
-   // Enlaza evento a contenedor padre
-   $(el).find('button').each(function (index, button) {
-     $(button).on('click', function(event) {callback()});
-   });
-   $(el).on('change', function (event) {callback()});
+    // Bind events to parent container
+    $(el).on('click', function(event) {
+      callback();
+    });
+    $(el).on('change', function(event) {
+      callback();
+    });
   },
-  unsubscribe: function(el) {
-  }
+  unsubscribe: function(el) {}
 });
 
 Shiny.inputBindings.register(colorInputBinding, 'shiny.colorInputBinding');

@@ -28,7 +28,7 @@ colorPalette <- function(inputId, colors) {
       shiny::div(
         shiny::tags$input(type = "color",  value = color),
         if (idx != 0) {
-          shiny::tags$button(index = idx, "x")
+          shiny::tags$button("x")
         } else {
           NULL
         }, class = "input-color-container"
