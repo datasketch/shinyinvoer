@@ -1,57 +1,38 @@
-var selectImageBinding = new Shiny.InputBinding();
+const selectImageBinding = new Shiny.InputBinding();
 // Si siempre hay un boton activo
-var selectClicked = undefined
+let selectClicked;
 
 $.extend(selectImageBinding, {
   find: function(scope) {
-		// Encuentra el elemento que se ha creado
-		return $(scope).find('.btn-group')
+    return $(scope).find('.btn-group');
+  },
+  initialize: function(el) {
+    el.dataset.selected = '';
   },
   getValue: function(el) {
-		// El manejador del evento
-		// Devuelve valor a R
- //return
-  if (!selectClicked) {
-    selectClicked = document.querySelector('.selectImage');
-    console.log(selectClicked)
-  }
-  var id = selectClicked.getAttribute('id')
-  return id
-  },
-   setValue: function(el, value) {
-   //console.log(value)
+    return el.dataset.selected;
   },
   subscribe: function(el, callback) {
-		// Enlaza eventos al elemento que se creo
-		$(el).on('click.selectImageBinding', function (event) {
-		  var target = event.target
-		  if (target.matches('a.selectImage')) {
-		    console.log(target)
-		    // Si es li
-		    selectClicked.classList.remove('active_btn')
-		    selectClicked = target
-		    selectClicked.classList.add('active_btn')
-		  } else if (target.matches('a.selectImage > img')) {
-		    console.log(target)
-		    // Si es a
-		    selectClicked.classList.remove('active_btn')
-		    selectClicked = target.parentNode
-		    selectClicked.classList.add('active_btn')
-		  } else if (!target.matches('select') && !target.matches('select img')) {
-		    // Ni boton, ni imagen
-		    return
-		  }
-		  var inner = selectClicked.innerHTML;
-		  console.log(inner)
-		  var button = document.querySelector('.buttonInner.selectImage');
-		  button.innerHTML = inner;
-		  var img_src = selectClicked.querySelector('img').getAttribute('src');
-		  console.log(img_src)
-		  callback();
-		})
-  },
-  unsubscribe: function(el) {
+    // Enlaza eventos al elemento que se creo
+    $(el).on('click.selectImageBinding', function(event) {
+      let target = event.target;
+      console.log(target);
+      if (target.matches('a.selectImage')) {
+        el.dataset.selected = target.id;
+      } else if (target.matches('a.selectImage img')) {
+        target = target.parentNode;
+        el.dataset.selected = target.id;
+      } else if (target.matches('li.selectImage')) {
+        target = target.querySelector('a.selectImage');
+        el.dataset.selected = target.id;
+      }
+      const button = el.querySelector('.buttonInner.selectImage');
+      if (target.matches('a')) {
+        button.innerHTML = target.innerHTML;
+      }
+      callback();
+    });
   }
 });
 
-Shiny.inputBindings.register(selectImageBinding, 'shiny.selectImageInput')
+Shiny.inputBindings.register(selectImageBinding, 'shiny.selectImageInput');
