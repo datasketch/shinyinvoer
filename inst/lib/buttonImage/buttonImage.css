@@ -39,7 +39,7 @@
 	background-color: transparent;
 	display: grid;
 	grid-gap: 20px;
-	grid-template-columns: repeat(auto-fill, 40px);
+	grid-template-columns: repeat(auto-fill, 60px);
 	padding: 15px 0;
 }
 
@@ -51,12 +51,12 @@
 	box-shadow: none !important;
 	cursor: pointer !important;
 	display: flex !important;
-	height: 40px;
+	height: 100%;
 	justify-content: center !important;
 	outline: 0;
 	position: relative !important;
 	text-align: center !important;
-	width: 40px;
+	width: 100%;
 }
 
 
@@ -75,7 +75,7 @@
 
 
 .buttons-group .buttonStyle .imageStyle {
-	width: 35px;
+	width: 80%;
 	filter: brightness(0) invert(0.7);
 	transition: all 0.3s cubic-bezier(0.680, -0.550, 0.265, 1.550);
 }
