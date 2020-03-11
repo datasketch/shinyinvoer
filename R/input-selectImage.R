@@ -91,11 +91,13 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
 #' @param width width in of input.
 #'
 #' @export
-updateSelectImageInput <- function (session, inputId, label = NULL, choices = NULL, selected = NULL) {
+updateSelectImageInput <- function (session, inputId, label = NULL, choices = NULL,
+                                    images = NULL, selected = NULL) {
   message <- dropNulls(
     list(
       label = label,
       choices = choices,
+      images = images,
       selected = selected)
   )
   session$sendInputMessage(inputId, message)
