@@ -40,6 +40,8 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
     )
   })
 
+  if(is.numeric(selected))
+    selected <- choices[selected]
   if(is.null(placeholder)){
     # placeholder <- div(style = paste0("width:",width,";"))
     x <- choices_list[[selected]]
@@ -59,7 +61,7 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
             shiny::tags$script(src = 'selectImage/selectImage-bindings.js')
           ))
       ),
-      div(class = "btn-group", id = inputId,
+      div(class = "btn-group", id = inputId, `data-init-value` = selected,
           tags$button(type = "button", class = "btn btn-default dropdown-toggle selectImage",
                       style = "display: flex;align-items: center;",
                       `data-toggle`="dropdown", `aria-haspopup`="true",  `aria-expanded`="false",

@@ -7,7 +7,9 @@ $.extend(selectImageBinding, {
     return $(scope).find('.btn-group');
   },
   initialize: function(el) {
-    el.dataset.selected = '';
+    //this.setValue(el, $el.attr('data-init-value'));
+    var $el = $(el);
+    el.dataset.selected = $el.attr('data-init-value');
   },
   getValue: function(el) {
     return el.dataset.selected;
