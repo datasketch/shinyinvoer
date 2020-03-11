@@ -14,18 +14,24 @@ named_choices <- c("Ahh!" = "a", "Buu!" = "b", "Cool"="c")
 
 ui <- fluidPage(
   #suppressDependencies('bootstrap'),
-  selectImageInput("dropdown1", "Select Image", choices = choices, images = images, width = 100),
+  selectImageInput("dropdown1", "Select Image", choices = choices,
+                   images = images, width = 100),
   verbatimTextOutput('test1'),
   hr(),
-  selectImageInput("dropdown2", "Named choices", choices = named_choices, images = images, width = 50),
+  selectImageInput("dropdown2", "Named choices", choices = named_choices,
+                   selected = "b",
+                   images = images, width = 50),
   verbatimTextOutput('test2'),
   hr(),
   selectImageInput("dropdown3", "With custom placeholder", choices = choices,
-                   placeholder = img(src = "https://via.placeholder.com/150x50"),
+                   placeholder = img(src = "https://via.placeholder.com/150x50/FF0000"),
                    images = images, width = 50),
   verbatimTextOutput('test3'),
-  uiOutput("test")
-
+  hr(),
+  selectImageInput("dropdown4", "With update", choices = choices,
+                   placeholder = img(src = "https://via.placeholder.com/150x50/FF0000"),
+                   images = images, width = 50),
+  verbatimTextOutput('test4')
 )
 
 server <- function(input, output, session) {
@@ -39,17 +45,15 @@ server <- function(input, output, session) {
   output$test3 <- renderPrint({
     input$dropdown3
   })
-  output$test <- renderUI({
-    selectInput("custom_selected", "Choose an option", c("none","a", "b", "c"))
+  output$test4 <- renderPrint({
+    input$dropdown4
   })
+
   observe({
-    if (is.null(input$custom_selected)) {
-      return()
-    } else {
-      print(input$custom_selected)
-      updateSelectImageInput(session, "dropdown1", selected = input$custom_selected)
-    }
+    updateSelectImageInput(session, inputId = "dropdown4", selected = input$dropdown3)
   })
+
+
 }
 
 shinyApp(ui, server)

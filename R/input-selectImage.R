@@ -8,11 +8,13 @@
 #' @param choices List of values to select from, when named the names are
 #'   appended to the right of the image.
 #' @param images List of image location that can be put in a src attribute.
-#' @param placeholder HTML to render as placeholder, defaults to empty div.
+#' @param selected Selected image, defaults to first one.
+#' @param placeholder HTML to render as placeholder, overrides selected param.
 #' @param width width in of input.
 #'
 #' @export
 selectImageInput <- function(inputId, label, choices, images = NULL,
+                             selected = 1,
                              placeholder = NULL,
                              width = 120) {
 
@@ -22,16 +24,13 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
                               package='shinyinvoer')
   )
 
-  if(is.null(placeholder)){
-    placeholder <- div(style = paste0("width:",width,";"))
-  }
-
   choices_list <- lapply(seq_along(choices), function(x){
     list(id = choices[x],
          image = images[x],
          label = names(choices[x])
     )
   })
+  names(choices_list) <- choices
 
   l <- lapply(choices_list, function(x){
     tags$li(class = "selectImage",
@@ -40,6 +39,14 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
             )
     )
   })
+
+  if(is.numeric(selected))
+    selected <- choices[selected]
+  if(is.null(placeholder)){
+    # placeholder <- div(style = paste0("width:",width,";"))
+    x <- choices_list[[selected]]
+    placeholder <- div(class = "selectImage", img(src=x$image), x$label)
+  }
 
   shiny::div(
     label,
@@ -54,7 +61,7 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
             shiny::tags$script(src = 'selectImage/selectImage-bindings.js')
           ))
       ),
-      div(class = "btn-group", id = inputId,
+      div(class = "btn-group", id = inputId, `data-init-value` = selected,
           tags$button(type = "button", class = "btn btn-default dropdown-toggle selectImage",
                       style = "display: flex;align-items: center;",
                       `data-toggle`="dropdown", `aria-haspopup`="true",  `aria-expanded`="false",
@@ -71,9 +78,34 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
   )
 }
 
+
+#' Update select image input
+#'
+#' @param session Shiny session
+#' @param inputId The input slot that will be used to access the value.
+#' @param choices List of values to select from, when named the names are
+#'   appended to the right of the image.
+#' @param images List of image location that can be put in a src attribute.
+#' @param selected Selected image, defaults to first one.
+#' @param placeholder HTML to render as placeholder, overrides selected param.
+#' @param width width in of input.
+#'
 #' @export
-updateSelectImageInput <- function(session,
-                              inputId,
-                              selected = NULL) {
-  session$sendInputMessage(inputId, selected)
+updateSelectImageInput <- function (session, inputId, label = NULL, choices = NULL, selected = NULL) {
+  message <- dropNulls(
+    list(
+      label = label,
+      choices = choices,
+      selected = selected)
+  )
+  session$sendInputMessage(inputId, message)
 }
+
+
+# copied from shiny since it's not exported
+dropNulls <- function(x) {
+  x[!vapply(x, is.null, FUN.VALUE=logical(1))]
+}
+
+
+

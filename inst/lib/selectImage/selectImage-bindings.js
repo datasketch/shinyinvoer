@@ -5,10 +5,16 @@ $.extend(selectImageBinding, {
     return $(scope).find('.btn-group');
   },
   initialize: function(el) {
-    el.dataset.selected = '';
+    //this.setValue(el, $el.attr('data-init-value'));
+    var $el = $(el);
+    el.dataset.selected = $el.attr('data-init-value');
   },
   getValue: function(el) {
     return el.dataset.selected;
+  },
+  setValue: function(el, value) {
+    //$(el).colourpicker('value', value);
+    el.dataset.selected = value;
   },
   subscribe: function(el, callback) {
     // Enlaza eventos al elemento que se creo
@@ -30,16 +36,17 @@ $.extend(selectImageBinding, {
       callback();
     });
   },
-  receiveMessage(el, selected) {
-    const target = el.querySelector('#' +  selected);
-    if (target) {
+  receiveMessage: function(el, data) {
+    if (data.selected) {
+      const target = el.querySelector('#' +  data.selected);
       $(target).trigger('click');
-    } else {
-      const button = el.querySelector('.buttonInner.selectImage');
-      button.innerHTML = '';
-      el.dataset.selected = '';
-      $(el).trigger('click');
+      return;
     }
+    const button = el.querySelector('.buttonInner.selectImage');
+    button.innerHTML = '';
+    el.dataset.selected = '';
+    $(el).trigger('click');
+    return;
   }
 });
 
