@@ -24,6 +24,8 @@ ui <- fluidPage(
                    placeholder = img(src = "https://via.placeholder.com/150x50"),
                    images = images, width = 50),
   verbatimTextOutput('test3'),
+  uiOutput("test")
+
 )
 
 server <- function(input, output, session) {
@@ -36,6 +38,17 @@ server <- function(input, output, session) {
   })
   output$test3 <- renderPrint({
     input$dropdown3
+  })
+  output$test <- renderUI({
+    selectInput("custom_selected", "Choose an option", c("none","a", "b", "c"))
+  })
+  observe({
+    if (is.null(input$custom_selected)) {
+      return()
+    } else {
+      print(input$custom_selected)
+      updateSelectImageInput(session, "dropdown1", selected = input$custom_selected)
+    }
   })
 }
 

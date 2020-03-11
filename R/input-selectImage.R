@@ -70,3 +70,10 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
     )
   )
 }
+
+#' @export
+updateSelectImageInput <- function(session,
+                              inputId,
+                              selected = NULL) {
+  session$sendInputMessage(inputId, selected)
+}

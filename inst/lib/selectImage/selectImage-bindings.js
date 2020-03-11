@@ -1,6 +1,4 @@
 const selectImageBinding = new Shiny.InputBinding();
-// Si siempre hay un boton activo
-let selectClicked;
 
 $.extend(selectImageBinding, {
   find: function(scope) {
@@ -16,7 +14,6 @@ $.extend(selectImageBinding, {
     // Enlaza eventos al elemento que se creo
     $(el).on('click.selectImageBinding', function(event) {
       let target = event.target;
-      console.log(target);
       if (target.matches('a.selectImage')) {
         el.dataset.selected = target.id;
       } else if (target.matches('a.selectImage img')) {
@@ -32,6 +29,17 @@ $.extend(selectImageBinding, {
       }
       callback();
     });
+  },
+  receiveMessage(el, selected) {
+    const target = el.querySelector('#' +  selected);
+    if (target) {
+      $(target).trigger('click');
+    } else {
+      const button = el.querySelector('.buttonInner.selectImage');
+      button.innerHTML = '';
+      el.dataset.selected = '';
+      $(el).trigger('click');
+    }
   }
 });
 
