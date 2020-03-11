@@ -9,6 +9,7 @@ selectImageInput(
   label,
   choices,
   images = NULL,
+  selected = 1,
   placeholder = NULL,
   width = 120
 )
@@ -21,7 +22,9 @@ appended to the right of the image.}
 
 \item{images}{List of image location that can be put in a src attribute.}
 
-\item{placeholder}{HTML to render as placeholder, defaults to empty div.}
+\item{selected}{Selected image, defaults to first one.}
+
+\item{placeholder}{HTML to render as placeholder, overrides selected param.}
 
 \item{width}{width in of input.}
 }

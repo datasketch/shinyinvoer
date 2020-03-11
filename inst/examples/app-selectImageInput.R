@@ -14,14 +14,17 @@ named_choices <- c("Ahh!" = "a", "Buu!" = "b", "Cool"="c")
 
 ui <- fluidPage(
   #suppressDependencies('bootstrap'),
-  selectImageInput("dropdown1", "Select Image", choices = choices, images = images, width = 100),
+  selectImageInput("dropdown1", "Select Image", choices = choices,
+                   images = images, width = 100),
   verbatimTextOutput('test1'),
   hr(),
-  selectImageInput("dropdown2", "Named choices", choices = named_choices, images = images, width = 50),
+  selectImageInput("dropdown2", "Named choices", choices = named_choices,
+                   selected = "b",
+                   images = images, width = 50),
   verbatimTextOutput('test2'),
   hr(),
   selectImageInput("dropdown3", "With custom placeholder", choices = choices,
-                   placeholder = img(src = "https://via.placeholder.com/150x50"),
+                   placeholder = img(src = "https://via.placeholder.com/150x50/FF0000"),
                    images = images, width = 50),
   verbatimTextOutput('test3'),
 )

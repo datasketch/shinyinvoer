@@ -8,11 +8,13 @@
 #' @param choices List of values to select from, when named the names are
 #'   appended to the right of the image.
 #' @param images List of image location that can be put in a src attribute.
-#' @param placeholder HTML to render as placeholder, defaults to empty div.
+#' @param selected Selected image, defaults to first one.
+#' @param placeholder HTML to render as placeholder, overrides selected param.
 #' @param width width in of input.
 #'
 #' @export
 selectImageInput <- function(inputId, label, choices, images = NULL,
+                             selected = 1,
                              placeholder = NULL,
                              width = 120) {
 
@@ -22,16 +24,13 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
                               package='shinyinvoer')
   )
 
-  if(is.null(placeholder)){
-    placeholder <- div(style = paste0("width:",width,";"))
-  }
-
   choices_list <- lapply(seq_along(choices), function(x){
     list(id = choices[x],
          image = images[x],
          label = names(choices[x])
     )
   })
+  names(choices_list) <- choices
 
   l <- lapply(choices_list, function(x){
     tags$li(class = "selectImage",
@@ -40,6 +39,11 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
             )
     )
   })
+
+  if(is.null(placeholder)){
+    # placeholder <- div(style = paste0("width:",width,";"))
+    placeholder <- img(src=choices_list[[selected]]$image)
+  }
 
   shiny::div(
     label,
