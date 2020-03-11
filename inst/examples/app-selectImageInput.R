@@ -27,6 +27,11 @@ ui <- fluidPage(
                    placeholder = img(src = "https://via.placeholder.com/150x50/FF0000"),
                    images = images, width = 50),
   verbatimTextOutput('test3'),
+  hr(),
+  selectImageInput("dropdown4", "With update", choices = choices,
+                   placeholder = img(src = "https://via.placeholder.com/150x50/FF0000"),
+                   images = images, width = 50),
+  verbatimTextOutput('test4')
 )
 
 server <- function(input, output, session) {
@@ -40,6 +45,15 @@ server <- function(input, output, session) {
   output$test3 <- renderPrint({
     input$dropdown3
   })
+  output$test4 <- renderPrint({
+    input$dropdown4
+  })
+
+  observe({
+    updateSelectImageInput(session, inputId = "dropdown4", selected = input$dropdown3)
+  })
+
+
 }
 
 shinyApp(ui, server)

@@ -32,6 +32,16 @@ $.extend(selectImageBinding, {
       }
       callback();
     });
+  },
+  receiveMessage: function(el, data) {
+    var $el = $(el);
+    if(data.selected){
+      var elId = "#" + data.selected;
+      var selected = el.querySelector(elId);
+      el.dataset.selected = data.selected;
+      const button = el.querySelector('.buttonInner.selectImage');
+      button.innerHTML = selected.innerHTML;
+    }
   }
 });
 
