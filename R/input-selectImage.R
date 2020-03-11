@@ -42,7 +42,8 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
 
   if(is.null(placeholder)){
     # placeholder <- div(style = paste0("width:",width,";"))
-    placeholder <- img(src=choices_list[[selected]]$image)
+    x <- choices_list[[selected]]
+    placeholder <- div(class = "selectImage", img(src=x$image), x$label)
   }
 
   shiny::div(

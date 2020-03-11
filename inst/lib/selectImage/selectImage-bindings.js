@@ -12,6 +12,10 @@ $.extend(selectImageBinding, {
   getValue: function(el) {
     return el.dataset.selected;
   },
+  setValue: function(el, value) {
+    //$(el).colourpicker('value', value);
+    el.dataset.selected = value;
+  },
   subscribe: function(el, callback) {
     // Enlaza eventos al elemento que se creo
     $(el).on('click.selectImageBinding', function(event) {
@@ -42,6 +46,7 @@ $.extend(selectImageBinding, {
       const button = el.querySelector('.buttonInner.selectImage');
       button.innerHTML = selected.innerHTML;
     }
+    $el.trigger("click");
   }
 });
 
