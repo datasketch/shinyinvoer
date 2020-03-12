@@ -45,6 +45,7 @@
 .dropdown.opened .dropdown-options {
   height: auto;
   overflow: auto;
+  z-index: 2;
 }
 
 .dropdown-option {

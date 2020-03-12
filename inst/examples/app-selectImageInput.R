@@ -21,42 +21,40 @@ ui <- fluidPage(
                    images = images, width = 200),
   verbatimTextOutput('dropdown_result'),
   hr(),
-  selectInput('updater', "Choose a country", c('be', 'co', 'br', 'de', 'jm')),
+  selectInput('updater', "Choose a country", c('be', 'co', 'br', 'de', 'jm'), selected = 'co'),
   selectImageInput("will_update", "Watch the result", choices = choices,
                    images = images, width = 200),
-  hr()
-  # selectImageInput("dropdown2", "Named choices", choices = named_choices,
-  #                  selected = "b",
-  #                  images = images, width = 50),
-  # verbatimTextOutput('test2'),
-  # hr(),
-  # selectImageInput("dropdown3", "With custom placeholder", choices = choices,
-  #                  placeholder = img(src = "https://via.placeholder.com/150x50/FF0000"),
-  #                  images = images, width = 50),
-  # verbatimTextOutput('test3'),
-  # hr(),
-  # selectImageInput("dropdown4", "With update", choices = choices,
-  #                  placeholder = img(src = "https://via.placeholder.com/150x50/FF0000"),
-  #                  images = images, width = 50),
-  # verbatimTextOutput('test4')
+  hr(),
+  p('Watch. Check. Watch again'),
+  checkboxInput('checkbox_updater', 'Add options'),
+  selectImageInput('checkbox_will_update',
+                   'New options added',
+                   choices = c('France' = 'fr'),
+                   images = c('https://www.countryflags.io/fr/flat/32.png'),
+                   width = 200),
+  verbatimTextOutput('checkbox_dropdown_result'),
+  # No named options
+  # selectImageInput('checkbox_will_update',
+  #                  'New options added',
+  #                  choices = c('fr'),
+  #                  images = c('https://www.countryflags.io/fr/flat/32.png'),
+  #                  width = 200)
 )
 
 server <- function(input, output, session) {
   output$dropdown_result <- renderPrint({
     input$dropdown_list
   })
-  # output$test2 <- renderPrint({
-  #   input$dropdown2
-  # })
-  # output$test3 <- renderPrint({
-  #   input$dropdown3
-  # })
-  # output$test4 <- renderPrint({
-  #   input$dropdown4
-  # })
-
+  output$checkbox_dropdown_result <- renderPrint({
+    input$checkbox_will_update
+  })
   observe({
     updateSelectImageInput(session, inputId = "will_update", selected = input$updater)
+    if (input$checkbox_updater) {
+      updateSelectImageInput(session, inputId = "checkbox_will_update", choices = choices, images = images)
+      # No named options
+      # updateSelectImageInput(session, inputId = "checkbox_will_update", choices = c('be', 'co', 'br', 'de', 'jm'), images = images)
+    }
   })
 }
 
