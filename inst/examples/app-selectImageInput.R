@@ -20,7 +20,11 @@ ui <- fluidPage(
   selectImageInput("dropdown_list", "Select Image", choices = choices,
                    images = images, width = 200),
   verbatimTextOutput('dropdown_result'),
-  # hr(),
+  hr(),
+  selectInput('updater', "Choose a country", c('be', 'co', 'br', 'de', 'jm')),
+  selectImageInput("will_update", "Watch the result", choices = choices,
+                   images = images, width = 200),
+  hr()
   # selectImageInput("dropdown2", "Named choices", choices = named_choices,
   #                  selected = "b",
   #                  images = images, width = 50),
@@ -51,9 +55,9 @@ server <- function(input, output, session) {
   #   input$dropdown4
   # })
 
-  # observe({
-  #   updateSelectImageInput(session, inputId = "dropdown4", selected = input$dropdown3)
-  # })
+  observe({
+    updateSelectImageInput(session, inputId = "will_update", selected = input$updater)
+  })
 }
 
 shinyApp(ui, server)

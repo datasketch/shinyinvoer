@@ -37,6 +37,13 @@ $.extend(selectImageBinding, {
       this.classList.toggle('opened');
       callback();
     });
+  },
+  receiveMessage: function(el, message) {
+    if (message.selected) {
+      const target = el.querySelector('#' +  message.selected);
+      $(target).trigger('click');
+      el.classList.remove('opened')
+    }
   }
 });
 
@@ -78,6 +85,7 @@ function createDropdownOptions(el, container) {
 
     li.dataset.option = option.id;
     li.setAttribute('class', 'dropdown-option');
+    li.setAttribute('id', option.id);
 
     if (el.dataset.selected && el.dataset.selected === option.id) {
       placeholder.innerHTML = li.innerHTML;
