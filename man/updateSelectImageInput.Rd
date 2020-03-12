@@ -9,6 +9,7 @@ updateSelectImageInput(
   inputId,
   label = NULL,
   choices = NULL,
+  images = NULL,
   selected = NULL
 )
 }
@@ -20,9 +21,9 @@ updateSelectImageInput(
 \item{choices}{List of values to select from, when named the names are
 appended to the right of the image.}
 
-\item{selected}{Selected image, defaults to first one.}
-
 \item{images}{List of image location that can be put in a src attribute.}
+
+\item{selected}{Selected image, defaults to first one.}
 
 \item{placeholder}{HTML to render as placeholder, overrides selected param.}
 
