@@ -27,7 +27,7 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
   choices_list <- lapply(seq_along(choices), function(x){
     list(id = choices[x],
          image = images[x],
-         label = names(choices[x])
+         label = ifelse(is.null(names(choices[x])), 0, names(choices[x]))
     )
   })
 

@@ -12,6 +12,7 @@ images <- c(
   'https://www.countryflags.io/jm/flat/32.png'
 )
 choices <- c('Belgium' = 'be', 'Colombia' = 'co', 'Brazil' = 'br', 'Germany' = 'de', 'Jamaica' = 'jm')
+# choices <- c('be', 'co', 'br', 'de', 'jm')
 named_choices <- c("Ahh!" = "a", "Buu!" = "b", "Cool"="c")
 
 ui <- fluidPage(
