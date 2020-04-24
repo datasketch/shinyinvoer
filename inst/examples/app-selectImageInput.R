@@ -72,7 +72,8 @@ server <- function(input, output, session) {
     }
     if (input$checkbox_updater2) {
       updateSelectImageInput(session, inputId = "empty_then_update",
-                             choices = sample(1:8,2),
+                             # choices = sample(1:8,2), -> ids cannot begin with a number
+                             choices = c('choice-1', 'choice-2'),
                              images = sample(images,2)
       )
     }

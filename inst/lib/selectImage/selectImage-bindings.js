@@ -39,7 +39,8 @@ $.extend(selectImageBinding, {
     });
   },
   receiveMessage: function(el, message) {
-    let options, images;
+    let options = [];
+    let images = [];
     if (message.selected) {
       const target = el.querySelector('#' + message.selected);
       $(target).trigger('click');
@@ -49,7 +50,7 @@ $.extend(selectImageBinding, {
       // choices should be an array or an object
       if (Array.isArray(message.choices)) {
         options = message.choices.map(function(choice) {
-          return { id: choice };
+          return { id: choice, label: choice };
         });
       } else {
         // TODO: check if choices is an object
@@ -58,13 +59,14 @@ $.extend(selectImageBinding, {
         });
       }
     }
+    // Images must be set, otherwise, what's the point
     if (message.hasOwnProperty('images')) {
       images = message.images.map(function(image) {
         return { image: image };
       });
     }
     // merge options and images if the length of both is the same
-    if (options && options.length === images.length) {
+    if (options.length) {
       const optionsData = zip(options, images);
       const optionsListItems = getDropdownOptions(el, optionsData);
       const optionsListContainer = el.querySelector('.dropdown-options');
@@ -109,6 +111,7 @@ function createDropdownOptions(el, container) {
 }
 
 function getDropdownOptions(el, optionsData) {
+  updateAttrs(el, optionsData);
   const placeholder = el.querySelector('.dropdown-placeholder');
   const options = optionsData.map(function(option) {
     // if this choice already exists do not even try
@@ -135,11 +138,35 @@ function getDropdownOptions(el, optionsData) {
 
     return li;
   });
+
   return options.filter(function(option) {
     return option;
   });
 }
 
+function updateAttrs(el, optionsData) {
+  const elOptions = JSON.parse(el.dataset.options);
+  const optionsDataStringified = JSON.stringify(optionsData);
+
+  // Update data-options if needed
+  if (!elOptions.length) {
+    el.dataset.options = optionsDataStringified;
+  } else if (el.dataset.options !== optionsDataStringified) {
+    el.dataset.options = optionsDataStringified;
+  }
+
+  // Set data-selected attribute if missing
+  if (!el.dataset.selected) {
+    el.dataset.selected = optionsData.length ? optionsData[0].id : '';
+  }
+}
+
+/*
+* Example
+* a = [{ number: 1 }, { number: 2 }, { number: 3 }]
+* b = [{ letter: 'a' }, { letter: 'b' }, { letter: 'c' }]
+* zip(a, b) = [{ number: 1, letter: 'a' }, { number: 2, letter: 'b' }, { number: 3, letter: 'c' }]
+*/
 function zip(a, b) {
   return a.map(function(item, index) {
     return Object.assign({}, item, b[index]);
