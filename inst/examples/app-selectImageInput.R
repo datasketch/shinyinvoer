@@ -18,7 +18,7 @@ named_choices <- c("Ahh!" = "a", "Buu!" = "b", "Cool"="c")
 ui <- fluidPage(
   #suppressDependencies('bootstrap'),
   selectImageInput("dropdown_list", "Select Image", choices = choices,
-                   images = images, width = 200),
+                   images = images, width = 300),
   verbatimTextOutput('dropdown_result'),
   hr(),
   selectInput('updater', "Choose a country", c('be', 'co', 'br', 'de', 'jm'), selected = 'co'),
@@ -32,6 +32,14 @@ ui <- fluidPage(
                    choices = c('France' = 'fr'),
                    images = c('https://www.countryflags.io/fr/flat/32.png'),
                    width = 200),
+  hr(),
+  p('Create empty, then update'),
+  selectImageInput('empty_then_update',
+                   'Empty, then update',
+                   choices = NULL,
+                   images = NULL,
+                   width = 200),
+  hr(),
   verbatimTextOutput('checkbox_dropdown_result'),
   # No named options
   # selectImageInput('checkbox_will_update',
@@ -39,6 +47,7 @@ ui <- fluidPage(
   #                  choices = c('fr'),
   #                  images = c('https://www.countryflags.io/fr/flat/32.png'),
   #                  width = 200)
+
 )
 
 server <- function(input, output, session) {
@@ -54,7 +63,10 @@ server <- function(input, output, session) {
       updateSelectImageInput(session, inputId = "checkbox_will_update", choices = choices, images = images)
       # No named options
       # updateSelectImageInput(session, inputId = "checkbox_will_update", choices = c('be', 'co', 'br', 'de', 'jm'), images = images)
+      updateSelectImageInput(session, inputId = "empty_then_update",
+                             choices = c("First" = "first", "Second" = "second"))
     }
+
   })
 }
 

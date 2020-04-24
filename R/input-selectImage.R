@@ -18,7 +18,7 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
                              placeholder = NULL,
                              width = 120) {
 
-  addResourcePath(
+  shiny::addResourcePath(
     prefix='selectImage',
     directoryPath=system.file("lib/selectImage",
                               package='shinyinvoer')
@@ -33,9 +33,9 @@ selectImageInput <- function(inputId, label, choices, images = NULL,
 
   if(is.numeric(selected))
     selected <- choices[selected]
-  if(is.null(placeholder)){
+  if(is.null(placeholder) & !is.null(selected)){
     x <- choices_list[[selected]]
-    placeholder <- div(class = "selectImage", img(src=x$image), x$label)
+    placeholder <- shiny::div(class = "selectImage", img(src=x$image), x$label)
   }
 
   input <- jsonlite::toJSON(choices_list, auto_unbox = TRUE)
