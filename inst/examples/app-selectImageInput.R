@@ -51,6 +51,22 @@ ui <- fluidPage(
   #                  choices = c('fr'),
   #                  images = c('https://www.countryflags.io/fr/flat/32.png'),
   #                  width = 200)
+  hr(),
+  p('Change the choices labels'),
+  checkboxInput('checkbox_labels', 'Change choices'),
+  selectImageInput('checkbox_will_update_labels',
+                   'Change choices labels',
+                   choices = choices,
+                   images = images,
+                   width = 200),
+  hr(),
+  p('Change the images'),
+  checkboxInput('checkbox_images', 'Change images'),
+  selectImageInput('checkbox_will_update_images',
+                   'Change images',
+                   choices = choices,
+                   images = images,
+                   width = 200),
 
 )
 
@@ -83,7 +99,20 @@ server <- function(input, output, session) {
                              images = NULL
       )
     }
-
+    if (input$checkbox_labels) {
+      updateSelectImageInput(
+        session,
+        inputId = "checkbox_will_update_labels",
+        choices = c('Bélgica' = 'be', 'Colombia' = 'co', 'Brasil' = 'br', 'Alemania' = 'de', 'Jamaica' = 'jm')
+      )
+    }
+    if (input$checkbox_images) {
+      updateSelectImageInput(
+        session,
+        inputId = "checkbox_will_update_images",
+        images = rev(images)
+      )
+    }
   })
 }
 

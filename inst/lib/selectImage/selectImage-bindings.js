@@ -1,10 +1,10 @@
 const selectImageBinding = new Shiny.InputBinding();
 
 $.extend(selectImageBinding, {
-  find: function(scope) {
+  find: function (scope) {
     return $(scope).find('.dropdown');
   },
-  initialize: function(el) {
+  initialize: function (el) {
     const container = document.createElement('div');
     container.setAttribute('class', 'dropdown-container');
     el.appendChild(container);
@@ -12,13 +12,13 @@ $.extend(selectImageBinding, {
     createDropdownSelector(container);
     createDropdownOptions(el, container);
   },
-  getValue: function(el) {
+  getValue: function (el) {
     return el.dataset.selected;
   },
-  subscribe: function(el, callback) {
+  subscribe: function (el, callback) {
     const placeholder = el.querySelector('.dropdown-placeholder');
 
-    el.addEventListener('click', function(event) {
+    el.addEventListener('click', function (event) {
       const target = event.target;
       if (target === this) {
         return;
@@ -38,9 +38,24 @@ $.extend(selectImageBinding, {
       callback();
     });
   },
-  receiveMessage: function(el, message) {
-    let options = [];
-    let images = [];
+  receiveMessage: function (el, message) {
+    const elData = JSON.parse(el.dataset.options);
+    // Default data rendered in DOM
+    let options = elData
+      .map(function (item) {
+        return { id: item.id, label: item.label };
+      })
+      .filter(function (item) {
+        return item;
+      });
+    let images = elData
+      .map(function (item) {
+        return { image: item.image };
+      })
+      .filter(function (item) {
+        return item;
+      });
+
     if (message.selected) {
       const target = el.querySelector('#' + message.selected);
       $(target).trigger('click');
@@ -49,19 +64,19 @@ $.extend(selectImageBinding, {
     if (message.hasOwnProperty('choices')) {
       // choices should be an array or an object
       if (Array.isArray(message.choices)) {
-        options = message.choices.map(function(choice) {
+        options = message.choices.map(function (choice) {
           return { id: choice, label: choice };
         });
       } else {
         // TODO: check if choices is an object
-        options = Object.keys(message.choices).map(function(key) {
+        options = Object.keys(message.choices).map(function (key) {
           return { id: message.choices[key], label: key };
         });
       }
     }
     // Images must be set, otherwise, what's the point
     if (message.hasOwnProperty('images')) {
-      images = message.images.map(function(image) {
+      images = message.images.map(function (image) {
         return { image: image };
       });
     }
@@ -74,7 +89,7 @@ $.extend(selectImageBinding, {
         optionsListContainer.appendChild(option);
       }
     }
-  }
+  },
 });
 
 function createDropdownSelector(el) {
@@ -113,14 +128,11 @@ function createDropdownOptions(el, container) {
 function getDropdownOptions(el, optionsData) {
   updateAttrs(el, optionsData);
   const placeholder = el.querySelector('.dropdown-placeholder');
-  const options = optionsData.map(function(option) {
-    // if this choice already exists do not even try
-    if (el.querySelector('#' + option.id)) {
-      return;
-    }
-    const li = document.createElement('li');
-    const image = document.createElement('img');
-    const span = document.createElement('span');
+  const options = optionsData.map(function (option) {
+    const li =
+      el.querySelector('#' + option.id) || document.createElement('li');
+    const image = li.querySelector('img') || document.createElement('img');
+    const span = li.querySelector('span') || document.createElement('span');
 
     image.setAttribute('src', option.image);
     span.textContent = option.label;
@@ -139,7 +151,7 @@ function getDropdownOptions(el, optionsData) {
     return li;
   });
 
-  return options.filter(function(option) {
+  return options.filter(function (option) {
     return option;
   });
 }
@@ -162,13 +174,13 @@ function updateAttrs(el, optionsData) {
 }
 
 /*
-* Example
-* a = [{ number: 1 }, { number: 2 }, { number: 3 }]
-* b = [{ letter: 'a' }, { letter: 'b' }, { letter: 'c' }]
-* zip(a, b) = [{ number: 1, letter: 'a' }, { number: 2, letter: 'b' }, { number: 3, letter: 'c' }]
-*/
+ * Example
+ * a = [{ number: 1 }, { number: 2 }, { number: 3 }]
+ * b = [{ letter: 'a' }, { letter: 'b' }, { letter: 'c' }]
+ * zip(a, b) = [{ number: 1, letter: 'a' }, { number: 2, letter: 'b' }, { number: 3, letter: 'c' }]
+ */
 function zip(a, b) {
-  return a.map(function(item, index) {
+  return a.map(function (item, index) {
     return Object.assign({}, item, b[index]);
   });
 }
