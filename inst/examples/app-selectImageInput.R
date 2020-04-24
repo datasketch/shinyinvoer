@@ -11,7 +11,8 @@ images <- c(
   'https://www.countryflags.io/de/flat/32.png',
   'https://www.countryflags.io/jm/flat/32.png'
 )
-choices <- c('Belgium' = 'be', 'Colombia' = 'co', 'Brazil' = 'br', 'Germany' = 'de', 'Jamaica' = 'jm')
+choices <- c('Belgium' = 'be', 'Colombia' = 'co', 'Brazil' = 'br',
+             'Germany' = 'de', 'Jamaica' = 'jm')
 # choices <- c('be', 'co', 'br', 'de', 'jm')
 named_choices <- c("Ahh!" = "a", "Buu!" = "b", "Cool"="c")
 
@@ -21,7 +22,9 @@ ui <- fluidPage(
                    images = images, width = 300),
   verbatimTextOutput('dropdown_result'),
   hr(),
-  selectInput('updater', "Choose a country", c('be', 'co', 'br', 'de', 'jm'), selected = 'co'),
+  selectInput('updater', "Choose a country",
+              c('be', 'co', 'br', 'de', 'jm'),
+              selected = 'co'),
   selectImageInput("will_update", "Watch the result", choices = choices,
                    images = images, width = 200),
   hr(),
@@ -34,6 +37,7 @@ ui <- fluidPage(
                    width = 200),
   hr(),
   p('Create empty, then update'),
+  checkboxInput('checkbox_updater2', 'Add more options'),
   selectImageInput('empty_then_update',
                    'Empty, then update',
                    choices = NULL,
@@ -55,16 +59,28 @@ server <- function(input, output, session) {
     input$dropdown_list
   })
   output$checkbox_dropdown_result <- renderPrint({
-    input$checkbox_will_update
+    input$checkbox_updater2
   })
   observe({
     updateSelectImageInput(session, inputId = "will_update", selected = input$updater)
     if (input$checkbox_updater) {
-      updateSelectImageInput(session, inputId = "checkbox_will_update", choices = choices, images = images)
+      updateSelectImageInput(session, inputId = "checkbox_will_update",
+                             choices = choices, images = images)
       # No named options
-      # updateSelectImageInput(session, inputId = "checkbox_will_update", choices = c('be', 'co', 'br', 'de', 'jm'), images = images)
+      # updateSelectImageInput(session, inputId = "checkbox_will_update",
+      # choices = c('be', 'co', 'br', 'de', 'jm'), images = images)
+    }
+    if (input$checkbox_updater2) {
       updateSelectImageInput(session, inputId = "empty_then_update",
-                             choices = c("First" = "first", "Second" = "second"))
+                             choices = sample(1:8,2),
+                             images = sample(images,2)
+      )
+    }
+    else{
+      updateSelectImageInput(session, inputId = "empty_then_update",
+                             choices = NULL,
+                             images = NULL
+      )
     }
 
   })
