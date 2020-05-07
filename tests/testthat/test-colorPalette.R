@@ -1,8 +1,8 @@
-context("colorPalette")
+context("colorPaletteInput")
 
 test_that("inputId", {
 
-  tagColors <- colorPalette(inputId = "id_colors",
+  tagColors <- colorPaletteInput(inputId = "id_colors",
                             colors = c("red", "blue", "orange"))
 
   expect_equal(tagColors$attribs$id, "id_colors")
@@ -13,7 +13,7 @@ test_that("inputId", {
 test_that("Initial colors", {
 
   initial_colors <- c("#bf3100", "#684a52", "#9eefe5", "#8d3b72", "44633f")
-  tagColors <- colorPalette(inputId = "id_colors",
+  tagColors <- colorPaletteInput(inputId = "id_colors",
                             colors = initial_colors)
 
 

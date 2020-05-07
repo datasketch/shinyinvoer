@@ -1,6 +1,6 @@
 #' @export
 
-colorPalette <- function(inputId, colors) {
+colorPaletteInput <- function(inputId, colors) {
 
   addResourcePath(
     prefix = 'colorInput',

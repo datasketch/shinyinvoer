@@ -2,8 +2,7 @@ library(shiny)
 library(shinyinvoer)
 
 
-ui <-
-  fluidPage(
+ui <- fluidPage(
     suppressDependencies('bootstrap'),
     uiOutput('colorWidget'),
     uiOutput('colorWidget_'),
@@ -11,15 +10,14 @@ ui <-
     verbatimTextOutput('test_')
   )
 
-server <-
-  function(input, output, session) {
+server <- function(input, output, session) {
 
     output$colorWidget <- renderUI({
-      colorPalette('id_colors', colors = c('#FFDAAC', '#AACDFF', '#FFADCA'))
+      colorPaletteInput('id_colors', colors = c('#FFDAAC', '#AACDFF', '#FFADCA'))
     })
 
     output$colorWidget_ <- renderUI({
-      colorPalette('id_colors_', colors = c('#FFDAAC', '#AACDFF', '#FFADCA'))
+      colorPaletteInput('id_colors_', colors = c('#FFDAAC', '#AACDFF', '#FFADCA'))
     })
 
     output$test <- renderPrint({
