@@ -12,11 +12,10 @@ Depends:
     R (>= 3.1.0)
 Imports:
     testthat,
-    shiny (>= 0.14),
+    shiny,
     htmltools,
     jsonlite,
     grDevices,
-    datafringe,
     purrr
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
