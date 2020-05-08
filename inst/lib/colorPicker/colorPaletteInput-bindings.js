@@ -1,4 +1,4 @@
-let colorInputBinding = new Shiny.InputBinding();
+let colorPaletteInputBinding = new Shiny.InputBinding();
 
 const typedArray = new Uint32Array(1);
 const createRandomIndex = function() {
@@ -44,7 +44,7 @@ const removeColor = function(event, el) {
   div.remove();
 };
 
-$.extend(colorInputBinding, {
+$.extend(colorPaletteInputBinding, {
   find: function(scope) {
     return $(scope).find('.input-color-palette');
   },
@@ -129,4 +129,4 @@ $.extend(colorInputBinding, {
   unsubscribe: function(el) {}
 });
 
-Shiny.inputBindings.register(colorInputBinding, 'shiny.colorInputBinding');
+Shiny.inputBindings.register(colorPaletteInputBinding, 'shiny.colorPaletteInputBinding');

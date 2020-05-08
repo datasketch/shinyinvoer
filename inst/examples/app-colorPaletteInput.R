@@ -13,11 +13,13 @@ ui <- fluidPage(
 server <- function(input, output, session) {
 
     output$colorWidget <- renderUI({
-      colorPaletteInput('id_colors', colors = c('#FFDAAC', '#AACDFF', '#FFADCA'))
+      colorPaletteInput('id_colors', "New palette",
+                        colors = c('#FFDAAC', '#AACDFF', '#FFADCA'))
     })
 
     output$colorWidget_ <- renderUI({
-      colorPaletteInput('id_colors_', colors = c('#FFDAAC', '#AACDFF', '#FFADCA'))
+      colorPaletteInput('id_colors_', "More colors",
+                        colors = c('#FFDAAC', '#AACDFF', '#FFADCA'))
     })
 
     output$test <- renderPrint({

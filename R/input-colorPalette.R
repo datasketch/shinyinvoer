@@ -1,9 +1,9 @@
 #' @export
 
-colorPaletteInput <- function(inputId, colors) {
+colorPaletteInput <- function(inputId, label, colors) {
 
   addResourcePath(
-    prefix = 'colorInput',
+    prefix = 'colorPaletteInput',
     directoryPath = system.file('lib/colorPicker', package='shinyinvoer')
   )
 
@@ -14,8 +14,8 @@ colorPaletteInput <- function(inputId, colors) {
       shiny::tags$head(
         shiny::tags$link(rel = 'stylesheet',
                          type = 'text/css',
-                         href = 'colorInput/colorInput-bindings.css'),
-        shiny::tags$script(src = 'colorInput/colorInput-bindings.js')
+                         href = 'colorPaletteInput/colorPaletteInput-bindings.css'),
+        shiny::tags$script(src = 'colorPaletteInput/colorPaletteInput-bindings.js')
       ))
   )
 
@@ -23,6 +23,7 @@ colorPaletteInput <- function(inputId, colors) {
     l,
     id = inputId,
     class = 'input-color-palette',
+    shiny::tags$label(shiny::tags$span(label)),
     purrr::imap(colors, function(color, i) {
       idx <- i - 1
       shiny::div(
