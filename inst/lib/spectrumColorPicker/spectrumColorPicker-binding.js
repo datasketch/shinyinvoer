@@ -1,11 +1,12 @@
 let binding = new Shiny.InputBinding();
+const SPECTRUM_DEFAULT_COLOR = '#ffffff';
 
 const typedArray = new Uint32Array(1);
 const createRandomIndex = function () {
   return crypto.getRandomValues(typedArray)[0];
 };
 
-const createInputColor = (color = 'white') => {
+const createInputColor = (color) => {
   const container = document.createElement('div');
   const input = document.createElement('input');
   const remove = document.createElement('button');
@@ -15,7 +16,7 @@ const createInputColor = (color = 'white') => {
   remove.classList.add('input-spectrum-remove');
 
   input.setAttribute('type', 'text');
-  input.setAttribute('value', color);
+  input.setAttribute('value', color || SPECTRUM_DEFAULT_COLOR);
   input.setAttribute('id', `scp-${createRandomIndex()}`);
 
   remove.textContent = 'Borrar';
@@ -46,19 +47,24 @@ const getIdsState = getState('ids');
 const setColorsState = setState('colors');
 const setIdsState = setState('ids');
 
-const initAndUpdate = (el, color) => {
+const initAndUpdate = (el, color, palette) => {
   const ids = getIdsState(el);
-  const { container, input, remove } = createInputColor(color);
+  const { container, input, remove } = createInputColor(color || palette[0]);
   el.appendChild(container);
   ids.push(input.id);
   setIdsState(el, ids);
   $(remove).on('click', () => removeInputColor(el, container, input));
   // Init Spectrum lib
-  $(input).spectrum({
-    showInput: true,
-    showInitial: true,
-    preferredFormat: 'hex',
-  });
+  const baseConfig = { preferredFormat: 'hex' };
+  const config = palette.length
+    ? Object.assign({}, baseConfig, {
+        showPalette: true,
+        showPaletteOnly: true,
+        hideAfterPaletteSelect: true,
+        palette: [palette]
+      })
+    : Object.assign({}, baseConfig, { showInput: true, showInitial: true });
+  $(input).spectrum(config);
 };
 
 $.extend(binding, {
@@ -68,14 +74,18 @@ $.extend(binding, {
   initialize: function (el) {
     // Initialize ids state
     setIdsState(el, []);
+    // Get palette
+    const palette = JSON.parse(el.dataset.palette);
     // Create and initialize color inputs
     const colors = getColorsState(el);
-    colors.forEach((color) => initAndUpdate(el, color));
+    colors.forEach((color) => initAndUpdate(el, color, palette));
     // Create color input
-    $('#add-color').on('click', () => {
-      initAndUpdate(el);
-      $(el).trigger('click'); // force update
-    });
+    $(el)
+      .find('.input-spectrum-add-color')
+      .on('click', () => {
+        initAndUpdate(el, null, palette);
+        $(el).trigger('click'); // force update
+      });
   },
   getValue: function (el) {
     const ids = getIdsState(el);
