@@ -6,12 +6,33 @@ const createRandomIndex = function () {
 };
 
 const createInputColor = (color = 'white') => {
+  const container = document.createElement('div');
   const input = document.createElement('input');
+  const remove = document.createElement('button');
+
+  container.classList.add('input-spectrum-container');
+  input.classList.add('input-spectrum-color');
+  remove.classList.add('input-spectrum-remove');
+
   input.setAttribute('type', 'text');
   input.setAttribute('value', color);
   input.setAttribute('id', `scp-${createRandomIndex()}`);
-  input.classList.add('input-spectrum-color');
-  return input;
+
+  remove.textContent = 'Borrar';
+
+  container.appendChild(input);
+  container.appendChild(remove);
+
+  return { container, input, remove };
+};
+
+const removeInputColor = (el, container, input) => {
+  const ids = getIdsState(el);
+  const index = ids.findIndex((id) => id === input.id);
+  ids.splice(index, 1);
+  setIdsState(el, ids);
+  container.remove();
+  $(el).trigger('click'); // force update
 };
 
 const getState = (attribute) => (el) => JSON.parse(el.dataset[attribute]);
@@ -27,10 +48,12 @@ const setIdsState = setState('ids');
 
 const initAndUpdate = (el, color) => {
   const ids = getIdsState(el);
-  const input = createInputColor(color);
-  el.appendChild(input);
+  const { container, input, remove } = createInputColor(color);
+  el.appendChild(container);
   ids.push(input.id);
   setIdsState(el, ids);
+  $(remove).on('click', () => removeInputColor(el, container, input));
+  // Init Spectrum lib
   $(input).spectrum({
     showInput: true,
     showInitial: true,
@@ -51,7 +74,7 @@ $.extend(binding, {
     // Create color input
     $('#add-color').on('click', () => {
       initAndUpdate(el);
-      $(el).trigger('click'); // force subscribe call
+      $(el).trigger('click'); // force update
     });
   },
   getValue: function (el) {

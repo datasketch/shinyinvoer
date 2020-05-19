@@ -1,0 +1,13 @@
+.input-spectrum-color-picker {
+  display: flex;
+  overflow-x: auto;
+}
+
+.input-spectrum-color-picker #add-color {
+  order: 1;
+}
+
+.input-spectrum-container {
+  display: flex;
+  flex-direction: column;
+}
