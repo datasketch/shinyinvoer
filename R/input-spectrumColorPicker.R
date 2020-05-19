@@ -1,6 +1,6 @@
 #' @export
 
-spectrumColorPicker <- function(inputId, label, colors = list(), palette = list(), alpha = F) {
+spectrumColorPicker <- function(inputId, label, colors = list(), palette = list(), alpha = F, max_colors = 1000) {
 
   addResourcePath(
     prefix = 'spectrumColorPicker',
@@ -30,6 +30,7 @@ spectrumColorPicker <- function(inputId, label, colors = list(), palette = list(
       `data-colors` = jsonlite::toJSON(colors),
       `data-palette` = jsonlite::toJSON(palette),
       alpha = alpha,
+      `max-colors` = max_colors,
       shiny::tags$button(class="input-spectrum-add-color", '+')
     )
   )

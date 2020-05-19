@@ -56,16 +56,27 @@ const initAndUpdate = (el, color, palette) => {
   $(remove).on('click', () => removeInputColor(el, container, input));
   // Init Spectrum lib
   const showAlpha = el.getAttribute('alpha') === 'TRUE';
-  const baseConfig = { showAlpha, preferredFormat: 'hex'};
+  const baseConfig = { showAlpha, preferredFormat: 'hex' };
   const config = palette.length
     ? Object.assign({}, baseConfig, {
         showPalette: true,
         showPaletteOnly: true,
         hideAfterPaletteSelect: true,
-        palette: [palette]
+        palette: [palette],
       })
     : Object.assign({}, baseConfig, { showInput: true, showInitial: true });
   $(input).spectrum(config);
+};
+
+const watchAddColorState = (el) => {
+  let max = el.getAttribute('max-colors');
+  if (isNaN(max)) return;
+  max = parseInt(max, 10);
+  const children = el.children.length - 1;
+  const button = el.querySelector('.input-spectrum-add-color');
+  children >= max
+    ? button.setAttribute('disabled', 'true')
+    : button.removeAttribute('disabled');
 };
 
 $.extend(binding, {
@@ -87,6 +98,7 @@ $.extend(binding, {
         initAndUpdate(el, null, palette);
         $(el).trigger('click'); // force update
       });
+    watchAddColorState(el);
   },
   getValue: function (el) {
     const ids = getIdsState(el);
@@ -96,8 +108,14 @@ $.extend(binding, {
     });
   },
   subscribe: function (el, callback) {
-    $(el).on('click', () => callback());
-    $(el).on('change', () => callback());
+    $(el).on('click', () => {
+      watchAddColorState(el);
+      callback();
+    });
+    $(el).on('change', () => {
+      watchAddColorState(el);
+      callback();
+    });
   },
 });
 
