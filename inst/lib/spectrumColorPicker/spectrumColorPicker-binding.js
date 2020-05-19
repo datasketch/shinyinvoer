@@ -55,7 +55,8 @@ const initAndUpdate = (el, color, palette) => {
   setIdsState(el, ids);
   $(remove).on('click', () => removeInputColor(el, container, input));
   // Init Spectrum lib
-  const baseConfig = { preferredFormat: 'hex' };
+  const showAlpha = el.getAttribute('alpha') === 'TRUE';
+  const baseConfig = { showAlpha, preferredFormat: 'hex'};
   const config = palette.length
     ? Object.assign({}, baseConfig, {
         showPalette: true,

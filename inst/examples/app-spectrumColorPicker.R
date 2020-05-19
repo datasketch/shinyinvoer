@@ -14,7 +14,7 @@ server <- function(input, output, session) {
 
   output$colorWidget <- renderUI({
     spectrumColorPicker('id_colors', "New palette",
-                      colors = c('#FFDAAC', '#AACDFF', '#FFADCA'))
+                      colors = c('#FFDAAC', '#AACDFF', '#FFADCA'), alpha = T)
   })
 
   output$test <- renderPrint({
