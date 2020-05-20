@@ -35,3 +35,15 @@ spectrumColorPicker <- function(inputId, label, colors = list(), palette = list(
     )
   )
 }
+
+#' Update spectrum color picker input
+#' @export
+updateSpectrumColorPicker <- function (session, inputId, colors = list()) {
+  message <- dropNulls(list(colors = colors))
+  session$sendInputMessage(inputId, message)
+}
+
+# copied from shiny since it's not exported
+dropNulls <- function(x) {
+  x[!vapply(x, is.null, FUN.VALUE=logical(1))]
+}

@@ -57,7 +57,7 @@ const initAndUpdate = (el, color, palette) => {
   // Init Spectrum lib
   const showAlpha = el.getAttribute('alpha') === 'TRUE';
   const baseConfig = { showAlpha, preferredFormat: 'hex' };
-  const config = palette.length
+  const config = palette && palette.length
     ? Object.assign({}, baseConfig, {
         showPalette: true,
         showPaletteOnly: true,
@@ -117,6 +117,16 @@ $.extend(binding, {
       callback();
     });
   },
+  receiveMessage: function (el, message) {
+    const existentInputs = Array.from(el.querySelectorAll('.input-spectrum-container'));
+    // Delete all existing inputs
+    existentInputs.forEach(element => element.remove());
+    // Update state
+    setIdsState(el, []);
+    // Add new colors
+    message.colors.forEach((color) => initAndUpdate(el, color));
+    $(el).trigger('click'); // force update
+  }
 });
 
 Shiny.inputBindings.register(binding);
