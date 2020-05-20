@@ -43,11 +43,14 @@ const setState = (attribute) => (el, value) => {
 
 const getColorsState = getState('colors');
 const getIdsState = getState('ids');
+const getPaletteState = getState('palette');
 
 const setColorsState = setState('colors');
 const setIdsState = setState('ids');
+const setPaletteState = setState('palette');
 
-const initAndUpdate = (el, color, palette) => {
+const initAndUpdate = (el, color) => {
+  const palette = getPaletteState(el);
   const ids = getIdsState(el);
   const { container, input, remove } = createInputColor(color || palette[0]);
   el.appendChild(container);
@@ -86,16 +89,14 @@ $.extend(binding, {
   initialize: function (el) {
     // Initialize ids state
     setIdsState(el, []);
-    // Get palette
-    const palette = JSON.parse(el.dataset.palette);
     // Create and initialize color inputs
     const colors = getColorsState(el);
-    colors.forEach((color) => initAndUpdate(el, color, palette));
+    colors.forEach((color) => initAndUpdate(el, color));
     // Create color input
     $(el)
       .find('.input-spectrum-add-color')
       .on('click', () => {
-        initAndUpdate(el, null, palette);
+        initAndUpdate(el);
         $(el).trigger('click'); // force update
       });
     watchAddColorState(el);
@@ -123,6 +124,8 @@ $.extend(binding, {
     existentInputs.forEach(element => element.remove());
     // Update state
     setIdsState(el, []);
+    // Update palette
+    setPaletteState(el, message.palette);
     // Add new colors
     message.colors.forEach((color) => initAndUpdate(el, color));
     $(el).trigger('click'); // force update

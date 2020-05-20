@@ -38,8 +38,8 @@ spectrumColorPicker <- function(inputId, label, colors = list(), palette = list(
 
 #' Update spectrum color picker input
 #' @export
-updateSpectrumColorPicker <- function (session, inputId, colors = list()) {
-  message <- dropNulls(list(colors = colors))
+updateSpectrumColorPicker <- function (session, inputId, colors = list(), palette = list()) {
+  message <- dropNulls(list(colors = colors, palette = palette))
   session$sendInputMessage(inputId, message)
 }
 

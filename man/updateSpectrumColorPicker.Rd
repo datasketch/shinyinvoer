@@ -4,7 +4,7 @@
 \alias{updateSpectrumColorPicker}
 \title{Update spectrum color picker input}
 \usage{
-updateSpectrumColorPicker(session, inputId, colors = list())
+updateSpectrumColorPicker(session, inputId, colors = list(), palette = list())
 }
 \description{
 Update spectrum color picker input
