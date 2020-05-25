@@ -19,7 +19,7 @@ const createInputColor = (color) => {
   input.setAttribute('value', color || SPECTRUM_DEFAULT_COLOR);
   input.setAttribute('id', `scp-${createRandomIndex()}`);
 
-  remove.textContent = 'Borrar';
+  remove.textContent = 'x';
 
   container.appendChild(input);
   container.appendChild(remove);

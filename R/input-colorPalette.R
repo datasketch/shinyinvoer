@@ -1,21 +1,23 @@
 #' @export
 
-colorPaletteInput <- function(inputId, label, colors) {
+colorPaletteInput <- function(inputId, label, colors = list(), palette = list(), alpha = F, max_colors = 1000) {
 
   addResourcePath(
-    prefix = 'colorPaletteInput',
-    directoryPath = system.file('lib/colorPicker', package='shinyinvoer')
+    prefix = 'spectrumColorPicker',
+    directoryPath = system.file('lib/spectrumColorPicker', package='shinyinvoer')
   )
-
-
 
   l <- shiny::tagList(
     shiny::singleton(
       shiny::tags$head(
         shiny::tags$link(rel = 'stylesheet',
+                        type = 'text/css',
+                        href = 'spectrumColorPicker/spectrum.css'),
+        shiny::tags$link(rel = 'stylesheet',
                          type = 'text/css',
-                         href = 'colorPaletteInput/colorPaletteInput-bindings.css'),
-        shiny::tags$script(src = 'colorPaletteInput/colorPaletteInput-bindings.js')
+                         href = 'spectrumColorPicker/spectrumColorPicker-binding.css'),
+        shiny::tags$script(src = 'spectrumColorPicker/spectrum.js'),
+        shiny::tags$script(src = 'spectrumColorPicker/spectrumColorPicker-binding.js')
       ))
   )
 
@@ -24,24 +26,24 @@ colorPaletteInput <- function(inputId, label, colors) {
     shiny::div(
       l,
       id = inputId,
-      class = 'input-color-palette',
-      purrr::imap(colors, function(color, i) {
-        idx <- i - 1
-        shiny::div(
-          shiny::tags$input(type = "color",  value = color),
-          if (idx != 0) {
-            shiny::tags$button("x")
-          } else {
-            NULL
-          }, class = "input-color-container"
-        )
-      }),
-      shiny::tags$button(id="add-color", '+')
+      class = 'input-spectrum-color-picker',
+      `data-colors` = jsonlite::toJSON(colors),
+      `data-palette` = jsonlite::toJSON(palette),
+      alpha = alpha,
+      `max-colors` = max_colors,
+      shiny::tags$button(class="input-spectrum-add-color", '+')
     )
   )
+}
 
+#' Update spectrum color picker input
+#' @export
+updateColorPaletteInput <- function (session, inputId, colors = list(), palette = list()) {
+  message <- dropNulls(list(colors = colors, palette = palette))
+  session$sendInputMessage(inputId, message)
+}
 
-
-
-
+# copied from shiny since it's not exported
+dropNulls <- function(x) {
+  x[!vapply(x, is.null, FUN.VALUE=logical(1))]
 }
