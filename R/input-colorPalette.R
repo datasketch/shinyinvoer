@@ -1,6 +1,7 @@
 #' @export
 
-colorPaletteInput <- function(inputId, label, colors = list(), palette = list(), alpha = F, max_colors = 1000) {
+colorPaletteInput <- function(inputId, label, colors = list(), palette = list(),
+                              alpha = FALSE, max_colors = 1000) {
 
   addResourcePath(
     prefix = 'spectrumColorPicker',

@@ -22,7 +22,8 @@ server <- function(input, output, session) {
 
   output$input_1 <- renderUI({
     colorPaletteInput('input_id_1', "New palette. Limited to 3 colors",
-                      colors = c('#FFDAAC', '#AACDFF', '#FFADCA'), alpha = T, max_colors = 3)
+                      colors = c('#FFDAAC', '#AACDFF', '#FFADCA'), alpha = T,
+                      max_colors = 3)
   })
 
   output$output_1 <- renderPrint({
