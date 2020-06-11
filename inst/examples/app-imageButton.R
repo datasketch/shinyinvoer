@@ -18,6 +18,7 @@ server <- function(input, output, session) {
     buttonImageInput(inputId = 'chosen_button',
                      label = "Elige un animal",
                      images = c("cat", "dog", "fox"),
+                     nrow = 2,
                      tooltips = c("Gato", "Perro", "Zorro"),
                      active = 'dog',
                      path = "img/")
