@@ -12,6 +12,10 @@ buttonImageInput(
   tooltips = NULL,
   path = NULL,
   format = NULL,
+  ncol = NULL,
+  nrow = NULL,
+  imageStyle = list(backgroundColor = "transparent", borderColor = "black", borderSize
+    = "1px", padding = "0", shadow = FALSE),
   class = "buttonStyle",
   classImg = "imageStyle"
 )
@@ -25,9 +29,15 @@ buttonImageInput(
 
 \item{path}{Folder where the images are stored.}
 
+\item{ncol}{Number of images per row.}
+
+\item{nrow}{Number of images per column.}
+
 \item{class}{Name of the class which contains the button´s style}
 
 \item{classImg}{class Name of the class which contains the images´ style.}
+
+\item{imageStyles}{Styles for the images (border, shadow, padding, background).}
 }
 \value{
 A group of buttons which can be controlled from the UI.
@@ -49,7 +59,7 @@ server <- function(input, output) {
  output$button <- renderUI({
                   buttonImageInput(inputId = 'chosen_button',
                   images = c("cat", "dog", "fox"),
-                  images = c("cat", "dog", "fox"),
+                  ncol = 2,
                   active = 'dog',
                   path = "img/")
                   })

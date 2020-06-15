@@ -100,6 +100,9 @@ $.extend(binding, {
         $(el).trigger('click'); // force update
       });
     watchAddColorState(el);
+    Sortable.create(el, {
+      animation: 150
+    })
   },
   getValue: function (el) {
     const ids = getIdsState(el);

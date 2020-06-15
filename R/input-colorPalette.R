@@ -17,6 +17,7 @@ colorPaletteInput <- function(inputId, label, colors = list(), palette = list(),
         shiny::tags$link(rel = 'stylesheet',
                          type = 'text/css',
                          href = 'spectrumColorPicker/spectrumColorPicker-binding.css'),
+        shiny::tags$script(src = 'spectrumColorPicker/sortable.min.js'),
         shiny::tags$script(src = 'spectrumColorPicker/spectrum.js'),
         shiny::tags$script(src = 'spectrumColorPicker/spectrumColorPicker-binding.js')
       ))
