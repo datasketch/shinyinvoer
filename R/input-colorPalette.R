@@ -33,7 +33,7 @@ colorPaletteInput <- function(inputId, label, colors = list(), palette = list(),
       `data-palette` = jsonlite::toJSON(palette),
       alpha = alpha,
       `max-colors` = max_colors,
-      shiny::tags$button(class="input-spectrum-add-color", '+')
+      shiny::tags$button(class="input-spectrum-add-color", span('+'))
     )
   )
 }

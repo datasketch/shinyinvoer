@@ -14,6 +14,14 @@
     padding: 0;
     text-align: center;
     color: #8097A4;
+    position: relative;
+}
+
+.input-spectrum-add-color span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .input-spectrum-add-color:focus,
@@ -29,8 +37,8 @@
 }
 
 .input-spectrum-remove {
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
     border-radius: 0 !important;
     background-color: transparent !important;
     background-image: url('delete.svg');

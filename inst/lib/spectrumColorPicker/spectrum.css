@@ -361,8 +361,8 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 }
 
 .sp-picker-container {
-    width: 172px;
-    border-left: solid 1px #fff;
+    width: 200px;
+    /* border-left: solid 1px #fff; */
 }
 
 /* Palettes */
@@ -552,6 +552,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 }
 
 .sp-cancel:hover {
+    text-decoration: none;
     /* removed */
     /* color: #d93f3f !important;
     text-decoration: underline; */
