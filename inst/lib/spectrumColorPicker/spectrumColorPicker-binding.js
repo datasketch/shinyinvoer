@@ -68,12 +68,16 @@ const initAndUpdate = (el, color) => {
   $(input).spectrum(config);
   const spectrumContainer = document.querySelector(`.${containerClassName}`);
   const chooseButton = spectrumContainer.querySelector('button.sp-choose');
+  const paletteRow = spectrumContainer.querySelector('.sp-palette-row');
 
-  if (!chooseButton) {
-    return
+  if (chooseButton) {
+    chooseButton.parentElement.appendChild(remove);
+  }
+  if (paletteRow) {
+    remove.classList.add('palette-only')
+    spectrumContainer.appendChild(remove);
   }
 
-  chooseButton.parentElement.appendChild(remove);
   remove.addEventListener('click', function () {
     removeInputColor(el, container, input)
   })
