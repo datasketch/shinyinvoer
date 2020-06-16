@@ -17,11 +17,26 @@
 }
 
 .input-spectrum-add-color:focus,
-.input-spectrum-add-color:active {
+.input-spectrum-add-color:active,
+.input-spectrum-remove:focus,
+.input-spectrum-remove:active {
     outline: none;
 }
 
 .input-spectrum-container {
     display: flex;
     flex-direction: column;
+}
+
+.input-spectrum-remove {
+    width: 25px;
+    height: 25px;
+    border-radius: 0 !important;
+    background-color: transparent !important;
+    background-image: url('delete.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin-right: 0 !important;
+    padding: 0 !important;
 }

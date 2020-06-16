@@ -503,7 +503,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     color: #ffffff; /* changed */
     font-size: 13px; /* changed */
     /* line-height: 1; */ /* removed */
-    padding: 10px; /* changed */
+    padding: 6px; /* changed */
     text-align: center;
     /* text-shadow: 0 1px 0 #eee; */ /* removed */
     /* vertical-align: middle; */ /* removed */
@@ -539,8 +539,9 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .sp-cancel {
     font-size: 13px; /* changed */
     color: #8097A4 !important; /* changed */
-    padding: 10px; /* changed */
+    padding: 6px; /* changed */
     margin: 0;
+    margin-right: 5px;
     text-decoration: none;
     font-weight: 700; /* added */
     text-transform: uppercase; /* added */

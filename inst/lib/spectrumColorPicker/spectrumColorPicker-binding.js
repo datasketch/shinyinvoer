@@ -19,12 +19,9 @@ const createInputColor = (color) => {
   input.setAttribute('value', color || SPECTRUM_DEFAULT_COLOR);
   input.setAttribute('id', `scp-${createRandomIndex()}`);
 
-  remove.textContent = 'x';
-
   container.appendChild(input);
-  container.appendChild(remove);
 
-  return { container, input, remove };
+  return {container, input, remove};
 };
 
 const removeInputColor = (el, container, input) => {
@@ -52,23 +49,34 @@ const setPaletteState = setState('palette');
 const initAndUpdate = (el, color) => {
   const palette = getPaletteState(el);
   const ids = getIdsState(el);
-  const { container, input, remove } = createInputColor(color || palette[0]);
+  const {container, input, remove} = createInputColor(color || palette[0]);
   el.appendChild(container);
   ids.push(input.id);
   setIdsState(el, ids);
-  $(remove).on('click', () => removeInputColor(el, container, input));
   // Init Spectrum lib
+  const containerClassName = input.id;
   const showAlpha = el.getAttribute('alpha') === 'TRUE';
-  const baseConfig = { showAlpha, preferredFormat: 'hex' };
+  const baseConfig = {showAlpha, containerClassName, preferredFormat: 'hex'};
   const config = palette && palette.length
     ? Object.assign({}, baseConfig, {
-        showPalette: true,
-        showPaletteOnly: true,
-        hideAfterPaletteSelect: true,
-        palette: [palette],
-      })
-    : Object.assign({}, baseConfig, { showInput: true, showInitial: true });
+      showPalette: true,
+      showPaletteOnly: true,
+      hideAfterPaletteSelect: true,
+      palette: [palette]
+    })
+    : Object.assign({}, baseConfig, {showInput: true, showInitial: true});
   $(input).spectrum(config);
+  const spectrumContainer = document.querySelector(`.${containerClassName}`);
+  const chooseButton = spectrumContainer.querySelector('button.sp-choose');
+
+  if (!chooseButton) {
+    return
+  }
+
+  chooseButton.parentElement.appendChild(remove);
+  remove.addEventListener('click', function () {
+    removeInputColor(el, container, input)
+  })
 };
 
 const watchAddColorState = (el) => {
@@ -102,7 +110,7 @@ $.extend(binding, {
     watchAddColorState(el);
     Sortable.create(el, {
       animation: 150,
-      onEnd: function() {
+      onEnd: function () {
         $(el).trigger('click');
       }
     })
