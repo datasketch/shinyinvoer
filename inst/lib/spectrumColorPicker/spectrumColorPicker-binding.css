@@ -1,13 +1,27 @@
 .input-spectrum-color-picker {
-  display: flex;
-  overflow-x: auto;
+    display: flex;
+    overflow-x: auto;
+    align-items: center;
 }
 
 .input-spectrum-add-color {
-  order: 1;
+    order: 1;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #8097A4;
+    background: transparent;
+    padding: 0;
+    text-align: center;
+    color: #8097A4;
+}
+
+.input-spectrum-add-color:focus,
+.input-spectrum-add-color:active {
+    outline: none;
 }
 
 .input-spectrum-container {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }

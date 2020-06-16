@@ -101,15 +101,19 @@ $.extend(binding, {
       });
     watchAddColorState(el);
     Sortable.create(el, {
-      animation: 150
+      animation: 150,
+      onEnd: function() {
+        console.log('Drag end');
+        console.log(el);
+        $(el).trigger('click');
+      }
     })
   },
   getValue: function (el) {
-    const ids = getIdsState(el);
-    return ids.map((id) => {
-      const color = $(`#${id}`).spectrum('get');
-      return color.toHex();
-    });
+    const inputs = el.querySelectorAll('.input-spectrum-color');
+    return Array.prototype.map.call(inputs, function (input) {
+      return input.value.slice(1)
+    })
   },
   subscribe: function (el, callback) {
     $(el).on('click', () => {
