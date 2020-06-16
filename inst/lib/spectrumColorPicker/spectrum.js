@@ -121,7 +121,7 @@
                         "<input class='sp-input' type='text' spellcheck='false'  />",
                     "</div>",
                     "<div class='sp-initial sp-thumb sp-cf'></div>",
-                    "<div class='sp-button-container sp-cf'>",
+                    "<div class='sp-button-container sp-cf' style='margin-top: 8px'>",
                         "<button type='button' class='sp-choose'></button>",
                         "<a class='sp-cancel' href='#'></a>",
                     "</div>",
