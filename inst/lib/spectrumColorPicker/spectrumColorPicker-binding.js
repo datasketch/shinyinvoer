@@ -103,8 +103,6 @@ $.extend(binding, {
     Sortable.create(el, {
       animation: 150,
       onEnd: function() {
-        console.log('Drag end');
-        console.log(el);
         $(el).trigger('click');
       }
     })
