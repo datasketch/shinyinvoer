@@ -21,7 +21,7 @@ const createInputColor = (color) => {
 
   container.appendChild(input);
 
-  return {container, input, remove};
+  return { container, input, remove };
 };
 
 const removeInputColor = (el, container, input) => {
@@ -49,22 +49,23 @@ const setPaletteState = setState('palette');
 const initAndUpdate = (el, color) => {
   const palette = getPaletteState(el);
   const ids = getIdsState(el);
-  const {container, input, remove} = createInputColor(color || palette[0]);
+  const { container, input, remove } = createInputColor(color || palette[0]);
   el.appendChild(container);
   ids.push(input.id);
   setIdsState(el, ids);
   // Init Spectrum lib
   const containerClassName = input.id;
   const showAlpha = el.getAttribute('alpha') === 'TRUE';
-  const baseConfig = {showAlpha, containerClassName, preferredFormat: 'hex'};
-  const config = palette && palette.length
-    ? Object.assign({}, baseConfig, {
-      showPalette: true,
-      showPaletteOnly: true,
-      hideAfterPaletteSelect: true,
-      palette: [palette]
-    })
-    : Object.assign({}, baseConfig, {showInput: true, showInitial: true});
+  const baseConfig = { showAlpha, containerClassName, preferredFormat: 'hex' };
+  const config =
+    palette && palette.length
+      ? Object.assign({}, baseConfig, {
+          showPalette: true,
+          showPaletteOnly: true,
+          hideAfterPaletteSelect: true,
+          palette: [palette],
+        })
+      : Object.assign({}, baseConfig, { showInput: true, showInitial: true });
   $(input).spectrum(config);
   const spectrumContainer = document.querySelector(`.${containerClassName}`);
   const chooseButton = spectrumContainer.querySelector('button.sp-choose');
@@ -74,13 +75,13 @@ const initAndUpdate = (el, color) => {
     chooseButton.parentElement.appendChild(remove);
   }
   if (paletteRow) {
-    remove.classList.add('palette-only')
+    remove.classList.add('palette-only');
     spectrumContainer.appendChild(remove);
   }
 
   remove.addEventListener('click', function () {
-    removeInputColor(el, container, input)
-  })
+    removeInputColor(el, container, input);
+  });
 };
 
 const watchAddColorState = (el) => {
@@ -116,14 +117,14 @@ $.extend(binding, {
       animation: 150,
       onEnd: function () {
         $(el).trigger('click');
-      }
-    })
+      },
+    });
   },
   getValue: function (el) {
     const inputs = el.querySelectorAll('.input-spectrum-color');
     return Array.prototype.map.call(inputs, function (input) {
-      return input.value.slice(1)
-    })
+      return input.value;
+    });
   },
   subscribe: function (el, callback) {
     $(el).on('click', () => {
@@ -136,9 +137,11 @@ $.extend(binding, {
     });
   },
   receiveMessage: function (el, message) {
-    const existentInputs = Array.from(el.querySelectorAll('.input-spectrum-container'));
+    const existentInputs = Array.from(
+      el.querySelectorAll('.input-spectrum-container')
+    );
     // Delete all existing inputs
-    existentInputs.forEach(element => element.remove());
+    existentInputs.forEach((element) => element.remove());
     // Update state
     setIdsState(el, []);
     // Update palette
@@ -146,7 +149,7 @@ $.extend(binding, {
     // Add new colors
     message.colors.forEach((color) => initAndUpdate(el, color));
     $(el).trigger('click'); // force update
-  }
+  },
 });
 
 Shiny.inputBindings.register(binding);
