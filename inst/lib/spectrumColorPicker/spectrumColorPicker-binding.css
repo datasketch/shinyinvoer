@@ -2,6 +2,7 @@
     display: flex;
     overflow-x: auto;
     align-items: center;
+    margin-bottom: 13px;
 }
 
 .input-spectrum-add-color {
