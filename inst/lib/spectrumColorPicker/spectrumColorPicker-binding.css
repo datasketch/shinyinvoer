@@ -18,6 +18,10 @@
     position: relative;
 }
 
+.input-spectrum-add-color[disabled] {
+    display: none;
+}
+
 .input-spectrum-add-color span {
     position: absolute;
     top: 50%;
