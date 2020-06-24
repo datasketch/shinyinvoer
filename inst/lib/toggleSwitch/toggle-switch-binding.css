@@ -1,0 +1,52 @@
+.switch-container {
+  height: 30px;
+  width: 60px;
+}
+
+.switch-state {
+  display: none;
+}
+
+.switch-state:checked + .switch-display {
+  background-color: #b70f7f;
+  color: #ffffff;
+}
+
+.switch-state:checked + .switch-display .switch-indicator {
+  border-color: #b70f7f;
+  transform: translateX(100%);
+}
+
+.switch-display {
+  align-items: center;
+  background-color: #bdcad1;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  height: 100%;
+  padding: 0 4px;
+  position: relative;
+  user-select: none;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.switch-on,
+.switch-off {
+  font-size: 12px;
+  text-align: center;
+  line-height: 30px;
+  width: 50%;
+}
+
+.switch-indicator {
+  background-color: #ffffff;
+  border: 2px solid #bdcad1;
+  border-radius: 50%;
+  height: 30px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: all 0.3s ease;
+  width: 30px;
+}
