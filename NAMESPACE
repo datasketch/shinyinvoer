@@ -3,6 +3,7 @@
 export(buttonImageInput)
 export(colorPalette2Input)
 export(colorPaletteInput)
+export(dropdownActionInput)
 export(searchInput)
 export(selectImageInput)
 export(toggleSwitchInput)
