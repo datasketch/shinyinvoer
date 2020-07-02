@@ -47,6 +47,7 @@
   position: absolute;
   top: 100%;
   width: 100%;
+  z-index: 100;
 }
 
 .dropdown-action-list.is-open {
@@ -55,10 +56,23 @@
 }
 
 .dropdown-action-item {
+  align-items: center;
   color: #435b69;
   cursor: pointer;
+  display: flex;
   font-size: 12px;
   padding: 0.5rem 1rem;
+}
+
+.dropdown-action-item-image {
+  margin-right: 4px;
+  width: 24px;
+}
+
+.dropdown-action-item-label {
+  overflow:hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dropdown-action-item:hover {
