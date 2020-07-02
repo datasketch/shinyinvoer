@@ -59,7 +59,7 @@ buttonImageInput <- function (inputId,
                               imageStyle = list(backgroundColor = "transparent",
                                                 borderColor = "black",
                                                 borderSize = "0px",
-                                                padding = "0",
+                                                padding = "none",
                                                 shadow = FALSE),
                               class = "buttonStyle",
                               classImg = "imageStyle") {
