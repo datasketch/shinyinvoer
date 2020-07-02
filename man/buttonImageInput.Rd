@@ -15,7 +15,7 @@ buttonImageInput(
   ncol = NULL,
   nrow = NULL,
   imageStyle = list(backgroundColor = "transparent", borderColor = "black", borderSize
-    = "1px", padding = "0", shadow = FALSE),
+    = "0px", padding = "0", shadow = FALSE),
   class = "buttonStyle",
   classImg = "imageStyle"
 )
