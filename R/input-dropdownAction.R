@@ -1,37 +1,28 @@
 #' @export
-dropdownActionInput <- function(inputId, label, choices, images = NULL, width = 150) {
+dropdownActionInput <- function(inputId, label, choices, images = NA, width = 150, downloadable = FALSE) {
 
-  shiny::addResourcePath(
-    prefix='dropdownAction',
-    directoryPath=system.file("lib/dropdownAction",
-                              package='shinyinvoer')
-  )
+  images <- images[seq_along(choices)]
+  img <- ""
+  images[is.na(images)] <- img
 
-  l <- shiny::tagList(
-    shiny::singleton(
-      shiny::tags$head(
-        shiny::tags$link(rel = 'stylesheet',
-                         type = 'text/css',
-                         href = 'dropdownAction/dropdown-action-binding.css'),
-        shiny::tags$script(src = 'dropdownAction/dropdown-action-binding.js')
-      ))
-  )
+  shiny::addResourcePath(prefix = 'dropdownAction', directoryPath = system.file("lib/dropdownAction", package = "shinyinvoer"))
 
-  choices_list <- lapply(seq_along(choices), function(x){
-    list(id = choices[x],
-         image = images[x],
-         label = ifelse(is.null(names(choices[x])), 0, names(choices[x]))
-    )
+  l <- shiny::tagList(shiny::singleton(shiny::tags$head(shiny::tags$link(rel = 'stylesheet',
+                                                                         type = 'text/css',
+                                                                         href = 'dropdownAction/dropdown-action-binding.css'),
+                                                        shiny::tags$script(src = 'dropdownAction/dropdown-action-binding.js'))))
+
+  choices_list <- lapply(seq_along(choices), function(x) {
+    list(id = choices[x], image = images[x], label = ifelse(is.null(names(choices[x])), choices[x], names(choices[x])))
   })
 
   input <- jsonlite::toJSON(choices_list, auto_unbox = TRUE)
+  shiny::div(l,
+             `data-options` = htmltools::HTML(input),
+             `data-label` = label,
+             `data-downloadable` = downloadable,
+             id = inputId,
+             class = "dropdown-action-container",
+             style = paste0('width:', width, 'px;'))
 
-  shiny::div(
-    l,
-    `data-options` = htmltools::HTML(input),
-    `data-label` = label,
-    id = inputId,
-    class = "dropdown-action-container",
-    style = paste0('width:', width, 'px;')
-  )
 }
