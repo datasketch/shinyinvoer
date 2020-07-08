@@ -63,7 +63,6 @@ $.extend(binding, {
     return $(scope).find('.dropdown-action-container');
   },
   initialize: function (el) {
-    console.log(el);
     const dropdownActionTrigger = dropdownActionCreateTriggerButton(
       el.dataset.label
     );
@@ -93,7 +92,6 @@ $.extend(binding, {
 
     el.addEventListener('click', function (event) {
         const { target } = event;
-        console.log(target)
         if (
           target.matches('.dropdown-action-trigger') ||
           target === dropdownActionIndicator
