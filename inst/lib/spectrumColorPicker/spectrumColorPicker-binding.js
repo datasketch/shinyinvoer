@@ -1,4 +1,4 @@
-let binding = new Shiny.InputBinding();
+let spectrumColorPickerBinding = new Shiny.InputBinding();
 const SPECTRUM_DEFAULT_COLOR = '#ffffff';
 
 const typedArray = new Uint32Array(1);
@@ -95,7 +95,7 @@ const watchAddColorState = (el) => {
     : button.removeAttribute('disabled');
 };
 
-$.extend(binding, {
+$.extend(spectrumColorPickerBinding, {
   find: function (scope) {
     return $(scope).find('.input-spectrum-color-picker');
   },
@@ -152,4 +152,4 @@ $.extend(binding, {
   },
 });
 
-Shiny.inputBindings.register(binding);
+Shiny.inputBindings.register(spectrumColorPickerBinding);

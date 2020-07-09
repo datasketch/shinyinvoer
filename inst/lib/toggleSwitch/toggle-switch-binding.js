@@ -1,6 +1,6 @@
-let binding = new Shiny.InputBinding();
+let toggleSwitchBinding = new Shiny.InputBinding();
 
-$.extend(binding, {
+$.extend(toggleSwitchBinding, {
   find: function (scope) {
     return $(scope).find('.switch-container');
   },
@@ -15,4 +15,4 @@ $.extend(binding, {
   },
 });
 
-Shiny.inputBindings.register(binding);
+Shiny.inputBindings.register(toggleSwitchBinding);

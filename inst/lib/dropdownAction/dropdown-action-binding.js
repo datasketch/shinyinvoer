@@ -1,4 +1,4 @@
-let binding = new Shiny.InputBinding();
+let dropdownActionBinding = new Shiny.InputBinding();
 
 function dropdownActionCreateTriggerButton(label) {
   const button = document.createElement('button');
@@ -58,7 +58,7 @@ function dropdownActionCreateActionList(choices, downloadable) {
   return dropdownActionList;
 }
 
-$.extend(binding, {
+$.extend(dropdownActionBinding, {
   find: function (scope) {
     return $(scope).find('.dropdown-action-container');
   },
@@ -110,4 +110,4 @@ $.extend(binding, {
   },
 });
 
-Shiny.inputBindings.register(binding);
+Shiny.inputBindings.register(dropdownActionBinding);

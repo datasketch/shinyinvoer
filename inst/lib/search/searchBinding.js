@@ -1,8 +1,8 @@
 // step i
-var binding = new Shiny.InputBinding();
+var searchBinding = new Shiny.InputBinding();
 
 // step ii
-$.extend(binding, {
+$.extend(searchBinding, {
 
   find: function(scope) {
       return $(scope).find('.input-autosuggest');
@@ -42,4 +42,4 @@ $.extend(binding, {
 });
 
 // step iii
-Shiny.inputBindings.register(binding);
+Shiny.inputBindings.register(searchBinding);
