@@ -1,7 +1,7 @@
 #' @title Switch state button
 #' @export
 
-toggleSwitchInput <- function(inputId, on_label = "ON", off_label = "OFF") {
+toggleSwitchInput <- function(inputId, label = NULL, on_label = "ON", off_label = "OFF") {
 
   addResourcePath(
     prefix = 'toggleSwitch',
@@ -19,6 +19,7 @@ toggleSwitchInput <- function(inputId, on_label = "ON", off_label = "OFF") {
   )
 
   shiny::div(
+    label,
     shiny::div(
       l,
       class = 'switch-container',

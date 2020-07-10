@@ -8,7 +8,7 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   output$toggle_switch_sample <- renderUI({
-    toggleSwitchInput(inputId = 'the_switch')
+    toggleSwitchInput(inputId = 'the_switch', label = "Toggle")
   })
   output$toggle_switch_output <- renderPrint({
     input$the_switch
