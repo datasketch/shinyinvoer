@@ -1,7 +1,7 @@
 #' @title Switch state button
 #' @export
 
-toggleSwitchInput <- function(inputId, label = NULL, on_label = "ON", off_label = "OFF") {
+toggleSwitchInput <- function(inputId, label = NULL, on_label = "ON", off_label = "OFF", value = FALSE) {
 
   addResourcePath(
     prefix = 'toggleSwitch',
@@ -18,12 +18,17 @@ toggleSwitchInput <- function(inputId, label = NULL, on_label = "ON", off_label 
       ))
   )
 
+  inp <- shiny::tags$input(id = inputId, type = "checkbox", class = "switch-state")
+  if (value) {
+    inp$attribs$checked <- "checked"
+  }
+
   shiny::div(
     label,
     shiny::div(
       l,
       class = 'switch-container',
-      shiny::tags$input(id = inputId, type = "checkbox", class = "switch-state"),
+      inp,
       shiny::tags$label(
         `for` = inputId,
         class = 'switch-display',
