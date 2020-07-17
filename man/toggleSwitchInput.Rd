@@ -4,7 +4,13 @@
 \alias{toggleSwitchInput}
 \title{Switch state button}
 \usage{
-toggleSwitchInput(inputId, on_label = "ON", off_label = "OFF")
+toggleSwitchInput(
+  inputId,
+  label = NULL,
+  on_label = "ON",
+  off_label = "OFF",
+  value = FALSE
+)
 }
 \description{
 Switch state button
