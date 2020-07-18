@@ -66,8 +66,8 @@
 }
 
 .dropdown-action-item-image {
-  margin-right: 4px;
-  width: 24px;
+  margin-right: 7px;
+  width: 17px;
 }
 
 .dropdown-action-item-label {
@@ -78,4 +78,8 @@
 
 .dropdown-action-item:hover {
   background-color: #e6eaed;
+}
+
+.dropdown-action-item-separator {
+  margin: 0;
 }

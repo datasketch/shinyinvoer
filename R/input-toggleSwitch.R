@@ -1,4 +1,30 @@
 #' @title Switch state button
+#'
+#' @param inputId The \code{input} slot that will be used to access the value.
+#' @param label Display label for the toggle switch, \code{NULL} for no label.
+#' @param on_label Display label when toggle switch is on.
+#' @param off_label Display label when toggle switch is off.
+#' @param value Initial value of the toggle TRUE on, FALSE off.
+#'
+#' @examples
+#' \dontrun{
+#' ## Only run examples in interactive R sessions
+#' if (interactive()) {
+#'
+#' ui <- fluidPage(
+#'     toggleSwitchInput(inputId = 'toggle', label = 'The toggle switch', value = TRUE)
+#'     verbatimTextOutput('toggle_state')
+#' )
+#' server <- function(input, output) {
+#'
+#' output$toggle_state <- renderPrint({
+#'                    input$toggle
+#'                 })
+#' }
+#' shinyApp(ui, server)
+#' }
+#' }
+#'
 #' @export
 
 toggleSwitchInput <- function(inputId, label = NULL, on_label = "ON", off_label = "OFF", value = FALSE) {

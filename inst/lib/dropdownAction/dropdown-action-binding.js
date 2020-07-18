@@ -10,51 +10,45 @@ function dropdownActionCreateTriggerButton(label) {
   return button;
 }
 
-function dropdownActionCreateActionList(choices, downloadable) {
+function dropdownActionCreateActionList(choices) {
   const dropdownActionList = document.createElement('div');
   dropdownActionList.classList.add('dropdown-action-list');
 
-  const isdownloadable = downloadable == 'TRUE'
-
-  if (isdownloadable) {
-    choices.forEach(function (choice) {
-      const dropdownActionItem = document.createElement('a');
-      dropdownActionItem.setAttribute('id', choice.id);
-      dropdownActionItem.setAttribute('target', '_blank');
-      dropdownActionItem.classList.add('shiny-download-link', 'dropdown-action-item');
-      dropdownActionItem.setAttribute('download', '');
-      dropdownActionItem.dataset.action = choice.id;
-       if (choice.image) {
-        const dropdownActionItemImage = document.createElement('img');
-        dropdownActionItemImage.classList.add('dropdown-action-item-image');
-        dropdownActionItemImage.setAttribute('src', choice.image);
-        dropdownActionItem.appendChild(dropdownActionItemImage);
+  choices.forEach(function (choice) {
+    if (choice.id === "separator" | choice.label === "separator") {
+      var dropdownActionItem = document.createElement('hr');
+      dropdownActionItem.classList.add('dropdown-action-item-separator');
+    } else {
+      if (choice.type === "text") {
+        var dropdownActionItem = document.createElement('div');
+        dropdownActionItem.classList.add('dropdown-action-item');
+      } else {
+        var dropdownActionItem = document.createElement('a');
+        dropdownActionItem.setAttribute('id', choice.id);
+        if (choice.type === "download") {
+          dropdownActionItem.setAttribute('target', '_blank');
+          dropdownActionItem.classList.add('shiny-download-link', 'dropdown-action-item');
+          dropdownActionItem.setAttribute('download', '');
+        } else {
+          dropdownActionItem.setAttribute('href', '#');
+          dropdownActionItem.classList.add('action-button', 'dropdown-action-item');
+        }
       }
-      const dropdownActionItemLabel = document.createElement('span');
-      dropdownActionItemLabel.classList.add('dropdown-action-item-label');
-      dropdownActionItemLabel.textContent = choice.label;
-      dropdownActionItem.appendChild(dropdownActionItemLabel);
-      dropdownActionList.appendChild(dropdownActionItem);
-    });
-  } else {
-    choices.forEach(function (choice) {
-      const dropdownActionItem = document.createElement('div');
       dropdownActionItem.setAttribute('title', choice.label);
-      dropdownActionItem.classList.add('dropdown-action-item');
       dropdownActionItem.dataset.action = choice.id;
       if (choice.image) {
-        const dropdownActionItemImage = document.createElement('img');
+        var dropdownActionItemImage = document.createElement('img');
         dropdownActionItemImage.classList.add('dropdown-action-item-image');
         dropdownActionItemImage.setAttribute('src', choice.image);
         dropdownActionItem.appendChild(dropdownActionItemImage);
       }
-      const dropdownActionItemLabel = document.createElement('span');
+      var dropdownActionItemLabel = document.createElement('span');
       dropdownActionItemLabel.classList.add('dropdown-action-item-label');
       dropdownActionItemLabel.textContent = choice.label;
       dropdownActionItem.appendChild(dropdownActionItemLabel);
-      dropdownActionList.appendChild(dropdownActionItem);
-    });
-  }
+    }
+    dropdownActionList.appendChild(dropdownActionItem);
+  })
   return dropdownActionList;
 }
 
@@ -67,7 +61,7 @@ $.extend(dropdownActionBinding, {
       el.dataset.label
     );
     const dropdownActionList = dropdownActionCreateActionList(
-      JSON.parse(el.dataset.options), el.dataset.downloadable
+      JSON.parse(el.dataset.options)
     );
     el.appendChild(dropdownActionTrigger);
     el.appendChild(dropdownActionList);
