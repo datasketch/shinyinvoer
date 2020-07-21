@@ -81,5 +81,7 @@
 }
 
 .dropdown-action-item-separator {
-  margin: 0;
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 2px 13px;
 }
