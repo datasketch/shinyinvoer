@@ -29,6 +29,9 @@ function dropdownActionCreateActionList(choices) {
           dropdownActionItem.setAttribute('target', '_blank');
           dropdownActionItem.classList.add('shiny-download-link', 'dropdown-action-item');
           dropdownActionItem.setAttribute('download', '');
+        } else if (choice.type === "modalShinypanels") {
+          dropdownActionItem.setAttribute('data-modal', 'md-' + choice.id);
+          dropdownActionItem.classList.add('modal-trigger', 'dropdown-action-item', 'dropdown-action-item-modal-shinypanels');
         } else {
           dropdownActionItem.setAttribute('href', '#');
           dropdownActionItem.classList.add('action-button', 'dropdown-action-item');
@@ -85,16 +88,16 @@ $.extend(dropdownActionBinding, {
     }
 
     el.addEventListener('click', function (event) {
-        const { target } = event;
-        if (
-          target.matches('.dropdown-action-trigger') ||
-          target === dropdownActionIndicator
-        ) {
-          dropdownActionToggleStates();
-          return callback();
-        }
+      const { target } = event;
+      if (
+        target.matches('.dropdown-action-trigger') ||
+        target === dropdownActionIndicator
+      ) {
+        dropdownActionToggleStates();
+        return callback();
+      }
 
-        if (target.matches('.dropdown-action-item') || target.matches('.dropdown-action-item .dropdown-action-item-image') || target.matches('.dropdown-action-item .dropdown-action-item-label')) {
+      if (target.matches('.dropdown-action-item') || target.matches('.dropdown-action-item .dropdown-action-item-image') || target.matches('.dropdown-action-item .dropdown-action-item-label')) {
         const action = target.dataset.action ? target.dataset.action : target.parentNode.dataset.action;
         el.dataset.selected = action || '';
         dropdownActionToggleStates();
