@@ -85,3 +85,11 @@
   border-top: 1px solid #eee;
   margin: 2px 13px;
 }
+
+.dropdown-action-item-modal-shinypanels {
+  background: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  transition: inherit;
+}

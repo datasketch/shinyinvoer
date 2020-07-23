@@ -30,7 +30,7 @@
 #' @export
 dropdownActionInput <- function(inputId, label, choices, choicesType = "text", images = NA, width = 150) {
 
-  if (all(choicesType %in% c(NA, "", "text", "download", "button"))) {
+  if (all(choicesType %in% c(NA, "", "text", "download", "button", "modalShinypanels"))) {
     if (length(choicesType) == 1) {
       choicesType[seq_along(choices)] <- choicesType
     } else if (length(choicesType) >= length(choices)) {
@@ -40,7 +40,7 @@ dropdownActionInput <- function(inputId, label, choices, choicesType = "text", i
       choicesType[is.na(choicesType)] <- "text"
     }
   } else {
-    stop("Elements of choicesType must be either text, download, button or NA")
+    stop("Elements of choicesType must be either text, download, button, modalShinypanels or NA")
   }
 
   if (sum(is.na(images)) | sum(is.null(images))) {
@@ -48,7 +48,7 @@ dropdownActionInput <- function(inputId, label, choices, choicesType = "text", i
       if (!is.na(w)) {
         if (w == "download") {
           "dropdownAction/images/download.svg"
-        } else if (w == "button") {
+        } else if (w %in% c("button", "modalShinypanels")) {
           "dropdownAction/images/share_link.svg"
         } else {
           ""
