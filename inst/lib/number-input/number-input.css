@@ -1,0 +1,58 @@
+/* Chrome, Safari, Edge, Opera */
+.number-input input::-webkit-outer-spin-button,
+.number-input input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.number-input input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.number-input {
+  font-size: 16px;
+}
+
+.number-input label {
+  color: #435B69;
+  display: block;
+  font-size: 0.875em;
+}
+
+.number-input-controls {
+  display: inline-flex;
+}
+
+.number-input-controls input {
+  border: 1px solid #E6EAED;
+  color: #435B69;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.875em;
+  min-width: auto;
+  padding: 0.25rem 0.5rem;
+  text-align: center;
+  width: 40px;
+}
+
+.number-input-controls button {
+  background: #E6EAED;
+  border: none;
+  color: #435B69;
+  font-weight: 700;
+  padding: 0 0.5rem;
+}
+
+.number-input-controls button:focus {
+  outline: none;
+}
+
+.number-input-controls button:first-child {
+  border-bottom-left-radius: 0.5rem;
+  border-top-left-radius: 0.5rem;
+}
+
+.number-input button:last-child {
+  border-bottom-right-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
