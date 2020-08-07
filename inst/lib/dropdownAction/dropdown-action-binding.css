@@ -3,18 +3,24 @@
 }
 
 .dropdown-action-trigger {
-  background-color: #b70f7f;
+  background-color: #da1c95;
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 700;
   border: none;
   border-radius: 0.35rem;
   color: #ffffff;
   cursor: pointer;
   font-size: 12px;
   font-weight: bold;
-  letter-spacing: 0.025em;
-  padding: 0.5rem 0.25rem;
+  letter-spacing: 0.055em;
+  padding: 0.65rem 0.25rem;
   position: relative;
   text-transform: uppercase;
   width: 100%;
+}
+
+.dropdown-action-trigger:hover {
+  background-color: #b70f7f;
 }
 
 .dropdown-action-trigger:focus {
@@ -61,13 +67,14 @@
   cursor: pointer;
   display: flex;
   font-size: 12px;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
   text-decoration: none;
+  border-radius: 0;
 }
 
 .dropdown-action-item-image {
   margin-right: 7px;
-  width: 17px;
+  width: 15px;
 }
 
 .dropdown-action-item-label {

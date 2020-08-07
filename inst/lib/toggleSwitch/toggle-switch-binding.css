@@ -1,7 +1,23 @@
 .switch-container {
-  height: 30px;
+  height: 25px;
   margin: 4px 0 13px 0;
-  width: 60px;
+  width: 50px;
+}
+
+.switch-container:hover > .switch-display {
+  background-color: #9eafb7;
+}
+
+.switch-container:hover > .switch-display .switch-indicator {
+  border-color: #9eafb7;
+}
+
+.switch-container:hover > .switch-state:checked + .switch-display {
+  background-color: #b70f7f;
+}
+
+.switch-container:hover > .switch-state:checked + .switch-display .switch-indicator {
+  border-color: #b70f7f;
 }
 
 .switch-state {
@@ -9,12 +25,12 @@
 }
 
 .switch-state:checked + .switch-display {
-  background-color: #b70f7f;
+  background-color: #da1c95;
   color: #ffffff;
 }
 
 .switch-state:checked + .switch-display .switch-indicator {
-  border-color: #b70f7f;
+  border-color: #da1c95;
   transform: translateX(100%);
 }
 
@@ -44,10 +60,10 @@
   background-color: #ffffff;
   border: 2px solid #bdcad1;
   border-radius: 50%;
-  height: 30px;
+  height: 25px;
   left: 0;
   position: absolute;
   top: 0;
   transition: all 0.3s ease;
-  width: 30px;
+  width: 25px;
 }

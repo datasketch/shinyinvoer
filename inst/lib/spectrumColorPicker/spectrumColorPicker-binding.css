@@ -1,14 +1,15 @@
 .input-spectrum-color-picker {
     display: flex;
-    overflow-x: auto;
     align-items: center;
     margin-bottom: 13px;
+    flex-wrap: wrap;
 }
 
 .input-spectrum-add-color {
     order: 1;
-    width: 20px;
-    height: 20px;
+    min-width: 30px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     border: 1px solid #8097A4;
     background: transparent;
@@ -16,6 +17,11 @@
     text-align: center;
     color: #8097A4;
     position: relative;
+    cursor: pointer;
+}
+
+.input-spectrum-add-color:hover {
+    filter: brightness(0.6);
 }
 
 .input-spectrum-add-color[disabled] {
@@ -24,9 +30,8 @@
 
 .input-spectrum-add-color span {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-51%, -55%);
+    font-size: 0.875rem;
 }
 
 .input-spectrum-add-color:focus,
@@ -52,6 +57,10 @@
     background-size: contain;
     margin-right: 0 !important;
     padding: 0 !important;
+}
+
+.input-spectrum-remove:hover {
+    filter: brightness(0.6);
 }
 
 .input-spectrum-remove.palette-only {

@@ -837,13 +837,15 @@
                 // Where to show the little circle in that displays your current selected color
                 var dragX = s * dragWidth;
                 var dragY = dragHeight - (v * dragHeight);
+                // Added /2 to center dragHelper
                 dragX = Math.max(
-                    -dragHelperHeight,
-                    Math.min(dragWidth - dragHelperHeight, dragX - dragHelperHeight)
+                    -dragHelperHeight/2,
+                    Math.min(dragWidth - dragHelperHeight/2, dragX - dragHelperHeight/2)
                 );
+                // Added /2 to center dragHelper
                 dragY = Math.max(
-                    -dragHelperHeight,
-                    Math.min(dragHeight - dragHelperHeight, dragY - dragHelperHeight)
+                    -dragHelperHeight/2,
+                    Math.min(dragHeight - dragHelperHeight/2, dragY - dragHelperHeight/2)
                 );
                 dragHelper.css({
                     "top": dragY + "px",
