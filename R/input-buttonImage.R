@@ -56,6 +56,7 @@ buttonImageInput <- function (inputId,
                               format = NULL,
                               ncol = NULL,
                               nrow = NULL,
+                              checkmarkColor = NULL,
                               imageStyle = list(borderColor = "black",
                                                 borderSize = "0px",
                                                 padding = "0",
@@ -66,6 +67,7 @@ buttonImageInput <- function (inputId,
   format <- format %||% "png"
   path <- path %||% "img/btn/"
   label <- label %||% " "
+  checkmarkColor <- checkmarkColor %||% "default"
   # backgroundColor <- backgroundColor
 
   if (is.null(tooltips)) tooltips <- images
@@ -81,6 +83,12 @@ buttonImageInput <- function (inputId,
                      " !important; padding: ",
                      imageStyle$padding,
                      ";")
+  checkmarkPath <- "buttonImage/images/checkmark.svg"
+  if(checkmarkColor == "orange"){
+    checkmarkPath <- "buttonImage/images/checkmark_orange.svg"
+  } else if (checkmarkColor == "pink"){
+    checkmarkPath <- "buttonImage/images/checkmark_pink.svg"
+  }
 
   if(format == "svg"){
     l <- purrr::map(seq_along(images), function (index) {
@@ -99,7 +107,7 @@ buttonImageInput <- function (inputId,
           type="submit",
           title= tooltips[index],
         ),
-        shiny::tags$img(src="buttonImage/images/checkmark.svg", class="button-checkmark")
+        shiny::tags$img(src=checkmarkPath, class="button-checkmark")
       )
     })
   } else {
@@ -110,7 +118,7 @@ buttonImageInput <- function (inputId,
         style = imgStyle,
         type="submit",
         title= tooltips[index],
-        shiny::tags$img(src="buttonImage/images/checkmark.svg", class="button-checkmark"),
+        shiny::tags$img(src=checkmarkPath, class="button-checkmark"),
         shiny::tags$img(src = paste0(path, images[index], '.', format), class = classImg)
       )
     })
