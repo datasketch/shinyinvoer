@@ -84,16 +84,32 @@ buttonImageInput <- function (inputId,
                      " !important; padding: ",
                      imageStyle$padding)
 
-  l <- purrr::map(seq_along(images), function (index) {
-    shiny::tags$button(
-      id = images[index],
-      class = class,
-      style = imgStyle,
-      type="submit",
-      title= tooltips[index],
-      shiny::tags$img(src = paste0(path, images[index], '.', format), class = classImg)
-    )
-  })
+  if(format == "svg"){
+    l <- purrr::map(seq_along(images), function (index) {
+      shiny::tags$button(
+        id = images[index],
+        class = class,
+        style = imgStyle,
+        type="submit",
+        title= tooltips[index],
+        shiny::tags$object(data = paste0(path, images[index], '.', format), class = classImg)
+      )
+    })
+  } else {
+    l <- purrr::map(seq_along(images), function (index) {
+      shiny::tags$button(
+        id = images[index],
+        class = class,
+        style = imgStyle,
+        type="submit",
+        title= tooltips[index],
+        shiny::tags$img(src = paste0(path, images[index], '.', format), class = classImg)
+      )
+    })
+  }
+
+
+
   if (is.null(active)) active <- images[1]
   active <- which(images == active)
 
