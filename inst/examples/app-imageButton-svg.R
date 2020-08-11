@@ -22,6 +22,7 @@ server <- function(input, output, session) {
                      tooltips = c("Areas", "Bubbles", "Donut"),
                      format = "svg",
                      active = 'areas',
+                     checkmarkColor = "#df5c33",
                      path = "img/")
   })
 

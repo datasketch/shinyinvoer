@@ -67,7 +67,7 @@ buttonImageInput <- function (inputId,
   format <- format %||% "png"
   path <- path %||% "img/btn/"
   label <- label %||% " "
-  checkmarkColor <- checkmarkColor %||% "default"
+  checkmarkColor <- checkmarkColor %||% "#b70f7f"
   # backgroundColor <- backgroundColor
 
   if (is.null(tooltips)) tooltips <- images
@@ -83,17 +83,20 @@ buttonImageInput <- function (inputId,
                      " !important; padding: ",
                      imageStyle$padding,
                      ";")
-  checkmarkPath <- "buttonImage/images/checkmark.svg"
-  if(checkmarkColor == "orange"){
-    checkmarkPath <- "buttonImage/images/checkmark_orange.svg"
-  } else if (checkmarkColor == "pink"){
-    checkmarkPath <- "buttonImage/images/checkmark_pink.svg"
-  }
+
+  # This doesn't look necessary anymore. Please verify
+  # checkmarkPath <- "buttonImage/images/checkmark.svg"
+  # if(checkmarkColor == "orange"){
+  #   checkmarkPath <- "buttonImage/images/checkmark_orange.svg"
+  # } else if (checkmarkColor == "pink"){
+  #   checkmarkPath <- "buttonImage/images/checkmark_pink.svg"
+  # }
 
   if(format == "svg"){
     l <- purrr::map(seq_along(images), function (index) {
       svg_path <- paste0(path, images[index], '.', format)
       shiny::tags$div(
+        style=paste0("color: ", checkmarkColor),
         class="button-container",
         shiny::tags$button(
           id = images[index],
@@ -107,7 +110,7 @@ buttonImageInput <- function (inputId,
           type="submit",
           title= tooltips[index],
         ),
-        shiny::tags$img(src=checkmarkPath, class="button-checkmark")
+        shiny::HTML('<svg class="button-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12.66 12.66"><circle fill="currentColor" cx="6.33" cy="6.33" r="6.33"/><path fill="#ffffff" d="M5.38,9.56a.49.49,0,0,1-.27-.13L3.24,7.49a.44.44,0,0,1,0-.63.45.45,0,0,1,.63,0L5.39,8.43,8.77,3.94a.44.44,0,0,1,.71.53L5.79,9.39a.47.47,0,0,1-.33.17Z"/></svg>')
       )
     })
   } else {
@@ -115,10 +118,10 @@ buttonImageInput <- function (inputId,
       shiny::tags$button(
         id = images[index],
         class = class,
-        style = imgStyle,
+        style = paste0(imgStyle, "color: ", checkmarkColor),
         type="submit",
         title= tooltips[index],
-        shiny::tags$img(src=checkmarkPath, class="button-checkmark"),
+        shiny::HTML('<svg class="button-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12.66 12.66"><circle fill="currentColor" cx="6.33" cy="6.33" r="6.33"/><path fill="#ffffff" d="M5.38,9.56a.49.49,0,0,1-.27-.13L3.24,7.49a.44.44,0,0,1,0-.63.45.45,0,0,1,.63,0L5.39,8.43,8.77,3.94a.44.44,0,0,1,.71.53L5.79,9.39a.47.47,0,0,1-.33.17Z"/></svg>'),
         shiny::tags$img(src = paste0(path, images[index], '.', format), class = classImg)
       )
     })

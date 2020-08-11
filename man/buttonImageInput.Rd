@@ -14,10 +14,11 @@ buttonImageInput(
   format = NULL,
   ncol = NULL,
   nrow = NULL,
-  imageStyle = list(backgroundColor = "transparent", borderColor = "black", borderSize
-    = "0px", padding = "none", shadow = FALSE),
-  class = "buttonStyle",
-  classImg = "imageStyle"
+  checkmarkColor = NULL,
+  imageStyle = list(borderColor = "black", borderSize = "0px", padding = "0", shadow =
+    FALSE),
+  class = "button-style",
+  classImg = "image-style"
 )
 }
 \arguments{
