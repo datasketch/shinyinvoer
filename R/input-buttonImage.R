@@ -56,13 +56,12 @@ buttonImageInput <- function (inputId,
                               format = NULL,
                               ncol = NULL,
                               nrow = NULL,
-                              imageStyle = list(backgroundColor = "transparent",
-                                                borderColor = "black",
+                              imageStyle = list(borderColor = "black",
                                                 borderSize = "0px",
-                                                padding = "none",
+                                                padding = "0",
                                                 shadow = FALSE),
-                              class = "buttonStyle",
-                              classImg = "imageStyle") {
+                              class = "button-style",
+                              classImg = "image-style") {
 
   format <- format %||% "png"
   path <- path %||% "img/btn/"
@@ -73,26 +72,34 @@ buttonImageInput <- function (inputId,
 
   addResourcePath(prefix='buttonImage', directoryPath=system.file("lib/buttonImage", package='shinyinvoer'))
 
-  imgStyle <- paste0("background-color: ",
-                     imageStyle$backgroundColor,
-                     " !important; border: ",
+  imgStyle <- paste0("border: ",
                      imageStyle$borderSize,
                      " solid ",
                      imageStyle$borderColor,
                      " !important; box-shadow: ",
                      ifelse(imageStyle$shadow, "-3px 3px 7px 2px rgba(0, 0, 0, 0.06)", "none"),
                      " !important; padding: ",
-                     imageStyle$padding)
+                     imageStyle$padding,
+                     ";")
 
   if(format == "svg"){
     l <- purrr::map(seq_along(images), function (index) {
-      shiny::tags$button(
-        id = images[index],
-        class = class,
-        style = imgStyle,
-        type="submit",
-        title= tooltips[index],
-        shiny::tags$object(data = paste0(path, images[index], '.', format), class = classImg)
+      svg_path <- paste0(path, images[index], '.', format)
+      shiny::tags$div(
+        class="button-container",
+        shiny::tags$button(
+          id = images[index],
+          class = class,
+          style = paste0(imgStyle,
+                         "mask: url(",
+                         svg_path,
+                         "); -webkit-mask: url(",
+                         svg_path,
+                         "); mask-position: center; mask-repeat: no-repeat; mask-size: contain; -webkit-mask-position: center; -webkit-mask-repeat: no-repeat; -webkit-mask-size: contain;"),
+          type="submit",
+          title= tooltips[index],
+        ),
+        shiny::tags$img(src="buttonImage/images/checkmark.svg", class="button-checkmark")
       )
     })
   } else {
@@ -103,6 +110,7 @@ buttonImageInput <- function (inputId,
         style = imgStyle,
         type="submit",
         title= tooltips[index],
+        shiny::tags$img(src="buttonImage/images/checkmark.svg", class="button-checkmark"),
         shiny::tags$img(src = paste0(path, images[index], '.', format), class = classImg)
       )
     })
@@ -114,7 +122,7 @@ buttonImageInput <- function (inputId,
   active <- which(images == active)
 
   l[[active]] <- purrr::map(active, function(a) {
-    htmltools::HTML(gsub('"buttonStyle"', '"buttonStyle active_btn"', l[[a]]))
+    htmltools::HTML(gsub('"button-style"', '"button-style active-btn"', l[[a]]))
   })
 
   if (is.null(nrow) & is.null(ncol)) {
