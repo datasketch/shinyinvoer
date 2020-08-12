@@ -2,7 +2,7 @@
   background-color: transparent;
   display: grid;
   grid-gap: 20px;
-  grid-template-columns: repeat(auto-fill, 60px);
+  grid-template-columns: repeat(auto-fill, 45px);
   padding: 15px 0;
 }
 
@@ -31,13 +31,13 @@
 }
 
 .button-style ~ .button-checkmark {
-  height: 16px;
+  height: 12px;
   position: absolute;
   opacity: 0;
-  right: 0;
-  top: 0;
+  right: -4px;
+  top: -4px;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  width: 16px;
+  width: 12px;
 }
 
 .button-style.active-btn ~ .button-checkmark {
