@@ -67,7 +67,7 @@ buttonImageInput <- function (inputId,
   format <- format %||% "png"
   path <- path %||% "img/btn/"
   label <- label %||% " "
-  checkmarkColor <- checkmarkColor %||% "#b70f7f"
+  checkmarkColor <- checkmarkColor %||% "#da1c95"
   # backgroundColor <- backgroundColor
 
   if (is.null(tooltips)) tooltips <- images
