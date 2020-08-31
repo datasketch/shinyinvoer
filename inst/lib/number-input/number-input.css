@@ -18,10 +18,12 @@
   color: #435B69;
   display: block;
   font-size: 0.875em;
+  font-weight: 500;
 }
 
 .number-input-controls {
   display: inline-flex;
+  margin: 2px 0 20px 0;
 }
 
 .number-input-controls input {
