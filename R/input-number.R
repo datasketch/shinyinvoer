@@ -1,6 +1,4 @@
 #' @export
-#'
-#'
 numberInput <- function(inputId, label=NULL, value=0, min=NULL, max=NULL, step=1) {
   addResourcePath(
     prefix="number-input", directoryPath=system.file("lib/number-input", package="shinyinvoer")
