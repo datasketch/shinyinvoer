@@ -32,7 +32,7 @@ $.extend(numberInputBinding, {
   },
   getValue: function (el) {
     const input = el.querySelector('input');
-    return input.value;
+    return parseFloat(input.value);
   },
   subscribe: function (el, callback) {
     const controls = el.querySelector('.number-input-controls');
