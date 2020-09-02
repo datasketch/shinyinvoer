@@ -89,9 +89,12 @@ $.extend(dropdownActionBinding, {
 
     el.addEventListener('click', function (event) {
       const { target } = event;
+        console.log("fsd")
+        console.log(target.matches(".dropdown-action-trigger path"))
       if (
         target.matches('.dropdown-action-trigger') ||
-        target === dropdownActionIndicator
+        target === dropdownActionIndicator ||
+        target.matches(".dropdown-action-trigger path")
       ) {
         dropdownActionToggleStates();
         return callback();
