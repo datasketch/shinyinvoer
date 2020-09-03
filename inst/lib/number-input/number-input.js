@@ -46,6 +46,12 @@ $.extend(numberInputBinding, {
       callback();
     });
   },
+  receiveMessage: function (el, message) {
+    const input = el.querySelector('input');
+    const controls = el.querySelector('.number-input-controls');
+    input.value = message.value;
+    $(controls).trigger('click');
+  },
 });
 
 Shiny.inputBindings.register(numberInputBinding);
