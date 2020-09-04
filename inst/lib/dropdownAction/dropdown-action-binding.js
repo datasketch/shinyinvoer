@@ -91,7 +91,8 @@ $.extend(dropdownActionBinding, {
       const { target } = event;
       if (
         target.matches('.dropdown-action-trigger') ||
-        target === dropdownActionIndicator
+        target === dropdownActionIndicator ||
+        target.matches(".dropdown-action-trigger path")
       ) {
         dropdownActionToggleStates();
         return callback();
