@@ -24,7 +24,7 @@ colorPaletteInput <- function(inputId, label, colors = list(), palette = list(),
   )
 
   shiny::div(
-    shiny::tags$label(shiny::tags$span(label)),
+    shiny::tags$label(shiny::tags$span(style = "font-weight: 500;", label)),
     shiny::div(
       l,
       id = inputId,
