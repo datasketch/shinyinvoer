@@ -2,7 +2,8 @@ library(shiny)
 
 ui <- fluidPage(
   uiOutput("the_input"),
-  verbatimTextOutput("the_output")
+  verbatimTextOutput("the_output"),
+  checkboxInput('the_update', 'Change value to 10')
 )
 
 server <- function(input, output, session) {
@@ -12,6 +13,12 @@ server <- function(input, output, session) {
 
   output$the_output <- renderPrint({
     input$numeric
+  })
+
+  observe({
+    if (input$the_update) {
+      updateNumberInput(session, inputId="numeric", value=10)
+    }
   })
 }
 

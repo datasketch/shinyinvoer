@@ -19,3 +19,15 @@ numberInput <- function(inputId, label=NULL, value=0, min=NULL, max=NULL, step=1
              )),
   )
 }
+
+#' Update number input
+#' @export
+updateNumberInput <- function (session, inputId, value) {
+  message <- dropNulls(list(value = value))
+  session$sendInputMessage(inputId, message)
+}
+
+# copied from shiny since it's not exported
+dropNulls <- function(x) {
+  x[!vapply(x, is.null, FUN.VALUE=logical(1))]
+}
