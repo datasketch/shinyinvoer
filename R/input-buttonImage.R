@@ -85,8 +85,6 @@ buttonImageInput <- function (inputId,
 
 
   l <- purrr::map(seq_along(images), function (index) {
-    print(images[index])
-    print(list.files(path))
     format <- unique(tools::file_ext(list.files(paste0("www/", path), pattern = images[index])))
     if (length(format) != 1) stop("All images have to be of the same type (png, jpeg, svg)")
     file_path <- file.path(path, paste0(images[index], '.', format))
