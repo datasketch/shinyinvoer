@@ -34,7 +34,8 @@
   background-color: #da1c95 !important;
 }
 
-.button-style ~ .button-checkmark {
+.button-style ~ .button-checkmark,
+.button-style .button-checkmark {
   height: 12px;
   position: absolute;
   opacity: 0;
@@ -44,7 +45,8 @@
   width: 12px;
 }
 
-.button-style.active-btn ~ .button-checkmark {
+.button-style.active-btn ~ .button-checkmark,
+.button-style.active-btn .button-checkmark {
   opacity: 1;
 }
 
