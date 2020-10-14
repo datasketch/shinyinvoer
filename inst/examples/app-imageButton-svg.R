@@ -20,8 +20,14 @@ server <- function(input, output, session) {
                      images = c("areas", "bubbles", "donut"),
                      nrow = 2,
                      tooltips = c("Areas", "Bubbles", "Donut"),
-                     format = "svg",
                      active = 'areas',
+
+                     imageStyle = list(borderColor = "#eee",
+                                       borderSize = "1px",
+                                       padding = "10px",
+                                       shadow = TRUE),
+
+
                      path = "img/")
   })
 
@@ -36,10 +42,10 @@ server <- function(input, output, session) {
 
 
   observe({
-    if (is.null(input$country_id)) return()
+    req(input$country_id)
 
     if (input$country_id == "mexico") {
-      updateButtonImageInput(session, "chosen_button", active = "fox")
+      updateButtonImageInput(session, "chosen_button", active = "donut")
     }
   })
 

@@ -17,10 +17,12 @@ server <- function(input, output, session) {
   output$button <- renderUI({
     buttonImageInput(inputId = 'chosen_button',
                      label = "Elige un animal",
-                     images = c("cat", "dog", "fox"),
+                     images = c("cat", "dog", "fox", "bubbles"),
                      nrow = 2,
-                     tooltips = c("Gato", "Perro", "Zorro"),
+                     tooltips = c("Gato", "Perro", "Zorro", "Bub"),
                      active = 'dog',
+                     checkmarkColor = "blue",
+                     # active = c('dog', "fox"),
                      path = "img/")
   })
 
@@ -35,7 +37,7 @@ server <- function(input, output, session) {
 
 
  observe({
-   if (is.null(input$country_id)) return()
+   req(input$country_id)
 
    if (input$country_id == "mexico") {
      updateButtonImageInput(session, "chosen_button", active = "fox")
