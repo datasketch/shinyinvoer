@@ -1,0 +1,68 @@
+.chip-container {
+  border-bottom: 2px solid #edf2f7;
+  display: flex;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 14px;
+  padding: 4px 0;
+  transition: border-color 0.25s ease-out;
+}
+
+.chip-container.focused {
+  border-color: #ed64a6;
+  transition-timing-function: ease-in;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.chip {
+  align-items: flex-end;
+  background-color: #efefef;
+  border-radius: 4px;
+  color: #435b69;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-weight: 300;
+  margin: 4px;
+  line-height: 1;
+  padding: 4px 8px;
+}
+
+.chip button {
+  background-color: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  line-height: inherit;
+  margin-left: 8px;
+  padding: 0;
+}
+
+.chip svg {
+  width: 12px;
+}
+
+.chip-input-container {
+  margin: 4px;
+  width: 150px;
+  flex-grow: 1 0 auto;
+}
+
+.chip-input {
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  height: 100%;
+  line-height: inherit;
+  margin: 0;
+  overflow: visible;
+  padding: 0;
+  width: 100%;
+}
+
+.chip button:focus,
+.chip-input:focus {
+  outline: none;
+}

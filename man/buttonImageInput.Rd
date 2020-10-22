@@ -11,7 +11,6 @@ buttonImageInput(
   active = NULL,
   tooltips = NULL,
   path = NULL,
-  format = NULL,
   ncol = NULL,
   nrow = NULL,
   checkmarkColor = NULL,
