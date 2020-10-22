@@ -3,7 +3,8 @@ library(shinyinvoer)
 
 ui <- fluidPage(
   uiOutput("the_input"),
-  verbatimTextOutput("the_output")
+  verbatimTextOutput("the_output"),
+  checkboxInput('the_update', 'Reset with some fruits')
 )
 
 server <- function(input, output, session) {
@@ -13,6 +14,12 @@ server <- function(input, output, session) {
 
   output$the_output <- renderPrint({
     input$tags
+  })
+
+  observe({
+    if (input$the_update) {
+      updateChipsInput(session, inputId="tags", chips=c("Apple", "Banana"))
+    }
   })
 }
 

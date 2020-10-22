@@ -15,6 +15,7 @@
 .chip-list {
   display: flex;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .chip {
@@ -46,8 +47,7 @@
 
 .chip-input-container {
   margin: 4px;
-  width: 150px;
-  flex-grow: 1 0 auto;
+  flex-grow: 1;
 }
 
 .chip-input {

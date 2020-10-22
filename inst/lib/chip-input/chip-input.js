@@ -35,14 +35,7 @@ $.extend(chipsInputBinding, {
     const chipContainer = el.querySelector('.chip-container');
     const chipInput = el.querySelector('.chip-input');
     const chipList = el.querySelector('.chip-list');
-    let chips;
 
-    try {
-      chips = JSON.parse(el.dataset.chips);
-    } catch (error) {
-      console.log('Something went wrong #subscribe');
-      chips = [];
-    }
     chipInput.addEventListener('focus', () => {
       chipContainer.classList.add('focused');
     });
@@ -56,10 +49,12 @@ $.extend(chipsInputBinding, {
 
       const value = e.target.value.trim();
       if (value === '') return;
-      const chip = this.createChip(e.target.value);
+
+      const chips = JSON.parse(el.dataset.chips);
+      const chip = this.createChip(value);
       chipList.insertBefore(chip, chipInput.parentNode);
 
-      chips.push(e.target.value);
+      chips.push(value);
       el.dataset.chips = JSON.stringify(chips);
       e.target.value = '';
 
@@ -81,8 +76,12 @@ $.extend(chipsInputBinding, {
         }
       }
 
-      if (!chip) return;
+      if (!chip) {
+        callback();
+        return;
+      }
 
+      const chips = JSON.parse(el.dataset.chips);
       let index = 0;
       let previousSibling = chip.previousElementSibling;
 
@@ -98,7 +97,22 @@ $.extend(chipsInputBinding, {
       callback();
     });
   },
-  receiveMessage(el, message) {},
+  receiveMessage(el, message) {
+    const chipList = el.querySelector('.chip-list');
+    const chipInput = el.querySelector('.chip-input');
+    const chipsElement = el.querySelectorAll('.chip');
+    const chips = message.chips || [];
+
+    chipsElement.forEach((chip) => chip.remove());
+    el.dataset.chips = JSON.stringify(chips);
+
+    chips.forEach((chip) => {
+      const chipEl = this.createChip(chip);
+      chipList.insertBefore(chipEl, chipInput.parentNode);
+    });
+
+    $(chipList).trigger('click');
+  },
   createChip(title) {
     const chip = document.createElement('div');
     chip.classList.add('chip');

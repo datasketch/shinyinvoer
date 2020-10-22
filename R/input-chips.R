@@ -24,8 +24,8 @@ chipsInput <- function(inputId, label=NULL, placeholder=NULL, chips=list()) {
 
 #' Update chip input
 #' @export
-updateChipsInput <- function (session, inputId, value) {
-  message <- dropNulls(list(value = value))
+updateChipsInput <- function (session, inputId, chips) {
+  message <- dropNulls(list(chips = chips))
   session$sendInputMessage(inputId, message)
 }
 
