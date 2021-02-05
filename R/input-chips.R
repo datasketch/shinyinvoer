@@ -12,7 +12,7 @@ chipsInput <- function(inputId, label=NULL, placeholder=NULL, chips=list()) {
     tags$div(class="shinyinvoer-chips-input",
              id=inputId,
              `data-chips`=jsonlite::toJSON(chips),
-             tags$label(label),
+             tags$label(class = "control-label", label),
              tags$div(class="chip-container",
                       tags$div(class="chip-list",
                                tags$div(class="chip-input-container",
