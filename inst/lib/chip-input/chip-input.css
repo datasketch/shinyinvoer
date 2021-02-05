@@ -1,3 +1,7 @@
+.shinyinvoer-chips-input {
+	margin-bottom: 13px;
+}
+
 .chip-container {
   border-bottom: 2px solid #edf2f7;
   display: flex;
