@@ -2,7 +2,7 @@
 passiveTextInput <-
   function(inputId,
            label = NULL,
-           value = ,
+           value = "",
            placeholder = NULL,
            showButton = F,
            buttonLabel = NULL) {
