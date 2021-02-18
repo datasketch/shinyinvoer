@@ -4,7 +4,7 @@
 \alias{updateChipsInput}
 \title{Update chip input}
 \usage{
-updateChipsInput(session, inputId, value)
+updateChipsInput(session, inputId, chips)
 }
 \description{
 Update chip input
