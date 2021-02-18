@@ -4,7 +4,7 @@
 \alias{updatePassiveTextInput}
 \title{Update passive text input}
 \usage{
-updatePassiveTextInput(session, inputId, value)
+updatePassiveTextInput(session, inputId, value = "")
 }
 \description{
 Update passive text input

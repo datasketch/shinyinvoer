@@ -5,7 +5,9 @@ $.extend(passiveTextInputBinding, {
     return $(scope).find('.shinyinvoer-passive-text-input');
   },
   initialize(el) {
-
+    const initialVal = el.dataset.value;
+    const input = el.querySelector('input');
+    input.value = initialVal;
   },
   getValue(el) {
     const input = el.querySelector('input');

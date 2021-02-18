@@ -4,7 +4,7 @@ library(shinyinvoer)
 ui <- fluidPage(
   uiOutput("the_input"),
   verbatimTextOutput("the_output"),
-  checkboxInput('the_update', 'Update input value with "message"')
+  checkboxInput('the_update', 'Reset input value')
 )
 
 server <- function(input, output, session) {
@@ -18,7 +18,7 @@ server <- function(input, output, session) {
 
   observe({
     if (input$the_update) {
-      updatePassiveTextInput(session, inputId="passive", value="message")
+      updatePassiveTextInput(session, inputId="passive", value="")
     }
   })
 }

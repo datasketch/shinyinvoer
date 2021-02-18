@@ -2,6 +2,7 @@
 passiveTextInput <-
   function(inputId,
            label = NULL,
+           value = ,
            placeholder = NULL,
            showButton = F,
            buttonLabel = NULL) {
@@ -19,6 +20,7 @@ passiveTextInput <-
       )),
       tags$div(
         class = "shinyinvoer-passive-text-input",
+        `data-value`=value,
         id = inputId,
         tags$label(class = "control-label", label),
         tags$div(
@@ -36,7 +38,7 @@ passiveTextInput <-
 
 #' Update passive text input
 #' @export
-updatePassiveTextInput <- function (session, inputId, value) {
+updatePassiveTextInput <- function (session, inputId, value = "") {
   message <- list(value = value)
   session$sendInputMessage(inputId, message)
 }
