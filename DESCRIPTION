@@ -1,6 +1,6 @@
 Package: shinyinvoer
 Title: More Input Widgets for Shiny
-Version: 0.1
+Version: 0.1.0
 Authors@R: c(
    person("Camila", "Achuri", email = "camila@randommonkey.io", role = c("aut", "cre")),
    person("David", "Daza", email = "david@randommonkey.io", role = "aut"),
