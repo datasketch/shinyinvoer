@@ -86,7 +86,8 @@ buttonImageInput <- function (inputId,
 
   l <- purrr::map(seq_along(images), function (index) {
     format <- unique(tools::file_ext(list.files(paste0("www/", path), pattern = images[index])))
-    if (length(format) != 1) stop("All images have to be of the same type (png, jpeg, svg)")
+    print(length(format))
+    if (length(format) != 1) warning("All images have to be of the same type (png, jpeg, svg)")
     file_path <- file.path(path, paste0(images[index], '.', format))
     if (format == "svg") {
       shiny::tags$div(style = paste0(imgStyle, "color: ", checkmarkColor),
