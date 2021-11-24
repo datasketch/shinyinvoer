@@ -27,7 +27,7 @@
 #'
 #' @export
 
-toggleSwitchInput <- function(inputId, label = NULL, on_label = "ON", off_label = "OFF", value = FALSE) {
+toggleSwitchInput <- function(inputId, label = NULL, on_label = "ON", off_label = "OFF", value = FALSE, class_name = "switch-styles") {
 
   addResourcePath(
     prefix = 'toggleSwitch',
@@ -50,6 +50,7 @@ toggleSwitchInput <- function(inputId, label = NULL, on_label = "ON", off_label 
   }
 
   shiny::div(
+    class = class_name,
     label,
     shiny::div(
       l,
