@@ -9,7 +9,8 @@ toggleSwitchInput(
   label = NULL,
   on_label = "ON",
   off_label = "OFF",
-  value = FALSE
+  value = FALSE,
+  class_name = "switch-styles"
 )
 }
 \arguments{

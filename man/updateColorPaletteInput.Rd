@@ -4,7 +4,14 @@
 \alias{updateColorPaletteInput}
 \title{Update spectrum color picker input}
 \usage{
-updateColorPaletteInput(session, inputId, colors = list(), palette = list())
+updateColorPaletteInput(
+  session,
+  inputId,
+  colors = list(),
+  palette = list(),
+  alpha = NULL,
+  max_colors = NULL
+)
 }
 \description{
 Update spectrum color picker input
