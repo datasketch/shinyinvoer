@@ -1,0 +1,14 @@
+.shinyinvoer-radio-buttons-choices {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+}
+
+.shinyinvoer-radio-buttons-choice {
+    display: flex;
+    align-items: flex-start;
+}
+
+.shinyinvoer-radio-buttons-choice > * ~ * {
+    margin-left: 8px;
+}
