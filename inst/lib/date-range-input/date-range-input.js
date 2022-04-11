@@ -74,7 +74,19 @@ Object.assign(dateRangeInputBinding, {
       callback()
     })
   },
-  receiveMessage (el, message) {}
+  receiveMessage (el, message) {
+    const { start: startDate, end: endDate, minDate, maxDate } = message
+    if (minDate) {
+      this.flatpickrRangeStart.config.minDate = minDate
+      this.flatpickrRangeEnd.config.minDate = minDate
+    }
+    if (maxDate) {
+      this.flatpickrRangeStart.config.maxDate = maxDate
+      this.flatpickrRangeEnd.config.maxDate = maxDate
+    }
+    if (startDate) this.flatpickrRangeStart.setDate(startDate, true)
+    if (endDate) this.flatpickrRangeEnd.setDate(endDate, true)
+  }
 })
 
 Shiny.inputBindings.register(dateRangeInputBinding)

@@ -52,3 +52,26 @@ dateRangeInput <- function(inputId,
     )
   )
 }
+
+#' @export
+updateDateRangeInput <-
+  function(session,
+           inputId,
+           start = NULL,
+           end = NULL,
+           minDate = NULL,
+           maxDate = NULL) {
+    message <-
+      dropNulls(list(
+        start = start,
+        end = end,
+        minDate = minDate,
+        maxDate = maxDate
+      ))
+    session$sendInputMessage(inputId, message)
+  }
+
+# copied from shiny since it's not exported
+dropNulls <- function(x) {
+  x[!vapply(x, is.null, FUN.VALUE = logical(1))]
+}

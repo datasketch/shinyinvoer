@@ -3,7 +3,8 @@ library(shinyinvoer)
 
 ui <- fluidPage(
   uiOutput("the_input"),
-  verbatimTextOutput("the_output")
+  verbatimTextOutput("the_output"),
+  checkboxInput('the_update', 'Reset with new dates')
 )
 
 server <- function(input, output, session) {
@@ -24,6 +25,19 @@ server <- function(input, output, session) {
 
   output$the_output <- renderPrint({
     input$date_range
+  })
+
+  observe({
+    if (input$the_update) {
+      shinyinvoer::updateDateRangeInput(
+        session,
+        inputId = "date_range",
+        start = '2021-05-07',
+        end = '2021-08-23',
+        minDate = '2020-01-01',
+        maxDate = '2022-01-01'
+      )
+    }
   })
 }
 
