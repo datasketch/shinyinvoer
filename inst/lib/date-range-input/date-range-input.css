@@ -1,0 +1,20 @@
+.shinyinvoer-date-range-container {
+  display: flex;
+  gap: 16px;
+}
+
+.shinyinvoer-date-range-select p {
+  margin-bottom: 0;
+}
+
+.shinyinvoer-date-range-reset {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.shinyinvoer-date-range-reset.is-unused {
+  display: none;
+}
