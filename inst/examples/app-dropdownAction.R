@@ -11,7 +11,7 @@ ui <- panelsPage(
                    dropdownActionInput(inputId = 'dropdown_downloadable', label = 'Publicar (descargable)', choices = choices[5], images = "img/fox.png"),
                    br(),
                    br(),
-                   dropdownActionInput(inputId = 'dropdown', label = 'Opciones', choices = choices, images = c("", "img/cat.png", "img/dog.png", "img/fox.png")),
+                   dropdownActionInput(inputId = 'dropdown', label = icon("bar-chart-o"), choices = choices, images = c("", "img/cat.png", "img/dog.png", "img/fox.png")),
                    br(),
                    dropdownActionInput(inputId = 'dropdown_1', label = 'Opciones con modal shinypanels', choices = choices[1:3], choicesType = c("download", "button", "modalShinypanels")),
                    br(),
