@@ -1,5 +1,6 @@
 /* global flatpickr */
 const dateRangeInputBinding = new Shiny.InputBinding()
+window.dateRangeInputBinding = {}
 
 Object.assign(dateRangeInputBinding, {
   find (scope) {
@@ -7,6 +8,7 @@ Object.assign(dateRangeInputBinding, {
     return matches
   },
   initialize (el) {
+    const id = el.id
     const dateRangeStart = el.querySelector('.shinyinvoer-date-range-start')
     const dateRangeEnd = el.querySelector('.shinyinvoer-date-range-end')
     const dateRangeReset = el.querySelector('.shinyinvoer-date-range-reset')
@@ -31,61 +33,68 @@ Object.assign(dateRangeInputBinding, {
       dateRangeReset.classList.add('is-unused')
     }
 
-    this.flatpickrRangeStart = flatpickr(dateRangeStart, {
-      minDate,
-      maxDate,
-      defaultDate: startDate,
-      locale: locale || 'en'
-    })
-
-    this.flatpickrRangeEnd = flatpickr(dateRangeEnd, {
-      minDate,
-      maxDate,
-      defaultDate: endDate,
-      locale: locale || 'en'
-    })
+    window.dateRangeInputBinding[id] = {
+      flatpickrRangeStart: flatpickr(dateRangeStart, {
+        minDate,
+        maxDate,
+        defaultDate: startDate,
+        locale: locale || 'en'
+      }),
+      flatpickrRangeEnd: flatpickr(dateRangeEnd, {
+        minDate,
+        maxDate,
+        defaultDate: endDate,
+        locale: locale || 'en'
+      })
+    }
   },
   getValue (el) {
-    const start = this.flatpickrRangeStart.input.value
-    const end = this.flatpickrRangeEnd.input.value
+    const id = el.id
+    const { flatpickrRangeStart, flatpickrRangeEnd } = window.dateRangeInputBinding[id]
+    const start = flatpickrRangeStart.input.value
+    const end = flatpickrRangeEnd.input.value
     return [start, end]
   },
   subscribe (el, callback) {
+    const id = el.id
     const dateRangeReset = el.querySelector('.shinyinvoer-date-range-reset')
     const startDate = el.dataset.start
     const endDate = el.dataset.end
     const resetLabel = el.dataset.resetLabel
+    const { flatpickrRangeStart, flatpickrRangeEnd } = window.dateRangeInputBinding[id]
 
-    this.flatpickrRangeStart.config.onChange.push(function () {
+    flatpickrRangeStart.config.onChange.push(function () {
       callback()
     })
 
-    this.flatpickrRangeEnd.config.onChange.push(function () {
+    flatpickrRangeEnd.config.onChange.push(function () {
       callback()
     })
 
     if (!resetLabel) return
 
     dateRangeReset.addEventListener('click', () => {
-      this.flatpickrRangeStart.clear()
-      this.flatpickrRangeEnd.clear()
-      if (startDate) this.flatpickrRangeStart.setDate(startDate, true)
-      if (endDate) this.flatpickrRangeEnd.setDate(endDate, true)
+      flatpickrRangeStart.clear()
+      flatpickrRangeEnd.clear()
+      if (startDate) flatpickrRangeStart.setDate(startDate, true)
+      if (endDate) flatpickrRangeEnd.setDate(endDate, true)
       callback()
     })
   },
   receiveMessage (el, message) {
+    const id = el.id
+    const { flatpickrRangeStart, flatpickrRangeEnd } = window.dateRangeInputBinding[id]
     const { start: startDate, end: endDate, minDate, maxDate } = message
     if (minDate) {
-      this.flatpickrRangeStart.config.minDate = minDate
-      this.flatpickrRangeEnd.config.minDate = minDate
+      flatpickrRangeStart.config.minDate = minDate
+      flatpickrRangeEnd.config.minDate = minDate
     }
     if (maxDate) {
-      this.flatpickrRangeStart.config.maxDate = maxDate
-      this.flatpickrRangeEnd.config.maxDate = maxDate
+      flatpickrRangeStart.config.maxDate = maxDate
+      flatpickrRangeEnd.config.maxDate = maxDate
     }
-    if (startDate) this.flatpickrRangeStart.setDate(startDate, true)
-    if (endDate) this.flatpickrRangeEnd.setDate(endDate, true)
+    if (startDate) flatpickrRangeStart.setDate(startDate, true)
+    if (endDate) flatpickrRangeEnd.setDate(endDate, true)
   }
 })
 

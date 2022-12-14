@@ -3,7 +3,9 @@ library(shinyinvoer)
 
 ui <- fluidPage(
   uiOutput("the_input"),
+  uiOutput("the_other_input"),
   verbatimTextOutput("the_output"),
+  verbatimTextOutput("the_other_output"),
   checkboxInput('the_update', 'Reset with new dates')
 )
 
@@ -23,8 +25,27 @@ server <- function(input, output, session) {
     )
   })
 
+  output$the_other_input <- renderUI({
+    shinyinvoer::dateRangeInput(
+      inputId = "other_date_range",
+      label = 'Seleccione el rango de fechas',
+      start = '2021-04-11',
+      end = '2021-04-18',
+      min = '2021-01-01',
+      max = '2021-12-31',
+      startLabel = 'Fecha inicial',
+      endLabel = 'Fecha final',
+      resetLabel = 'Restablecer fechas',
+      locale = 'es'
+    )
+  })
+
   output$the_output <- renderPrint({
     input$date_range
+  })
+
+  output$the_other_output <- renderPrint({
+    input$other_date_range
   })
 
   observe({
