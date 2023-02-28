@@ -12,7 +12,7 @@
 }
 
 .buttons-group .button-style {
-  background-color: #bdcad1 !important;
+  background-color: #bdcad1;
   border: 0px !important;
   box-shadow: none !important;
   cursor: pointer !important;
@@ -23,7 +23,7 @@
 }
 
 .buttons-group .button-style:hover {
- background-color: #8097a4 !important;
+ background-color: #8097a4;
 }
 
 .buttons-group .button-style.active-btn:hover {
