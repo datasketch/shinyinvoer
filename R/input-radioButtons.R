@@ -3,7 +3,9 @@ radioButtonsInput <-
   function(inputId,
            label = NULL,
            choices = list(),
-           selected = '') {
+           selected = '',
+           class_label = NULL,
+           class_choices = NULL) {
     addResourcePath(
       prefix = "radio-buttons-input",
       directoryPath = system.file("lib/radio-buttons-input", package = "shinyinvoer")
@@ -19,8 +21,8 @@ radioButtonsInput <-
         id = inputId,
         `data-choices` = jsonlite::toJSON(choices),
         `data-selected` = selected,
-        tags$label(label),
-        tags$div(class = "shinyinvoer-radio-buttons-choices"),
+        div(id = class_label, tags$label(label)),
+        tags$div(class = paste("shinyinvoer-radio-buttons-choices", class_choices)),
       )
     )
   }
