@@ -198,11 +198,12 @@ buttonImageInput <- function (inputId,
   }
   shiny::div(label,
              shiny::div(`data-shiny-input-type` = "buttonImage",
+                        `data-value` = active,
                         shiny::tagList(shiny::singleton(shiny::tags$head(shiny::tags$link(rel = 'stylesheet',
                                                                                           type = 'text/css',
                                                                                           href = 'buttonImage/buttonImage.css'),
                                                                          shiny::tags$script(src = 'buttonImage/buttonImage-bindings.js')))),
-                        class = 'buttons-group',
+                        class = 'button-image-input',
                         style = grid,
                         id = inputId,
                         l))
