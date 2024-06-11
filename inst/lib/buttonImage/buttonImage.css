@@ -27,11 +27,11 @@
 }
 
 .buttons-group .button-style.active-btn:hover {
-  background-color: #b70f7f;
+/*  background-color: #b70f7f;*/
 }
 
 .buttons-group .button-style.active-btn {
-  background-color: #da1c95;
+/*  background-color: #da1c95;*/
 }
 
 .button-style ~ .button-checkmark,
@@ -59,3 +59,11 @@
 .button-style.active-btn .image-style {
   filter: brightness(1) invert(0) !important;
 }
+
+.button-style.disabled-btn .image-style {
+  filter: brightness(0.5) !important;
+  pointer-events: none;
+}
+
+
+
