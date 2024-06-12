@@ -47,7 +47,7 @@
 #'
 #' @export
 
-buttonImageInput <- function (inputId,
+buttonImageInputOld <- function (inputId,
                               label = NULL,
                               images = NULL,
                               active = NULL,
@@ -77,9 +77,6 @@ buttonImageInput <- function (inputId,
   }else{
     web_path <- path %||% "."
   }
-
-
-
 
   tooltips <- names(images) %||% images
 

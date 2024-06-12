@@ -12,6 +12,8 @@ $.extend(buttonImageInputBinding, {
   },
   subscribe: function(el, callback) {
 
+
+
     // Set initial value from the active button when the input binding is initialized
     var initialActiveButton = $(el).find('.active-btn');
     if (initialActiveButton.length) {
@@ -21,6 +23,8 @@ $.extend(buttonImageInputBinding, {
     }
 
     $(el).on("click.buttonImageInput", function(event) {
+
+  
       console.log(event.target);
       const target = event.target;
       let buttonElement;

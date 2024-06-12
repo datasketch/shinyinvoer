@@ -1,0 +1,61 @@
+.buttons-group {
+  background-color: transparent;
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, 45px);
+  padding: 15px 0;
+}
+
+.buttons-group .button-container {
+  position: relative;
+  height: 60px;
+}
+
+.buttons-group .button-style {
+  background-color: #bdcad1;
+  border: 0px !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  height: 100%;
+  outline: 0;
+  position: relative;
+  width: 100%;
+}
+
+.buttons-group .button-style:hover {
+ background-color: #8097a4;
+}
+
+.buttons-group .button-style.active-btn:hover {
+  background-color: #b70f7f;
+}
+
+.buttons-group .button-style.active-btn {
+  background-color: #da1c95;
+}
+
+.button-style ~ .button-checkmark,
+.button-style .button-checkmark {
+  height: 12px;
+  position: absolute;
+  opacity: 0;
+  right: -4px;
+  top: -4px;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  width: 12px;
+}
+
+.button-style.active-btn ~ .button-checkmark,
+.button-style.active-btn .button-checkmark {
+  opacity: 1;
+}
+
+.buttons-group .button-style .image-style {
+  filter: brightness(0) invert(0.7);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  width: 80%;
+}
+
+.button-style.active-btn .image-style {
+  filter: brightness(1) invert(0) !important;
+}
