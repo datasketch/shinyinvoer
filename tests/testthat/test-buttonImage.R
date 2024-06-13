@@ -34,6 +34,11 @@ test_that("ButtonImageOptions work", {
   img_opts <- buttonImageOptions(images = images, path = path)
   expect_true(img_opts[[1]]$format == "svg")
 
+  # images <- c('Table'='table', 'Bubble' = 'bubble')
+  # path <- "www/img_svg"
+  # img_opts <- buttonImageOptions(images = images, path = path)
+  # expect_true(img_opts[[1]]$format == "svg")
+
   # Mixed PNG and SVG
   images <- c('Dog'='dog.png', 'Cat'='cat.png', 'Fox'='fox.png', 'Bubble' = 'bubble.svg')
   path <- "inst/examples/www/img"

@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyinvoer)
 
 ui <- fluidPage(
   tags$head(
@@ -15,6 +16,7 @@ ui <- fluidPage(
   hr(),
   buttonImageInputTest("imageInput2",
                     images = c("www/img/bubble.svg", "www/img/dog.png", "www/img/fox.png"),
+                    highlightColor = "#5603a0",
                     active = "bubble",
                     disabled = "dog",
                     checkmark = TRUE),

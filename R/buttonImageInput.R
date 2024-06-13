@@ -102,7 +102,7 @@ buttonImageOptions <- function(images = NULL,
   # TODO case when images come from urls
   if(!is.null(path)){
     if(!dir.exists(path)) stop("Path doesn't exist")
-    web_path <- gsub("^www", "", path)
+    web_path <- gsub("^www/", "", path)
   }else{
     web_path <- path %||% ""
   }
@@ -124,7 +124,7 @@ buttonImageOptions <- function(images = NULL,
   }else{
     web_paths <- file.path(web_path, images)
   }
-  web_paths <- gsub("/www", "", web_paths)
+  web_paths <- gsub("^/www", "", web_paths)
 
   image_ids <- dstools::sans_ext(images)
 

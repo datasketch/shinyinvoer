@@ -88,52 +88,6 @@ checkmark_html <- function(include){
   shiny::HTML('<svg class="button-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12.66 12.66"><circle fill="currentColor" cx="6.33" cy="6.33" r="6.33"/><path fill="#ffffff" d="M5.38,9.56a.49.49,0,0,1-.27-.13L3.24,7.49a.44.44,0,0,1,0-.63.45.45,0,0,1,.63,0L5.39,8.43,8.77,3.94a.44.44,0,0,1,.71.53L5.79,9.39a.47.47,0,0,1-.33.17Z"/></svg>')
 }
 
-buttonImageOptions <- function(images = NULL,
-                               active = NULL,
-                               disabled = NULL,
-                               tooltips = NULL,
-                               path = NULL,
-                               format = NULL){
-  # TODO case when images come from urls
-  if(!is.null(path)){
-    if(!dir.exists(path)) stop("Path doesn't exist")
-    web_path <- gsub("^www", "", path)
-  }else{
-    web_path <- path %||% ""
-  }
-  tooltips <- names(images) %||% basename(dstools::sans_ext(images))
-  formats <- dstools::file_ext(images)
-  without_ext <- all(formats == "")
-  if(is.null(format) && without_ext){
-    if(is.null(path)) stop("Need path of images with extensions")
-    default_format <- unique(tools::file_ext(list.files(path)))
-    if(length(default_format) > 1)
-      stop("All images in path should have the same format extension")
-    format <- default_format
-  }
-  if(without_ext){
-    if(is.null(format))
-      stop("Need image formats. As images.png or as images=c(image1,image2) with format = png")
-    formats <- rep(format, length(images))
-    web_paths <- file.path(web_path, paste0(images, '.', formats))
-  }else{
-    web_paths <- file.path(web_path, images)
-  }
-  web_paths <- gsub("/www", "", web_paths)
-
-  image_ids <- dstools::sans_ext(images)
-
-  image_list <- purrr::transpose(list(
-    id = image_ids,
-    path = web_paths,
-    tooltip = tooltips,
-    format = formats
-  ))
-  image_list
-
-}
-
-
 
 updateButtonImageInputTest <- function(session, inputId,
                                        active = NULL) {
