@@ -1,1 +1,58 @@
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"><defs><style>.cls-1{fill:#b70f7f;}</style></defs><title>Viz Themes</title><path class="cls-1" d="M31.41,122.91h11.5A5.89,5.89,0,0,0,48.79,117V72.66a5.89,5.89,0,0,0-5.88-5.88H31.41a5.88,5.88,0,0,0-5.87,5.88V117A5.88,5.88,0,0,0,31.41,122.91Zm-1-50.25a1,1,0,0,1,1-1h11.5a1,1,0,0,1,1,1V117a1,1,0,0,1-1,1H31.41a1,1,0,0,1-1-1Z"/><path class="cls-1" d="M70.12,122.91H81.61A5.89,5.89,0,0,0,87.49,117V45.29a5.89,5.89,0,0,0-5.88-5.88H70.12a5.88,5.88,0,0,0-5.88,5.88V117A5.88,5.88,0,0,0,70.12,122.91Zm-1-77.62a1,1,0,0,1,1-1H81.61a1,1,0,0,1,1,1V117a1,1,0,0,1-1,1H70.12a1,1,0,0,1-1-1Z"/><path class="cls-1" d="M108.82,122.91h11.49a5.89,5.89,0,0,0,5.88-5.88V17.3a5.89,5.89,0,0,0-5.88-5.88H108.82a5.89,5.89,0,0,0-5.88,5.88V117A5.89,5.89,0,0,0,108.82,122.91Zm-1-105.61a1,1,0,0,1,1-1h11.49a1,1,0,0,1,1,1V117a1,1,0,0,1-1,1H108.82a1,1,0,0,1-1-1Z"/><path class="cls-1" d="M138.09,134.3H12.71V13.85a2.43,2.43,0,0,0-4.86,0V136.73a2.43,2.43,0,0,0,2.43,2.43H138.09a2.43,2.43,0,1,0,0-4.86Z"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Layer_1"
+   data-name="Layer 1"
+   viewBox="0 0 150 150"
+   version="1.1"
+   sodipodi:docname="bar.svg"
+   inkscape:version="1.3.2 (1:1.3.2+202311252150+091e20ef0f)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="5.3533333"
+     inkscape:cx="75"
+     inkscape:cy="74.9066"
+     inkscape:window-width="1850"
+     inkscape:window-height="1016"
+     inkscape:window-x="70"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_1" />
+  <defs
+     id="defs1">
+    <style
+       id="style1">.cls-1{fill:#b70f7f;}</style>
+  </defs>
+  <title
+     id="title1">Viz Themes</title>
+  <path
+     class="cls-1"
+     d="M31.41,122.91h11.5A5.89,5.89,0,0,0,48.79,117V72.66a5.89,5.89,0,0,0-5.88-5.88H31.41a5.88,5.88,0,0,0-5.87,5.88V117A5.88,5.88,0,0,0,31.41,122.91Zm-1-50.25a1,1,0,0,1,1-1h11.5a1,1,0,0,1,1,1V117a1,1,0,0,1-1,1H31.41a1,1,0,0,1-1-1Z"
+     id="path1"
+     style="fill:#000000" />
+  <path
+     class="cls-1"
+     d="M70.12,122.91H81.61A5.89,5.89,0,0,0,87.49,117V45.29a5.89,5.89,0,0,0-5.88-5.88H70.12a5.88,5.88,0,0,0-5.88,5.88V117A5.88,5.88,0,0,0,70.12,122.91Zm-1-77.62a1,1,0,0,1,1-1H81.61a1,1,0,0,1,1,1V117a1,1,0,0,1-1,1H70.12a1,1,0,0,1-1-1Z"
+     id="path2"
+     style="fill:#000000" />
+  <path
+     class="cls-1"
+     d="M108.82,122.91h11.49a5.89,5.89,0,0,0,5.88-5.88V17.3a5.89,5.89,0,0,0-5.88-5.88H108.82a5.89,5.89,0,0,0-5.88,5.88V117A5.89,5.89,0,0,0,108.82,122.91Zm-1-105.61a1,1,0,0,1,1-1h11.49a1,1,0,0,1,1,1V117a1,1,0,0,1-1,1H108.82a1,1,0,0,1-1-1Z"
+     id="path3"
+     style="fill:#000000" />
+  <path
+     class="cls-1"
+     d="M138.09,134.3H12.71V13.85a2.43,2.43,0,0,0-4.86,0V136.73a2.43,2.43,0,0,0,2.43,2.43H138.09a2.43,2.43,0,1,0,0-4.86Z"
+     id="path4"
+     style="fill:#000000" />
+</svg>

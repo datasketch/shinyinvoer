@@ -1,1 +1,62 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128.59 127.88"><defs><style>.cls-1{fill:#b70f7f;}</style></defs><title>Asset 1</title><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path class="cls-1" d="M56.69,127.88H2.5a2.5,2.5,0,0,1-2.5-2.5V2.5A2.5,2.5,0,0,1,2.5,0H56.69a2.5,2.5,0,0,1,2.5,2.5V125.38A2.5,2.5,0,0,1,56.69,127.88ZM5,122.88H54.19V5H5Z"/><path class="cls-1" d="M126.09,80.19h-58a2.49,2.49,0,0,1-2.5-2.5V2.5A2.49,2.49,0,0,1,68.07,0h58a2.5,2.5,0,0,1,2.5,2.5V77.69A2.5,2.5,0,0,1,126.09,80.19Zm-55.52-5h53V5h-53Z"/><path class="cls-1" d="M126.09,127.88h-58a2.49,2.49,0,0,1-2.5-2.5v-36a2.49,2.49,0,0,1,2.5-2.5h58a2.5,2.5,0,0,1,2.5,2.5v36A2.5,2.5,0,0,1,126.09,127.88Zm-55.52-5h53v-31h-53Z"/></g></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 128.59 127.88"
+   version="1.1"
+   id="svg3"
+   sodipodi:docname="treemap.svg"
+   inkscape:version="1.3.2 (1:1.3.2+202311252150+091e20ef0f)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview3"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="6.2446537"
+     inkscape:cx="64.294998"
+     inkscape:cy="63.894656"
+     inkscape:window-width="1850"
+     inkscape:window-height="1016"
+     inkscape:window-x="70"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3" />
+  <defs
+     id="defs1">
+    <style
+       id="style1">.cls-1{fill:#b70f7f;}</style>
+  </defs>
+  <title
+     id="title1">Asset 1</title>
+  <g
+     id="Layer_2"
+     data-name="Layer 2"
+     style="fill:#000000">
+    <g
+       id="Layer_1-2"
+       data-name="Layer 1"
+       style="fill:#000000">
+      <path
+         class="cls-1"
+         d="M56.69,127.88H2.5a2.5,2.5,0,0,1-2.5-2.5V2.5A2.5,2.5,0,0,1,2.5,0H56.69a2.5,2.5,0,0,1,2.5,2.5V125.38A2.5,2.5,0,0,1,56.69,127.88ZM5,122.88H54.19V5H5Z"
+         id="path1"
+         style="fill:#000000" />
+      <path
+         class="cls-1"
+         d="M126.09,80.19h-58a2.49,2.49,0,0,1-2.5-2.5V2.5A2.49,2.49,0,0,1,68.07,0h58a2.5,2.5,0,0,1,2.5,2.5V77.69A2.5,2.5,0,0,1,126.09,80.19Zm-55.52-5h53V5h-53Z"
+         id="path2"
+         style="fill:#000000" />
+      <path
+         class="cls-1"
+         d="M126.09,127.88h-58a2.49,2.49,0,0,1-2.5-2.5v-36a2.49,2.49,0,0,1,2.5-2.5h58a2.5,2.5,0,0,1,2.5,2.5v36A2.5,2.5,0,0,1,126.09,127.88Zm-55.52-5h53v-31h-53Z"
+         id="path3"
+         style="fill:#000000" />
+    </g>
+  </g>
+</svg>

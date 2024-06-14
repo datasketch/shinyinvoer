@@ -12,19 +12,19 @@ $.extend(buttonImageInputBinding, {
   },
   subscribe: function(el, callback) {
 
-    // Set initial value from the active button when the input binding is initialized
+    // Need setTimeout for inputs created dynamically with uiOutput
     setTimeout(function() {
+      // Set initial value from the active button when the input binding is initialized
       var initialActiveButton = $(el).find('.active-btn');
       if (initialActiveButton.length) {
         var initialValue = initialActiveButton.attr("id").split('_').pop();
         $(el).data("value", initialValue);
         callback(true);
       }
-     }, 0);
-
+    }, 0);
 
     $(el).on("click.buttonImageInput", function(event) {
-      console.log(event.target);
+    
       const target = event.target;
       let buttonElement;
 
@@ -33,8 +33,8 @@ $.extend(buttonImageInputBinding, {
       } else if (target.matches('.button-style')) {
         buttonElement = target;
       } else if (target.matches('.button-container')){
-        buttonElement =  target.querySelector('.button-style');
-      }else{
+        buttonElement = target.querySelector('.button-style');
+      } else {
         return; // If the target is not a div or div img, do nothing
       }
 
@@ -63,10 +63,11 @@ $.extend(buttonImageInputBinding, {
   },
   receiveMessage: function(el, data) {
     // Update the active button based on the data from Shiny
-    console.log("active",data.active)
+        console.log("active", data.active);
 
     var newActiveButton = $(el).find('#' + $(el).attr("id") + "_" + data.active);
-    console.log("newActive",newActiveButton)
+    console.log("newActive", newActiveButton);
+
     if (newActiveButton.length) {
       // Remove active-btn class from all buttons
       $(el).find('.button-style').removeClass('active-btn');
@@ -75,11 +76,8 @@ $.extend(buttonImageInputBinding, {
       newActiveButton.addClass('active-btn');
 
       // Update the value
-      //var value = newActiveButton.attr("id").split('_').pop();
-      console.log("active2",data.active)
       this.setValue(el, data.active);
-      //$(el).data("value", data.active);
-      console.log(this.getValue(el))
+
       // Notify Shiny of the change
       $(el).trigger("change");
     }
@@ -90,5 +88,7 @@ $.extend(buttonImageInputBinding, {
 });
 
 Shiny.inputBindings.register(buttonImageInputBinding, "shiny.buttonImageInput");
+
+
 
 

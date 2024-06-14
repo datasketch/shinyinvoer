@@ -26,7 +26,7 @@ ui <- fluidPage(
   hr(),
   h3("SVG"),
   selectInput("svg_images", "Select images",
-              c("bubble_line", "line_donut")
+              c("area_line", "pie_donut")
   ),
   uiOutput('ui_button_svg'),
   verbatimTextOutput('debug_svg'),
@@ -82,14 +82,14 @@ server <- function(input, output, session) {
 
     output$ui_button_svg <- renderUI({
       imgs <- selected_images()
-      imgs <- c("bubbles", "areas")
+      #imgs <- c("bubble", "area")
       buttonImageInput(inputId = 'button_svg',
                        label = " ",
                        images = imgs,
                        nrow = 2,
-                       highlightColor = "red",
+                       highlightColor = "blue",
                        checkmark = FALSE,
-                       # active = c('dog', "fox"),
+                       active = imgs[2],
                        path = "www/img_svg")
     })
 

@@ -5,9 +5,11 @@ ui <- fluidPage(
   tags$head(
     # Include the custom JavaScript file
     # tags$script(src = "buttonImageInput0.js")
-    tags$link(rel="stylesheet", type="text/css", href="buttonImageInput.css"),
-    tags$script(src = "buttonImageInput.js")
+    tags$link(rel="stylesheet", type="text/css", href="buttonImageInputTest.css"),
+    tags$script(src = "buttonImageInputTest.js")
   ),
+  uiOutput("ui_button_svg"),
+  verbatimTextOutput("clickedImageId3"),
   buttonImageInputTest("imageInput",
                     images = c("www/img_png/cat.png", "www/img_png/dog.png", "www/img_png/fox.png"),
                     active = "cat"),
@@ -36,6 +38,19 @@ server <- function(input, output, session) {
 
   output$clickedImageId2 <- renderText({
     input$imageInput2
+  })
+
+  output$ui_button_svg <- renderUI({
+    buttonImageInputTest(inputId = 'imageInput3',
+                     images = c("pie", "area", "map", "line"),
+                     nrow = 2,
+                     highlightColor = "#d84570",
+                     checkmark = FALSE,
+                     active = c("map"),
+                     path = "www/img_svg")
+  })
+  output$clickedImageId3 <- renderText({
+    input$imageInput3
   })
 }
 
