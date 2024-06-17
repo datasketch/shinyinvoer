@@ -43,6 +43,7 @@ function dropdownActionCreateActionList(choices) {
         var dropdownActionItemImage = document.createElement('img');
         dropdownActionItemImage.classList.add('dropdown-action-item-image');
         dropdownActionItemImage.setAttribute('src', choice.image);
+        dropdownActionItemImage.setAttribute('alt', choice.label);
         dropdownActionItem.appendChild(dropdownActionItemImage);
       }
       var dropdownActionItemLabel = document.createElement('span');
