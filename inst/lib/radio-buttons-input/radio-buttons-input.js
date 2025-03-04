@@ -26,17 +26,26 @@ Object.assign(radioButtonsInputBinding, {
     })
   },
   receiveMessage (el, message) {
-    const { choices } = message
-    if (!choices) return
+    const { choices, selected } = message
+    if (choices) {
+      el.dataset.choices = JSON.stringify(choices)
+      const container = el.querySelector('.shinyinvoer-radio-buttons-choices')
+      container.innerHTML = ''
+      this._renderChoices(el, choices, selected)
 
-    el.dataset.choices = JSON.stringify(choices)
+      const event = new Event('change')
+      el.dispatchEvent(event)
+    }
 
-    const container = el.querySelector('.shinyinvoer-radio-buttons-choices')
-    container.innerHTML = ''
-    this._renderChoices(el, choices)
 
-    const event = new Event('change')
-    el.dispatchEvent(event)
+    if (selected !== undefined) {
+      const selectedInput = el.querySelector(`#${selected}`)
+      if (selectedInput) {
+        selectedInput.checked = true
+        const event = new Event('change')
+        el.dispatchEvent(event)
+      }
+    }
   },
   _renderChoices (el, choices, selected) {
     const name = el.id
