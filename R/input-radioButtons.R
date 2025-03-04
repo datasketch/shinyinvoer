@@ -28,8 +28,9 @@ radioButtonsInput <-
   }
 
 #' @export
-updateRadioButtonsInput <- function(session, inputId, choices) {
-  message <- dropNulls(list(choices = choices))
+updateRadioButtonsInput <- function(session, inputId, choices, selected) {
+  message <- dropNulls(list(choices = choices,
+                            selected = selected))
   session$sendInputMessage(inputId, message)
 }
 
