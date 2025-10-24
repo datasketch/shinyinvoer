@@ -1,0 +1,272 @@
+/* Colored Selectize Widget Styles - Minimalist Design */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
+.colored-selectize-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  min-width: 200px;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.colored-selectize-input-container {
+  position: relative;
+  border-radius: 6px;
+  border: 1px solid rgba(33, 44, 53, 0.20);
+  background: rgba(243, 243, 243, 0.60);
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.colored-selectize-input-container:hover {
+  border-color: rgba(33, 44, 53, 0.40);
+}
+
+.colored-selectize-input-container:focus-within {
+  border-color: rgba(33, 44, 53, 0.60);
+  box-shadow: 0 0 0 2px rgba(33, 44, 53, 0.10);
+}
+
+.colored-selectize-selected-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  min-height: 24px;
+}
+
+/* Selected items (chips) */
+.colored-selectize-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 4px;
+  color: #000;
+  font-family: "IBM Plex Sans";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-transform: capitalize;
+  background-color: #DA1C95;
+  border: 1px solid #DA1C95;
+  opacity: 0.9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  cursor: default;
+  user-select: none;
+  margin: 2px 4px 2px 0;
+  max-width: 120px;
+  min-width: 60px;
+}
+
+.colored-selectize-item span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.colored-selectize-item:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.colored-selectize-remove {
+  margin-left: 8px;
+  cursor: pointer;
+  font-family: "IBM Plex Sans";
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.colored-selectize-remove:hover {
+  opacity: 1;
+}
+
+/* Add button */
+.colored-selectize-add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.colored-selectize-add-button:hover {
+  background-color: rgba(33, 44, 53, 0.05);
+}
+
+.colored-selectize-add-button:focus {
+  outline: none;
+  background-color: rgba(33, 44, 53, 0.10);
+}
+
+.colored-selectize-add-button.open {
+  background-color: rgba(33, 44, 53, 0.10);
+  transform: rotate(45deg);
+}
+
+/* Dropdown */
+.colored-selectize-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(33, 44, 53, 0.20);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin: 0;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(33, 44, 53, 0.15);
+  display: none;
+  backdrop-filter: blur(8px);
+}
+
+.colored-selectize-wrapper.open .colored-selectize-dropdown {
+  display: block;
+}
+
+.colored-selectize-options-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.colored-selectize-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid rgba(33, 44, 53, 0.05);
+}
+
+.colored-selectize-option:last-child {
+  border-bottom: none;
+}
+
+.colored-selectize-option:hover {
+  background-color: rgba(33, 44, 53, 0.05);
+}
+
+.colored-selectize-option:active {
+  background-color: rgba(33, 44, 53, 0.10);
+}
+
+.colored-selectize-color-preview {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  margin-right: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.colored-selectize-option-text {
+  flex: 1;
+  font-size: 14px;
+  color: #374151;
+}
+
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .colored-selectize-wrapper {
+    min-width: 150px;
+  }
+  
+  .colored-selectize-item {
+    font-size: 13px;
+    padding: 3px 10px;
+  }
+  
+  .colored-selectize-option {
+    padding: 6px 10px;
+  }
+  
+  .colored-selectize-add-button {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .colored-selectize-dropdown {
+    max-height: 150px;
+  }
+}
+
+/* Animation for smooth transitions */
+.colored-selectize-item {
+  animation: fadeInUp 0.2s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+/* Focus states */
+.colored-selectize-input-container.focus {
+  border-color: rgba(33, 44, 53, 0.60);
+  box-shadow: 0 0 0 2px rgba(33, 44, 53, 0.10);
+}
+
+/* Empty state */
+.colored-selectize-selected-container:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(33, 44, 53, 0.50);
+  font-style: italic;
+  padding: 4px 0;
+}
+
+/* Loading state */
+.colored-selectize-wrapper.loading .colored-selectize-add-button:after {
+  content: '';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}
