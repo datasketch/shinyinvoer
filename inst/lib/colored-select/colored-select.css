@@ -1,0 +1,222 @@
+.colored-select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  min-width: 200px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.colored-select-input-container {
+  position: relative;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.colored-select-input-container:hover {
+  border-color: #9ca3af;
+}
+
+.colored-select-input-container:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.colored-select-selected-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  min-height: 24px;
+}
+
+.colored-select-selected-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 2px 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.2s ease;
+}
+
+.colored-select-selected-item:hover {
+  opacity: 0.8;
+}
+
+.colored-select-remove {
+  margin-left: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.colored-select-remove:hover {
+  opacity: 1;
+}
+
+.colored-select-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  min-width: 120px;
+  font-size: 14px;
+  color: #374151;
+  padding: 4px 0;
+}
+
+.colored-select-input::placeholder {
+  color: #9ca3af;
+}
+
+.colored-select-arrow {
+  color: #6b7280;
+  font-size: 12px;
+  transition: transform 0.2s ease;
+  margin-left: 8px;
+  user-select: none;
+}
+
+.colored-select-arrow.open {
+  transform: rotate(180deg);
+}
+
+.colored-select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+.colored-select-wrapper.open .colored-select-dropdown {
+  display: block;
+}
+
+.colored-select-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.colored-select-option:last-child {
+  border-bottom: none;
+}
+
+.colored-select-option:hover {
+  background-color: #f9fafb;
+}
+
+.colored-select-option.selected {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.colored-select-color-preview {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  margin-right: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.colored-select-option-text {
+  flex: 1;
+  font-size: 14px;
+  color: #374151;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .colored-select-input-container {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+  
+  .colored-select-input-container:hover {
+    border-color: #6b7280;
+  }
+  
+  .colored-select-input-container:focus-within {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  }
+  
+  .colored-select-input {
+    color: #f9fafb;
+  }
+  
+  .colored-select-input::placeholder {
+    color: #6b7280;
+  }
+  
+  .colored-select-arrow {
+    color: #9ca3af;
+  }
+  
+  .colored-select-dropdown {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  .colored-select-option {
+    border-bottom-color: #374151;
+  }
+  
+  .colored-select-option:hover {
+    background-color: #374151;
+  }
+  
+  .colored-select-option.selected {
+    background-color: #1e3a8a;
+    color: #93c5fd;
+  }
+  
+  .colored-select-option-text {
+    color: #f9fafb;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .colored-select-wrapper {
+    min-width: 150px;
+  }
+  
+  .colored-select-input {
+    min-width: 100px;
+  }
+  
+  .colored-select-dropdown {
+    max-height: 150px;
+  }
+}
