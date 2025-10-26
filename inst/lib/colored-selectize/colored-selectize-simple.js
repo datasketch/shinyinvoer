@@ -9,6 +9,7 @@
     this.colors = options.colors || {};
     this.placeholder = options.placeholder || 'Select options...';
     this.multiple = options.multiple !== false;
+    this.reorder = options.reorder === true;
     this.isOpen = false;
     
     this.init();
@@ -19,6 +20,9 @@
     this.bindEvents();
     this.updateDisplay();
     this.renderOptions();
+    if (this.reorder) {
+      this.makeSortable();
+    }
     console.log('Widget initialized with selected:', this.selected);
   };
 
@@ -186,6 +190,7 @@
       
       var item = document.createElement('div');
       item.className = 'colored-selectize-item';
+      item.dataset.value = key; // Add data-value for drag-and-drop
       
       // Convert hex color to rgba for background
       var rgb = self.hexToRgb(color);
@@ -213,6 +218,12 @@
     });
     
     this.addButton.style.display = this.selected.length < Object.keys(this.choices).length ? 'flex' : 'none';
+    
+    // Re-initialize sortable if reorder is enabled
+    // But only if this.reorder is true (will be false temporarily during drag-and-drop)
+    if (this.reorder) {
+      this.makeSortable();
+    }
   };
 
   ColoredSelectize.prototype.removeOption = function(key) {
@@ -239,6 +250,148 @@
     this.container.dispatchEvent(event);
   };
 
+  ColoredSelectize.prototype.makeSortable = function() {
+    var self = this;
+    
+    // Clear any existing handlers first
+    if (self._sortableHandlers) {
+      self.removeSortable();
+    }
+    
+    var draggedElement = null;
+    
+    var handleDragStart = function(e) {
+      draggedElement = this;
+      this.style.opacity = '0.4';
+      e.dataTransfer.effectAllowed = 'move';
+    };
+    
+    var handleDragEnd = function(e) {
+      if (draggedElement) {
+        draggedElement.style.opacity = '1';
+      }
+      var items = self.selectedContainer.querySelectorAll('.colored-selectize-item');
+      items.forEach(function(item) {
+        item.style.removeProperty('opacity');
+        item.classList.remove('dragover');
+      });
+      draggedElement = null;
+    };
+    
+    var handleDragOver = function(e) {
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+    };
+    
+    var handleDragEnter = function(e) {
+      this.classList.add('dragover');
+    };
+    
+    var handleDragLeave = function(e) {
+      this.classList.remove('dragover');
+    };
+    
+    var handleDrop = function(e) {
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+      
+      if (!draggedElement) {
+        return;
+      }
+      
+      var droppedOn = this;
+      var draggedValue = draggedElement.dataset.value;
+      var droppedOnValue = droppedOn.dataset.value;
+      
+      if (draggedValue && droppedOnValue && draggedValue !== droppedOnValue) {
+        // Get current order
+        var currentOrder = Array.from(self.selectedContainer.children).map(function(child) {
+          return child.dataset.value;
+        });
+        
+        // Find indices
+        var draggedIndex = currentOrder.indexOf(draggedValue);
+        var droppedIndex = currentOrder.indexOf(droppedOnValue);
+        
+        // Reorder array
+        var newOrder = currentOrder.slice();
+        newOrder.splice(draggedIndex, 1);
+        newOrder.splice(droppedIndex, 0, draggedValue);
+        
+        // Update selected array
+        self.selected = newOrder;
+        
+        // Temporarily disable reorder to prevent infinite loop
+        var wasReorderEnabled = self.reorder;
+        self.reorder = false;
+        
+        // Update display (will call makeSortable if reorder is true, but it's false now)
+        self.updateDisplay();
+        
+        // Re-enable reorder
+        self.reorder = wasReorderEnabled;
+        
+        // Make sortable again with fresh handlers
+        if (self.reorder) {
+          self.makeSortable();
+        }
+        
+        // Trigger change
+        self.triggerChange();
+      }
+      
+      this.classList.remove('dragover');
+      return false;
+    };
+    
+    // Store handlers for removal later
+    self._sortableHandlers = {
+      start: handleDragStart,
+      end: handleDragEnd,
+      over: handleDragOver,
+      enter: handleDragEnter,
+      leave: handleDragLeave,
+      drop: handleDrop
+    };
+    
+    // Attach event handlers to all items
+    var items = self.selectedContainer.querySelectorAll('.colored-selectize-item');
+    items.forEach(function(item) {
+      item.setAttribute('draggable', 'true');
+      item.addEventListener('dragstart', handleDragStart);
+      item.addEventListener('dragend', handleDragEnd);
+      item.addEventListener('dragover', handleDragOver);
+      item.addEventListener('dragenter', handleDragEnter);
+      item.addEventListener('dragleave', handleDragLeave);
+      item.addEventListener('drop', handleDrop);
+    });
+  };
+
+  ColoredSelectize.prototype.removeSortable = function() {
+    var self = this;
+    if (!self._sortableHandlers) {
+      return;
+    }
+    
+    var items = self.selectedContainer.querySelectorAll('.colored-selectize-item');
+    items.forEach(function(item) {
+      item.removeAttribute('draggable');
+      item.removeEventListener('dragstart', self._sortableHandlers.start);
+      item.removeEventListener('dragend', self._sortableHandlers.end);
+      item.removeEventListener('dragover', self._sortableHandlers.over);
+      item.removeEventListener('dragenter', self._sortableHandlers.enter);
+      item.removeEventListener('dragleave', self._sortableHandlers.leave);
+      item.removeEventListener('drop', self._sortableHandlers.drop);
+      item.classList.remove('dragover');
+    });
+    
+    self._sortableHandlers = null;
+  };
+
   // Shiny binding
   var coloredSelectizeBinding = new Shiny.InputBinding();
   
@@ -253,6 +406,7 @@
       var colors = JSON.parse(el.dataset.colors || '{}');
       var placeholder = el.dataset.placeholder || 'Select options...';
       var multiple = el.dataset.multiple === 'true';
+      var reorder = el.dataset.reorder === 'true';
       
       console.log('Initializing with data:', {
         choices: choices,
@@ -297,7 +451,8 @@
         selected: selected,
         colors: colorMapping,
         placeholder: placeholder,
-        multiple: multiple
+        multiple: multiple,
+        reorder: reorder
       });
       
       el.coloredSelectizeWidget = this.widget;

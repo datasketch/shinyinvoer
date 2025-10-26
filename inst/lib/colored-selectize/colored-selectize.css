@@ -78,6 +78,20 @@
   transform: translateY(-1px);
 }
 
+/* Drag and drop styles */
+.colored-selectize-item[draggable="true"] {
+  cursor: grab;
+}
+
+.colored-selectize-item[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.colored-selectize-item.dragover {
+  border-color: rgba(33, 44, 53, 0.60);
+  box-shadow: 0 2px 8px rgba(33, 44, 53, 0.20);
+}
+
 .colored-selectize-remove {
   margin-left: 8px;
   cursor: pointer;

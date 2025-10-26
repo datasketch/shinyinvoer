@@ -27,6 +27,7 @@ ui <- fluidPage(
         selected = "Species",
         multiple = TRUE,
         placeholder = "Choose variables...",
+        reorder = TRUE,
         width = "100%"
       ),
 
