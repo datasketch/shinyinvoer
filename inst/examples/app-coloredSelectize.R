@@ -24,7 +24,7 @@ ui <- fluidPage(
           "Species" = "Species"
         ),
         colors = c("#ff6b6b", "#4ecdc4", "#45b7d1", "#96ceb4", "#feca57"),
-        selected = "Species",
+        selected = "Species", maxItems = 3,
         multiple = TRUE,
         placeholder = "Choose variables...",
         placeholderText = "Suggested",
