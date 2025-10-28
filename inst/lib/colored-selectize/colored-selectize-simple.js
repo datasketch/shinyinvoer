@@ -11,6 +11,8 @@
     this.placeholderText = options.placeholderText || '';
     this.multiple = options.multiple !== false;
     this.reorder = options.reorder === true;
+    this.maxItems = options.maxItems || null;
+    this.minItems = options.minItems || null;
     this.isOpen = false;
     this.hasInteracted = false; // Track if user has interacted
     this.initialSelectedLength = this.selected.length; // Store initial selected count
@@ -156,6 +158,15 @@
       var value = self.choices[key];
       var isSelected = self.selected.includes(key);
       
+      // Check if we've reached maxItems
+      var canAddMore = true;
+      if (self.maxItems !== null && self.maxItems !== undefined) {
+        var maxItems = parseInt(self.maxItems, 10);
+        if (!isNaN(maxItems) && self.selected.length >= maxItems) {
+          canAddMore = false;
+        }
+      }
+      
       if (!isSelected) {
         var li = document.createElement('li');
         li.className = 'colored-selectize-option';
@@ -163,15 +174,22 @@
         
         var color = self.colors[key] || '#3498db';
         
+        // Disable option if maxItems reached
+        if (!canAddMore) {
+          li.classList.add('disabled');
+        }
+        
         li.innerHTML = `
           <span class="colored-selectize-color-preview" style="background-color: ${color}"></span>
           <span class="colored-selectize-option-text">${value}</span>
         `;
         
-        li.addEventListener('click', function(e) {
-          e.stopPropagation();
-          self.selectOption(key);
-        });
+        if (canAddMore) {
+          li.addEventListener('click', function(e) {
+            e.stopPropagation();
+            self.selectOption(key);
+          });
+        }
         
         self.optionsList.appendChild(li);
       }
@@ -181,6 +199,16 @@
   ColoredSelectize.prototype.selectOption = function(key) {
     console.log('Selecting option:', key);
     this.hasInteracted = true; // Mark that user has interacted
+    
+    // Check maxItems constraint
+    if (this.maxItems !== null && this.maxItems !== undefined) {
+      var maxItems = parseInt(this.maxItems, 10);
+      if (!isNaN(maxItems) && this.selected.length >= maxItems) {
+        console.log('Maximum items reached:', maxItems);
+        return; // Don't allow more selections
+      }
+    }
+    
     if (this.multiple) {
       // Check if option is already selected
       if (!this.selected.includes(key)) {
@@ -463,6 +491,8 @@
       var placeholderText = el.dataset.placeholderText || '';
       var multiple = el.dataset.multiple === 'true';
       var reorder = el.dataset.reorder === 'true';
+      var maxItems = el.dataset.maxItems || null;
+      var minItems = el.dataset.minItems || null;
       
       console.log('Initializing with data:', {
         choices: choices,
@@ -509,7 +539,9 @@
         placeholder: placeholder,
         placeholderText: placeholderText,
         multiple: multiple,
-        reorder: reorder
+        reorder: reorder,
+        maxItems: maxItems,
+        minItems: minItems
       });
       
       // Set placeholder text for icon placeholder

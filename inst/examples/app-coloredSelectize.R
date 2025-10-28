@@ -48,6 +48,8 @@ ui <- fluidPage(
         ),
         colors = "#e74c3c",
         multiple = TRUE,
+        minItems = 2,
+        placeholderText = "Suggested",
         placeholder = "Choose variables...",
         width = "100%"
       ),
@@ -68,7 +70,7 @@ ui <- fluidPage(
         ),
         colors = c("#9b59b6", "#e67e22", "#1abc9c", "#34495e", "#e74c3c"),
         multiple = FALSE,
-        placeholder = "Choose one variable...", placeholderText = "hola",
+        placeholder = "Choose one variable...",
         width = "100%"
       )
     ),

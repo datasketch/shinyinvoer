@@ -14,6 +14,8 @@
 #' @param placeholderText Text to display with the icon when no items are selected.
 #' @param multiple Is multiple selection allowed?
 #' @param reorder Allow drag-and-drop reordering of selected items? (Only works when multiple=TRUE)
+#' @param maxItems Maximum number of items that can be selected. If NULL, all available options can be selected.
+#' @param minItems Minimum number of items that should be selected initially. If NULL, no items are selected by default.
 #' @param width The width of the input, e.g. '400px', or '100\%'.
 #'
 #' @return A colored selectize input control that can be added to a UI definition.
@@ -49,7 +51,8 @@
 #' @export
 coloredSelectizeInput <- function(inputId, label = NULL, choices = NULL, selected = NULL, 
                                  colors = NULL, placeholder = "Select options...", 
-                                 placeholderText = "", multiple = TRUE, reorder = FALSE, width = NULL) {
+                                 placeholderText = "", multiple = TRUE, reorder = FALSE, 
+                                 maxItems = NULL, minItems = NULL, width = NULL) {
   
   # Validate inputs
   if (is.null(inputId)) {
@@ -97,6 +100,13 @@ coloredSelectizeInput <- function(inputId, label = NULL, choices = NULL, selecte
   # Create color mapping - use the same keys as choices
   color_mapping <- setNames(colors, names(choices))
   
+  # Handle minItems: if selected is NULL and minItems > 0, select first minItems
+  if (is.null(selected) && !is.null(minItems) && minItems > 0) {
+    choice_names <- names(choices)
+    n_select <- min(minItems, length(choices))
+    selected <- choice_names[1:n_select]
+  }
+  
   # Add resource path
   addResourcePath(
     prefix = 'libColoredSelectize',
@@ -131,6 +141,8 @@ coloredSelectizeInput <- function(inputId, label = NULL, choices = NULL, selecte
       `data-placeholder-text` = placeholderText,
       `data-multiple` = tolower(as.character(multiple)),
       `data-reorder` = tolower(as.character(reorder)),
+      `data-max-items` = if (!is.null(maxItems)) as.character(maxItems) else NULL,
+      `data-min-items` = if (!is.null(minItems)) as.character(minItems) else NULL,
       style = if (!is.null(width)) paste0("width: ", width, ";")
     )
   )

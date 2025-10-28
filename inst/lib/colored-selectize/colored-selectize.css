@@ -228,6 +228,15 @@
   background-color: rgba(33, 44, 53, 0.10);
 }
 
+.colored-selectize-option.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.colored-selectize-option.disabled:hover {
+  background-color: transparent;
+}
+
 .colored-selectize-color-preview {
   width: 16px;
   height: 16px;
