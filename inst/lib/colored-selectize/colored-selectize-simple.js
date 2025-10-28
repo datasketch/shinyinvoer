@@ -192,6 +192,7 @@
     }
     console.log('Selected options:', this.selected);
     this.updateDisplay();
+    this.renderOptions();
     this.triggerChange();
   };
 
