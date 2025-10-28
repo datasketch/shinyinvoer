@@ -11,6 +11,7 @@
 #' @param colors Vector of colors for the selected items. If length 1, all items use the same color.
 #'   If length equals number of choices, each item gets its own color.
 #' @param placeholder Character string giving the user a hint as to what can be typed into the control.
+#' @param placeholderText Text to display with the icon when no items are selected.
 #' @param multiple Is multiple selection allowed?
 #' @param reorder Allow drag-and-drop reordering of selected items? (Only works when multiple=TRUE)
 #' @param width The width of the input, e.g. '400px', or '100\%'.
@@ -48,7 +49,7 @@
 #' @export
 coloredSelectizeInput <- function(inputId, label = NULL, choices = NULL, selected = NULL, 
                                  colors = NULL, placeholder = "Select options...", 
-                                 multiple = TRUE, reorder = FALSE, width = NULL) {
+                                 placeholderText = "", multiple = TRUE, reorder = FALSE, width = NULL) {
   
   # Validate inputs
   if (is.null(inputId)) {
@@ -127,6 +128,7 @@ coloredSelectizeInput <- function(inputId, label = NULL, choices = NULL, selecte
       `data-selected` = jsonlite::toJSON(selected, auto_unbox = TRUE),
       `data-colors` = jsonlite::toJSON(color_mapping, auto_unbox = TRUE),
       `data-placeholder` = placeholder,
+      `data-placeholder-text` = placeholderText,
       `data-multiple` = tolower(as.character(multiple)),
       `data-reorder` = tolower(as.character(reorder)),
       style = if (!is.null(width)) paste0("width: ", width, ";")

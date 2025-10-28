@@ -27,6 +27,7 @@ ui <- fluidPage(
         selected = "Species",
         multiple = TRUE,
         placeholder = "Choose variables...",
+        placeholderText = "Suggested",
         reorder = TRUE,
         width = "100%"
       ),
@@ -67,7 +68,7 @@ ui <- fluidPage(
         ),
         colors = c("#9b59b6", "#e67e22", "#1abc9c", "#34495e", "#e74c3c"),
         multiple = FALSE,
-        placeholder = "Choose one variable...",
+        placeholder = "Choose one variable...", placeholderText = "hola",
         width = "100%"
       )
     ),

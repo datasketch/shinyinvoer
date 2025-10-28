@@ -17,7 +17,6 @@
   min-height: 38px;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   padding: 4px 8px;
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -112,6 +111,40 @@
 
 .colored-selectize-remove:hover {
   opacity: 1;
+}
+
+/* Icon Placeholder (with icon for placeholderText) */
+.colored-selectize-placeholder-icon-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(33, 44, 53, 0.50);
+  font-family: "IBM Plex Sans";
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.colored-selectize-placeholder-icon {
+  flex-shrink: 0;
+}
+
+.colored-selectize-placeholder-text {
+  flex: 1;
+  background: linear-gradient(272deg, #5141FB -2.23%, #DA1C95 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+}
+
+/* Empty Placeholder (simple text for placeholder) */
+.colored-selectize-empty-placeholder {
+  color: rgba(33, 44, 53, 0.50);
+  font-family: "IBM Plex Sans";
+  font-size: 14px;
+  font-weight: 400;
+  font-style: italic;
+  text-align: left;
+  width: 100%;
 }
 
 /* Add button */
