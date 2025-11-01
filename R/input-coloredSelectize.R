@@ -63,12 +63,53 @@ coloredSelectizeInput <- function(inputId, label = NULL, choices = NULL, selecte
     choices <- list()
   }
   
-  # Convert choices to proper format
-  if (is.vector(choices) && !is.list(choices)) {
-    if (is.null(names(choices))) {
-      choices <- as.list(setNames(choices, choices))
-    } else {
-      choices <- as.list(choices)
+  # Detect if choices is a named list of vectors/lists (grouped structure)
+  # A list is grouped if it has names and at least one element is a vector/list
+  # with length > 1, or if all elements are vectors but not simple key-value pairs
+  is_grouped <- is.list(choices) && 
+                !is.null(names(choices)) && 
+                length(choices) > 0 &&
+                all(purrr::map_lgl(choices, ~ is.vector(.x) || is.list(.x))) &&
+                any(purrr::map_lgl(choices, ~ length(.x) > 1))
+  
+  # Handle grouped structure (named list of vectors)
+  groups <- NULL
+  group_order <- NULL
+  if (is_grouped) {
+    # Extract group information
+    group_order <- names(choices)
+    
+    # Flatten choices and create group mapping using purrr
+    processed_groups <- purrr::imap(choices, function(group_items, group_name) {
+      if (is.vector(group_items) && !is.list(group_items)) {
+        # If group items are unnamed, use values as keys
+        if (is.null(names(group_items))) {
+          group_items <- setNames(group_items, group_items)
+        }
+        # Return list with choices and group mapping
+        list(
+          choices = group_items,
+          groups = purrr::imap(group_items, ~ group_name) |> 
+            purrr::set_names(names(group_items))
+        )
+      } else {
+        list(choices = list(), groups = list())
+      }
+    })
+    
+    # Combine all flattened choices and groups
+    choices <- purrr::map(processed_groups, "choices") |> 
+      purrr::flatten()
+    groups <- purrr::map(processed_groups, "groups") |> 
+      purrr::flatten()
+  } else {
+    # Convert choices to proper format (non-grouped)
+    if (is.vector(choices) && !is.list(choices)) {
+      if (is.null(names(choices))) {
+        choices <- as.list(setNames(choices, choices))
+      } else {
+        choices <- as.list(choices)
+      }
     }
   }
   
@@ -89,7 +130,7 @@ coloredSelectizeInput <- function(inputId, label = NULL, choices = NULL, selecte
   
   # If more colors than choices, truncate
   if (length(colors) > length(choices)) {
-    colors <- colors[1:length(choices)]
+    colors <- colors[seq_len(length(choices))]
   }
   
   # If fewer colors than choices, repeat the last color
@@ -143,6 +184,9 @@ coloredSelectizeInput <- function(inputId, label = NULL, choices = NULL, selecte
       `data-reorder` = tolower(as.character(reorder)),
       `data-max-items` = if (!is.null(maxItems)) as.character(maxItems) else NULL,
       `data-min-items` = if (!is.null(minItems)) as.character(minItems) else NULL,
+      `data-grouped` = tolower(as.character(is_grouped)),
+      `data-groups` = if (is_grouped) jsonlite::toJSON(groups, auto_unbox = TRUE) else NULL,
+      `data-group-order` = if (is_grouped) jsonlite::toJSON(group_order, auto_unbox = TRUE) else NULL,
       style = if (!is.null(width)) paste0("width: ", width, ";")
     )
   )

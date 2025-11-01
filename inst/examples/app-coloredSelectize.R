@@ -39,13 +39,7 @@ ui <- fluidPage(
       coloredSelectizeInput(
         "iris_vars_single",
         "Select variables (single color):",
-        choices = c(
-          "Sepal.Length" = "esto es una palabra muy larga",
-          "Sepal.Width" = "Sepal.Width",
-          "Petal.Length" = "Petal.Length",
-          "Petal.Width" = "Petal.Width",
-          "Species" = "Species"
-        ),
+        choices = list(Cat = c('Species' = 'species'), Num = c('Petal.Length' = 'petal_length', 'Sepal.Length' = 'sepal_length', 'Sepal.Width' = 'sepal_width', 'Petal.Width' = 'petal_width')),
         colors = "#e74c3c",
         multiple = TRUE,
         minItems = 2,

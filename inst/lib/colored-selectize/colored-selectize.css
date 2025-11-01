@@ -3,10 +3,16 @@
 
 .colored-selectize-wrapper {
   position: relative;
-  display: inline-block;
+  display: block;
   width: 100%;
   min-width: 200px;
   font-family: "IBM Plex Sans", sans-serif;
+  z-index: 1;
+  box-sizing: border-box;
+}
+
+.colored-selectize-wrapper.open {
+  z-index: 10000;
 }
 
 .colored-selectize-input-container {
@@ -189,7 +195,7 @@
   border-radius: 0 0 6px 6px;
   max-height: 200px;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 10001;
   margin: 0;
   padding: 0;
   box-shadow: 0 4px 12px rgba(33, 44, 53, 0.15);
@@ -250,6 +256,24 @@
   flex: 1;
   font-size: 14px;
   color: #374151;
+}
+
+/* Group headers */
+.colored-selectize-group-header {
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: rgba(243, 243, 243, 0.80);
+  border-bottom: 1px solid rgba(33, 44, 53, 0.10);
+  cursor: default;
+  user-select: none;
+}
+
+.colored-selectize-group-header:hover {
+  background-color: rgba(243, 243, 243, 0.80);
 }
 
 

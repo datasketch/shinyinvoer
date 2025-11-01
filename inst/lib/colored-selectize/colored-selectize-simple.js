@@ -13,6 +13,9 @@
     this.reorder = options.reorder === true;
     this.maxItems = options.maxItems || null;
     this.minItems = options.minItems || null;
+    this.grouped = options.grouped === true;
+    this.groups = options.groups || null;
+    this.groupOrder = options.groupOrder || null;
     this.isOpen = false;
     this.hasInteracted = false; // Track if user has interacted
     this.initialSelectedLength = this.selected.length; // Store initial selected count
@@ -26,10 +29,35 @@
     this.bindEvents();
     this.updateDisplay();
     this.renderOptions();
+    
+    // Apply width after DOM is ready (for dynamic widgets)
+    this.applyWidthFromContainer();
+    
     if (this.reorder) {
       this.makeSortable();
     }
     console.log('Widget initialized with selected:', this.selected);
+  };
+  
+  ColoredSelectize.prototype.applyWidthFromContainer = function() {
+    // Only apply width if wrapper doesn't have inline style
+    // If width was already set in createHTML, don't override it
+    if (this.wrapper && !this.wrapper.style.width) {
+      // Get width from container's inline style if present
+      var containerStyle = this.container.getAttribute('style') || '';
+      if (containerStyle.includes('width:')) {
+        var widthMatch = containerStyle.match(/width:\s*([^;]+)/);
+        if (widthMatch) {
+          var widthValue = widthMatch[1].trim();
+          this.wrapper.style.width = widthValue;
+          console.log('Applied width from container style:', widthValue);
+        }
+      } else {
+        // No width specified, ensure it uses 100%
+        this.wrapper.style.width = '100%';
+        console.log('Applied default width: 100%');
+      }
+    }
   };
 
   ColoredSelectize.prototype.hexToRgb = function(hex) {
@@ -64,8 +92,39 @@
     
     var uniqueId = this.uniqueId;
     
+    // Get width from container style if specified (handle both inline style and computed style)
+    var containerStyle = this.container.getAttribute('style') || '';
+    var widthStyle = '';
+    var widthValue = null;
+    
+    // Try to get width from inline style first
+    if (containerStyle.includes('width:')) {
+      var widthMatch = containerStyle.match(/width:\s*([^;]+)/);
+      if (widthMatch) {
+        widthValue = widthMatch[1].trim();
+      }
+    }
+    
+    // Apply width to wrapper if found
+    // If width is specified, use it; otherwise default to 100% (which is already in CSS)
+    if (widthValue) {
+      widthStyle = ' style="width: ' + widthValue + ';"';
+      // Remove width from container style (it's now on the wrapper) only if it was inline
+      if (containerStyle.includes('width:')) {
+        var newStyle = containerStyle.replace(/width:\s*[^;]+;?\s*/g, '').trim();
+        if (newStyle) {
+          this.container.setAttribute('style', newStyle);
+        } else {
+          this.container.removeAttribute('style');
+        }
+      }
+    } else {
+      // No width specified, ensure it uses 100% from CSS
+      widthStyle = ' style="width: 100%;"';
+    }
+    
     this.container.innerHTML = 
-      '<div class="colored-selectize-wrapper">' +
+      '<div class="colored-selectize-wrapper"' + widthStyle + '>' +
         '<div class="colored-selectize-input-container">' +
           '<div class="colored-selectize-selected-container">' +
             '<button type="button" class="colored-selectize-add-button">' +
@@ -109,13 +168,21 @@
   ColoredSelectize.prototype.bindEvents = function() {
     var self = this;
     
+    // Ensure elements exist before binding events
+    if (!this.addButton || !this.inputContainer || !this.wrapper) {
+      console.error('Cannot bind events: required DOM elements not found');
+      return;
+    }
+    
     this.addButton.addEventListener('click', function(e) {
       e.stopPropagation();
+      console.log('Add button clicked, toggling dropdown');
       self.toggleDropdown();
     });
     
     this.inputContainer.addEventListener('click', function(e) {
       e.stopPropagation();
+      console.log('Input container clicked, toggling dropdown');
       self.toggleDropdown();
     });
     
@@ -135,20 +202,134 @@
   };
 
   ColoredSelectize.prototype.openDropdown = function() {
+    console.log('Opening dropdown, isOpen:', this.isOpen);
+    if (!this.wrapper || !this.addButton || !this.optionsList || !this.dropdown) {
+      console.error('Cannot open dropdown: required elements not found', {
+        wrapper: !!this.wrapper,
+        addButton: !!this.addButton,
+        optionsList: !!this.optionsList,
+        dropdown: !!this.dropdown
+      });
+      return;
+    }
     this.isOpen = true;
     this.wrapper.classList.add('open');
     this.addButton.classList.add('open');
+    console.log('Rendering options for dropdown');
     this.renderOptions();
+    
+    // Force display and check computed styles
+    var computedStyle = window.getComputedStyle(this.dropdown);
+    console.log('Dropdown should be open now, wrapper classes:', this.wrapper.className);
+    console.log('Dropdown computed display:', computedStyle.display);
+    console.log('Dropdown computed z-index:', computedStyle.zIndex);
+    console.log('Dropdown computed position:', computedStyle.position);
+    console.log('Wrapper computed overflow:', window.getComputedStyle(this.wrapper).overflow);
+    console.log('Container computed overflow:', window.getComputedStyle(this.container).overflow);
+    
+    // Check if parent has overflow hidden that might clip the dropdown
+    var parent = this.wrapper.parentElement;
+    var hasOverflowIssue = false;
+    while (parent && parent !== document.body) {
+      var parentOverflow = window.getComputedStyle(parent).overflow;
+      if (parentOverflow === 'hidden' || parentOverflow === 'auto' || parentOverflow === 'scroll') {
+        console.warn('Parent element has overflow:', parentOverflow, parent);
+        hasOverflowIssue = true;
+        break; // Found one, no need to check further
+      }
+      parent = parent.parentElement;
+    }
+    
+    // If there's an overflow issue, always use fixed positioning to avoid clipping
+    if (hasOverflowIssue) {
+      console.log('Detected overflow issue, using fixed positioning');
+      this.updateFixedPosition();
+      this.dropdown.setAttribute('data-use-fixed', 'true');
+      
+      // Add listeners to update position on scroll/resize
+      var self = this;
+      if (!this._fixedPositionListeners) {
+        this._fixedPositionListeners = {
+          scroll: function() {
+            if (self.isOpen && self.dropdown.getAttribute('data-use-fixed') === 'true') {
+              self.updateFixedPosition();
+            }
+          },
+          resize: function() {
+            if (self.isOpen && self.dropdown.getAttribute('data-use-fixed') === 'true') {
+              self.updateFixedPosition();
+            }
+          }
+        };
+        window.addEventListener('scroll', this._fixedPositionListeners.scroll, true);
+        window.addEventListener('resize', this._fixedPositionListeners.resize);
+      }
+    } else {
+      // No overflow issue, use normal absolute positioning
+      this.dropdown.removeAttribute('data-use-fixed');
+      this.dropdown.style.position = '';
+      this.dropdown.style.top = '';
+      this.dropdown.style.left = '';
+      this.dropdown.style.width = '';
+    }
+  };
+
+  ColoredSelectize.prototype.updateFixedPosition = function() {
+    if (!this.dropdown || !this.inputContainer) {
+      return;
+    }
+    // position: fixed is relative to viewport, not document, so don't add scroll offsets
+    var rect = this.inputContainer.getBoundingClientRect();
+    
+    this.dropdown.style.position = 'fixed';
+    this.dropdown.style.top = rect.bottom + 'px';
+    this.dropdown.style.left = rect.left + 'px';
+    this.dropdown.style.width = rect.width + 'px';
+    this.dropdown.style.right = 'auto';
+    this.dropdown.style.display = 'block';
+    this.dropdown.style.zIndex = '10002'; // Ensure it's above everything
+    
+    console.log('Updated fixed positioning:', {
+      top: this.dropdown.style.top,
+      left: this.dropdown.style.left,
+      width: this.dropdown.style.width,
+      rect: { bottom: rect.bottom, left: rect.left, width: rect.width }
+    });
   };
 
   ColoredSelectize.prototype.closeDropdown = function() {
     this.isOpen = false;
     this.wrapper.classList.remove('open');
     this.addButton.classList.remove('open');
+    
+    // Clean up any inline styles from fixed positioning fallback
+    if (this.dropdown && this.dropdown.getAttribute('data-use-fixed') === 'true') {
+      this.dropdown.style.position = '';
+      this.dropdown.style.top = '';
+      this.dropdown.style.left = '';
+      this.dropdown.style.width = '';
+      this.dropdown.style.right = '';
+      this.dropdown.style.zIndex = '';
+      this.dropdown.removeAttribute('data-use-fixed');
+    }
+    
+    // Remove listeners if they exist
+    if (this._fixedPositionListeners) {
+      window.removeEventListener('scroll', this._fixedPositionListeners.scroll, true);
+      window.removeEventListener('resize', this._fixedPositionListeners.resize);
+      this._fixedPositionListeners = null;
+    }
   };
 
   ColoredSelectize.prototype.renderOptions = function() {
     var self = this;
+    
+    if (!this.optionsList) {
+      console.error('Cannot render options: optionsList not found');
+      return;
+    }
+    
+    console.log('Rendering options, selected:', this.selected, 'choices:', Object.keys(this.choices));
     this.optionsList.innerHTML = '';
     
     // Ensure selected is an array
@@ -156,46 +337,87 @@
       this.selected = [];
     }
     
-    Object.keys(this.choices).forEach(function(key) {
-      var value = self.choices[key];
-      var isSelected = self.selected.includes(key);
+    // Check if we've reached maxItems
+    var canAddMore = true;
+    if (this.maxItems !== null && this.maxItems !== undefined) {
+      var maxItems = parseInt(this.maxItems, 10);
+      if (!isNaN(maxItems) && this.selected.length >= maxItems) {
+        canAddMore = false;
+      }
+    }
+    
+    // Helper function to create an option element
+    var createOptionElement = function(key, value, color) {
+      var li = document.createElement('li');
+      li.className = 'colored-selectize-option';
+      li.dataset.value = key;
       
-      // Check if we've reached maxItems
-      var canAddMore = true;
-      if (self.maxItems !== null && self.maxItems !== undefined) {
-        var maxItems = parseInt(self.maxItems, 10);
-        if (!isNaN(maxItems) && self.selected.length >= maxItems) {
-          canAddMore = false;
-        }
+      // Disable option if maxItems reached
+      if (!canAddMore) {
+        li.classList.add('disabled');
       }
       
-      if (!isSelected) {
-        var li = document.createElement('li');
-        li.className = 'colored-selectize-option';
-        li.dataset.value = key;
-        
-        var color = self.colors[key] || '#3498db';
-        
-        // Disable option if maxItems reached
-        if (!canAddMore) {
-          li.classList.add('disabled');
-        }
-        
-        li.innerHTML = `
-          <span class="colored-selectize-color-preview" style="background-color: ${color}"></span>
-          <span class="colored-selectize-option-text">${value}</span>
-        `;
-        
-        if (canAddMore) {
-          li.addEventListener('click', function(e) {
-            e.stopPropagation();
-            self.selectOption(key);
-          });
-        }
-        
-        self.optionsList.appendChild(li);
+      li.innerHTML = `
+        <span class="colored-selectize-color-preview" style="background-color: ${color}"></span>
+        <span class="colored-selectize-option-text">${key}</span>
+      `;
+      
+      if (canAddMore) {
+        li.addEventListener('click', function(e) {
+          e.stopPropagation();
+          self.selectOption(key);
+        });
       }
-    });
+      
+      return li;
+    };
+    
+    // If grouped, render by groups
+    if (this.grouped && this.groups && this.groupOrder) {
+      // Iterate through groups in order
+      this.groupOrder.forEach(function(groupName) {
+        // Create group header
+        var groupHeader = document.createElement('li');
+        groupHeader.className = 'colored-selectize-group-header';
+        groupHeader.textContent = groupName + ':';
+        self.optionsList.appendChild(groupHeader);
+        
+        // Get all keys that belong to this group
+        var groupKeys = [];
+        Object.keys(self.groups).forEach(function(key) {
+          if (self.groups[key] === groupName) {
+            groupKeys.push(key);
+          }
+        });
+        
+        // Render options for this group
+        groupKeys.forEach(function(key) {
+          var isSelected = self.selected.includes(key);
+          
+          if (!isSelected) {
+            var value = self.choices[key];
+            var color = self.colors[key] || '#3498db';
+            var li = createOptionElement(key, value, color);
+            self.optionsList.appendChild(li);
+          }
+        });
+      });
+    } else {
+      // Non-grouped: render all options normally
+      var optionsCount = 0;
+      Object.keys(this.choices).forEach(function(key) {
+        var isSelected = self.selected.includes(key);
+        
+        if (!isSelected) {
+          var value = self.choices[key];
+          var color = self.colors[key] || '#3498db';
+          var li = createOptionElement(key, value, color);
+          self.optionsList.appendChild(li);
+          optionsCount++;
+        }
+      });
+      console.log('Rendered', optionsCount, 'options in dropdown');
+    }
   };
 
   ColoredSelectize.prototype.selectOption = function(key) {
@@ -258,7 +480,7 @@
       item.style.border = `1px solid ${color}`;
       
       item.innerHTML = `
-        <span>${value}</span>
+        <span>${key}</span>
         <button type="button" class="colored-selectize-remove">×</button>
       `;
       
@@ -276,7 +498,15 @@
     }
     
     // Show/hide icon placeholder (placeholderText - when there are initial selections)
-    if (self.placeholderIconWrapper && self.placeholderText) {
+    // Re-query elements in case DOM was recreated (for dynamic widgets)
+    var placeholderIconWrapper = this.container.querySelector('.colored-selectize-placeholder-icon-wrapper');
+    var placeholderTextEl = this.container.querySelector('.colored-selectize-placeholder-text');
+    
+    if (placeholderIconWrapper && placeholderTextEl) {
+      // Update references
+      this.placeholderIconWrapper = placeholderIconWrapper;
+      this.placeholderText = placeholderTextEl;
+      
       // Show icon placeholder only if:
       // 1. There are selected items AND
       // 2. User hasn't interacted yet AND
@@ -286,18 +516,21 @@
                                 this.selected.length === this.initialSelectedLength;
       
       if (showIconPlaceholder) {
-        self.placeholderIconWrapper.style.display = 'flex';
+        placeholderIconWrapper.style.display = 'flex';
       } else {
-        self.placeholderIconWrapper.style.display = 'none';
+        placeholderIconWrapper.style.display = 'none';
       }
     }
     
     // Show/hide empty placeholder (placeholder - when no selections)
-    if (self.emptyPlaceholder) {
+    // Re-query element in case DOM was recreated (for dynamic widgets)
+    var emptyPlaceholder = this.container.querySelector('.colored-selectize-empty-placeholder');
+    if (emptyPlaceholder) {
+      this.emptyPlaceholder = emptyPlaceholder;
       if (this.selected.length === 0) {
-        self.emptyPlaceholder.style.display = 'block';
+        emptyPlaceholder.style.display = 'block';
       } else {
-        self.emptyPlaceholder.style.display = 'none';
+        emptyPlaceholder.style.display = 'none';
       }
     }
     
@@ -322,7 +555,11 @@
   };
 
   ColoredSelectize.prototype.getValue = function() {
-    return this.multiple ? this.selected : (this.selected[0] || null);
+    // Map keys to their corresponding values
+    var values = this.selected.map(function(key) {
+      return this.choices[key] || key;
+    }, this);
+    return this.multiple ? values : (values[0] || null);
   };
 
   ColoredSelectize.prototype.triggerChange = function() {
@@ -487,6 +724,12 @@
     },
     
     initialize: function(el) {
+      // Prevent double initialization
+      if (el.coloredSelectizeWidget) {
+        console.log('Widget already initialized, skipping');
+        return;
+      }
+      
       var choices = JSON.parse(el.dataset.choices || '{}');
       var selected = JSON.parse(el.dataset.selected || '[]');
       var colors = JSON.parse(el.dataset.colors || '{}');
@@ -496,6 +739,9 @@
       var reorder = el.dataset.reorder === 'true';
       var maxItems = el.dataset.maxItems || null;
       var minItems = el.dataset.minItems || null;
+      var grouped = el.dataset.grouped === 'true';
+      var groups = grouped ? JSON.parse(el.dataset.groups || '{}') : null;
+      var groupOrder = grouped ? JSON.parse(el.dataset.groupOrder || '[]') : null;
       
       console.log('Initializing with data:', {
         choices: choices,
@@ -504,7 +750,10 @@
         selectedIsArray: Array.isArray(selected),
         colors: colors,
         placeholder: placeholder,
-        multiple: multiple
+        multiple: multiple,
+        grouped: grouped,
+        groups: groups,
+        groupOrder: groupOrder
       });
       
       // Ensure selected is always an array
@@ -519,6 +768,20 @@
           selected = [];
         }
       }
+      
+      // Map selected values to keys if needed (in case user passes values instead of keys)
+      selected = selected.map(function(item) {
+        // If item is already a key in choices, return it
+        if (choices.hasOwnProperty(item)) {
+          return item;
+        }
+        // Otherwise, try to find the key that has this value
+        var foundKey = Object.keys(choices).find(function(key) {
+          return choices[key] === item;
+        });
+        // If found, return the key; otherwise return item as-is (backward compatibility)
+        return foundKey !== undefined ? foundKey : item;
+      });
       
       console.log('After conversion, selected:', selected);
       
@@ -544,7 +807,10 @@
         multiple: multiple,
         reorder: reorder,
         maxItems: maxItems,
-        minItems: minItems
+        minItems: minItems,
+        grouped: grouped,
+        groups: groups,
+        groupOrder: groupOrder
       });
       
       // Set placeholder text for icon placeholder
@@ -568,29 +834,74 @@
     
     setValue: function(el, value) {
       if (el.coloredSelectizeWidget) {
+        var widget = el.coloredSelectizeWidget;
         if (value === null || value === undefined) {
-          el.coloredSelectizeWidget.selected = [];
+          widget.selected = [];
         } else {
-          el.coloredSelectizeWidget.selected = Array.isArray(value) ? value : [value];
+          var values = Array.isArray(value) ? value : [value];
+          // Map values to keys (find key for each value)
+          widget.selected = values.map(function(val) {
+            // Find the key that has this value
+            var foundKey = Object.keys(widget.choices).find(function(key) {
+              return widget.choices[key] === val;
+            });
+            // If found, return the key; otherwise assume the value itself is the key (backward compatibility)
+            return foundKey !== undefined ? foundKey : val;
+          });
         }
-        el.coloredSelectizeWidget.updateDisplay();
-        el.coloredSelectizeWidget.renderOptions();
+        widget.updateDisplay();
+        widget.renderOptions();
       }
     },
     
     subscribe: function(el, callback) {
       console.log('Subscribing to change events');
-      if (el.coloredSelectizeWidget) {
-        el.addEventListener('change', function(event) {
-          console.log('Change event received, calling callback');
-          callback();
-        });
+      
+      // Ensure widget is initialized (for dynamically created widgets)
+      var self = this;
+      var changeHandler = function(event) {
+        console.log('Change event received, calling callback');
+        callback();
+      };
+      
+      // Store handler for later removal
+      if (!el._coloredSelectizeChangeHandler) {
+        el._coloredSelectizeChangeHandler = changeHandler;
+      }
+      
+      if (!el.coloredSelectizeWidget) {
+        // If widget doesn't exist, initialize it (for dynamic widgets)
+        // Use requestAnimationFrame to ensure DOM is ready
+        if (window.requestAnimationFrame) {
+          requestAnimationFrame(function() {
+            setTimeout(function() {
+              console.log('Initializing widget in subscribe (dynamic)');
+              self.initialize(el);
+              if (el.coloredSelectizeWidget && el._coloredSelectizeChangeHandler) {
+                el.addEventListener('change', el._coloredSelectizeChangeHandler);
+              }
+            }, 10);
+          });
+        } else {
+          setTimeout(function() {
+            console.log('Initializing widget in subscribe (dynamic, fallback)');
+            self.initialize(el);
+            if (el.coloredSelectizeWidget && el._coloredSelectizeChangeHandler) {
+              el.addEventListener('change', el._coloredSelectizeChangeHandler);
+            }
+          }, 10);
+        }
+      } else {
+        // Widget already exists, just add listener
+        console.log('Widget already exists, adding change listener');
+        el.addEventListener('change', el._coloredSelectizeChangeHandler);
       }
     },
     
     unsubscribe: function(el) {
-      if (el.coloredSelectizeWidget) {
-        el.removeEventListener('change', function() {});
+      if (el._coloredSelectizeChangeHandler) {
+        el.removeEventListener('change', el._coloredSelectizeChangeHandler);
+        el._coloredSelectizeChangeHandler = null;
       }
     }
   });
