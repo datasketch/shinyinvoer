@@ -17,7 +17,8 @@
     this.groups = options.groups || null;
     this.groupOrder = options.groupOrder || null;
     this.isOpen = false;
-    this.hasInteracted = false; // Track if user has interacted
+    // Restore hasInteracted state from options if provided (set during initialization)
+    this.hasInteracted = options.hasInteracted === true;
     this.initialSelectedLength = this.selected.length; // Store initial selected count
     this.uniqueId = 'paint_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); // Unique ID for gradients
     
@@ -177,12 +178,18 @@
     this.addButton.addEventListener('click', function(e) {
       e.stopPropagation();
       console.log('Add button clicked, toggling dropdown');
+      self.hasInteracted = true; // Mark interaction
+      self.persistHasInteractedState();
+      self.updateDisplay(); // Update display to hide placeholder
       self.toggleDropdown();
     });
     
     this.inputContainer.addEventListener('click', function(e) {
       e.stopPropagation();
       console.log('Input container clicked, toggling dropdown');
+      self.hasInteracted = true; // Mark interaction
+      self.persistHasInteractedState();
+      self.updateDisplay(); // Update display to hide placeholder
       self.toggleDropdown();
     });
     
@@ -212,11 +219,14 @@
       });
       return;
     }
+    this.hasInteracted = true; // Mark interaction when opening dropdown
+    this.persistHasInteractedState();
     this.isOpen = true;
     this.wrapper.classList.add('open');
     this.addButton.classList.add('open');
     console.log('Rendering options for dropdown');
     this.renderOptions();
+    this.updateDisplay(); // Update display to hide placeholder if needed
     
     // Force display and check computed styles
     var computedStyle = window.getComputedStyle(this.dropdown);
@@ -246,18 +256,31 @@
       this.updateFixedPosition();
       this.dropdown.setAttribute('data-use-fixed', 'true');
       
-      // Add listeners to update position on scroll/resize
+      // Add listeners to update position on scroll/resize (with debouncing)
       var self = this;
       if (!this._fixedPositionListeners) {
+        var scrollTimeout;
+        var resizeTimeout;
+        
         this._fixedPositionListeners = {
           scroll: function() {
-            if (self.isOpen && self.dropdown.getAttribute('data-use-fixed') === 'true') {
-              self.updateFixedPosition();
+            if (self.isOpen && self.dropdown && self.dropdown.getAttribute('data-use-fixed') === 'true') {
+              clearTimeout(scrollTimeout);
+              scrollTimeout = setTimeout(function() {
+                if (self.isOpen && self.dropdown && self.dropdown.getAttribute('data-use-fixed') === 'true') {
+                  self.updateFixedPosition();
+                }
+              }, 16); // ~60fps
             }
           },
           resize: function() {
-            if (self.isOpen && self.dropdown.getAttribute('data-use-fixed') === 'true') {
-              self.updateFixedPosition();
+            if (self.isOpen && self.dropdown && self.dropdown.getAttribute('data-use-fixed') === 'true') {
+              clearTimeout(resizeTimeout);
+              resizeTimeout = setTimeout(function() {
+                if (self.isOpen && self.dropdown && self.dropdown.getAttribute('data-use-fixed') === 'true') {
+                  self.updateFixedPosition();
+                }
+              }, 100);
             }
           }
         };
@@ -275,32 +298,51 @@
   };
 
   ColoredSelectize.prototype.updateFixedPosition = function() {
-    if (!this.dropdown || !this.inputContainer) {
+    if (!this.dropdown || !this.inputContainer || !this.isOpen) {
       return;
     }
-    // position: fixed is relative to viewport, not document, so don't add scroll offsets
-    var rect = this.inputContainer.getBoundingClientRect();
     
-    this.dropdown.style.position = 'fixed';
-    this.dropdown.style.top = rect.bottom + 'px';
-    this.dropdown.style.left = rect.left + 'px';
-    this.dropdown.style.width = rect.width + 'px';
-    this.dropdown.style.right = 'auto';
-    this.dropdown.style.display = 'block';
-    this.dropdown.style.zIndex = '10002'; // Ensure it's above everything
+    // Debounce to prevent infinite loops
+    if (this._updateFixedPositionTimeout) {
+      clearTimeout(this._updateFixedPositionTimeout);
+    }
     
-    console.log('Updated fixed positioning:', {
-      top: this.dropdown.style.top,
-      left: this.dropdown.style.left,
-      width: this.dropdown.style.width,
-      rect: { bottom: rect.bottom, left: rect.left, width: rect.width }
-    });
+    var self = this;
+    this._updateFixedPositionTimeout = setTimeout(function() {
+      if (!self.dropdown || !self.inputContainer || !self.isOpen) {
+        return;
+      }
+      
+      // position: fixed is relative to viewport, not document, so don't add scroll offsets
+      var rect = self.inputContainer.getBoundingClientRect();
+      
+      // Only update if rect has valid dimensions
+      if (rect.width > 0 && rect.height > 0) {
+        self.dropdown.style.position = 'fixed';
+        self.dropdown.style.top = rect.bottom + 'px';
+        self.dropdown.style.left = rect.left + 'px';
+        self.dropdown.style.width = rect.width + 'px';
+        self.dropdown.style.right = 'auto';
+        self.dropdown.style.display = 'block';
+        self.dropdown.style.zIndex = '10002'; // Ensure it's above everything
+      }
+    }, 10);
   };
 
   ColoredSelectize.prototype.closeDropdown = function() {
     this.isOpen = false;
-    this.wrapper.classList.remove('open');
-    this.addButton.classList.remove('open');
+    if (this.wrapper) {
+      this.wrapper.classList.remove('open');
+    }
+    if (this.addButton) {
+      this.addButton.classList.remove('open');
+    }
+    
+    // Clear any pending position updates
+    if (this._updateFixedPositionTimeout) {
+      clearTimeout(this._updateFixedPositionTimeout);
+      this._updateFixedPositionTimeout = null;
+    }
     
     // Clean up any inline styles from fixed positioning fallback
     if (this.dropdown && this.dropdown.getAttribute('data-use-fixed') === 'true') {
@@ -423,6 +465,7 @@
   ColoredSelectize.prototype.selectOption = function(key) {
     console.log('Selecting option:', key);
     this.hasInteracted = true; // Mark that user has interacted
+    this.persistHasInteractedState();
     
     // Check maxItems constraint
     if (this.maxItems !== null && this.maxItems !== undefined) {
@@ -545,6 +588,7 @@
 
   ColoredSelectize.prototype.removeOption = function(key) {
     this.hasInteracted = true; // Mark that user has interacted
+    this.persistHasInteractedState();
     var index = this.selected.indexOf(key);
     if (index > -1) {
       this.selected.splice(index, 1);
@@ -714,6 +758,25 @@
     
     self._sortableHandlers = null;
   };
+  
+  ColoredSelectize.prototype.persistHasInteractedState = function() {
+    if (!this.container) {
+      return;
+    }
+    
+    // Store in dataset as backup
+    this.container.dataset.hasInteracted = 'true';
+    
+    // Store in sessionStorage for persistence across widget recreations
+    try {
+      var widgetId = this.container.id || 'colored-selectize-default';
+      var storageKey = 'colored-selectize-has-interacted-' + widgetId;
+      sessionStorage.setItem(storageKey, 'true');
+      console.log('Persisted hasInteracted state to sessionStorage for widget:', widgetId);
+    } catch (e) {
+      // sessionStorage might not be available, that's okay
+    }
+  };
 
   // Shiny binding
   var coloredSelectizeBinding = new Shiny.InputBinding();
@@ -725,9 +788,50 @@
     
     initialize: function(el) {
       // Prevent double initialization
+      // Check both the element property and if widget instance exists in DOM
       if (el.coloredSelectizeWidget) {
-        console.log('Widget already initialized, skipping');
-        return;
+        // Widget already exists, check if we need to update it instead of reinitializing
+        var existingWidget = el.coloredSelectizeWidget;
+        var newChoices = JSON.parse(el.dataset.choices || '{}');
+        var newSelected = JSON.parse(el.dataset.selected || '[]');
+        
+        // Convert newSelected to array if needed
+        if (!Array.isArray(newSelected)) {
+          if (newSelected && typeof newSelected === 'object') {
+            newSelected = Object.values(newSelected);
+          } else if (newSelected !== null && newSelected !== undefined && newSelected !== '') {
+            newSelected = [newSelected];
+          } else {
+            newSelected = [];
+          }
+        }
+        
+        // Check if choices have actually changed
+        var choicesChanged = JSON.stringify(existingWidget.choices) !== JSON.stringify(newChoices);
+        var selectedChanged = JSON.stringify(existingWidget.selected) !== JSON.stringify(newSelected);
+        
+        // If only selected changed (not choices), update without reinitializing
+        if (!choicesChanged && selectedChanged) {
+          console.log('Widget exists, updating selected values only (avoiding reinitialization)');
+          existingWidget.selected = newSelected;
+          existingWidget.updateDisplay();
+          existingWidget.renderOptions();
+          return;
+        }
+        
+        // If nothing changed, don't do anything
+        if (!choicesChanged && !selectedChanged) {
+          console.log('Widget already initialized with same data, skipping');
+          return;
+        }
+        
+        // If choices changed, we need to reinitialize, but preserve hasInteracted state
+        console.log('Widget exists but choices changed, reinitializing while preserving state');
+        var wasInteracted = existingWidget.hasInteracted;
+        // Clean up old widget
+        if (existingWidget.removeSortable) {
+          existingWidget.removeSortable();
+        }
       }
       
       var choices = JSON.parse(el.dataset.choices || '{}');
@@ -785,6 +889,53 @@
       
       console.log('After conversion, selected:', selected);
       
+      // Check if there's a persisted hasInteracted state from previous widget instance
+      // Use sessionStorage to persist across widget recreations
+      // IMPORTANT: Do this BEFORE creating the widget so hasInteracted is set correctly
+      var widgetId = el.id || 'colored-selectize-default';
+      var storageKey = 'colored-selectize-has-interacted-' + widgetId;
+      var initialLengthKey = 'colored-selectize-initial-length-' + widgetId;
+      var persistedHasInteracted = false;
+      var storedInitialLength = null;
+      
+      try {
+        var storedValue = sessionStorage.getItem(storageKey);
+        persistedHasInteracted = storedValue === 'true';
+        var storedLength = sessionStorage.getItem(initialLengthKey);
+        if (storedLength !== null) {
+          storedInitialLength = parseInt(storedLength, 10);
+        }
+      } catch (e) {
+        // sessionStorage might not be available, fall back to dataset
+        persistedHasInteracted = el.dataset.hasInteracted === 'true';
+      }
+      
+      // Store initial length if not stored yet
+      if (storedInitialLength === null && selected.length >= 0) {
+        try {
+          sessionStorage.setItem(initialLengthKey, selected.length.toString());
+          storedInitialLength = selected.length;
+        } catch (e) {
+          // sessionStorage might not be available
+        }
+      }
+      
+      // Determine if user has interacted
+      var hasInteractedValue = false;
+      if (persistedHasInteracted) {
+        hasInteractedValue = true;
+        console.log('Will restore hasInteracted state from sessionStorage for widget:', widgetId);
+      } else if (storedInitialLength !== null && selected.length !== storedInitialLength) {
+        // If selected count is different from stored initial length, user likely interacted
+        hasInteractedValue = true;
+        console.log('Detected interaction: selected count changed from initial', storedInitialLength, 'to', selected.length);
+      }
+      
+      // Also check dataset as fallback
+      if (el.dataset.hasInteracted === 'true') {
+        hasInteractedValue = true;
+      }
+      
       // Convert colors array to object if needed
       var colorMapping = {};
       if (Array.isArray(colors)) {
@@ -810,8 +961,14 @@
         minItems: minItems,
         grouped: grouped,
         groups: groups,
-        groupOrder: groupOrder
+        groupOrder: groupOrder,
+        hasInteracted: hasInteractedValue // Pass hasInteracted state to constructor
       });
+      
+      // If hasInteracted was set, persist it immediately
+      if (hasInteractedValue && !persistedHasInteracted) {
+        this.widget.persistHasInteractedState();
+      }
       
       // Set placeholder text for icon placeholder
       if (this.widget.placeholderText && this.widget.placeholderText.textContent !== undefined) {
@@ -835,6 +992,9 @@
     setValue: function(el, value) {
       if (el.coloredSelectizeWidget) {
         var widget = el.coloredSelectizeWidget;
+        // Preserve hasInteracted state when updating value programmatically
+        var wasInteracted = widget.hasInteracted;
+        
         if (value === null || value === undefined) {
           widget.selected = [];
         } else {
@@ -849,8 +1009,139 @@
             return foundKey !== undefined ? foundKey : val;
           });
         }
+        
+        // Restore hasInteracted state
+        widget.hasInteracted = wasInteracted;
         widget.updateDisplay();
         widget.renderOptions();
+      }
+    },
+    
+    receiveMessage: function(el, data) {
+      if (el.coloredSelectizeWidget) {
+        var widget = el.coloredSelectizeWidget;
+        // Preserve hasInteracted state when updating dynamically
+        var wasInteracted = widget.hasInteracted;
+        
+        if (data.choices) {
+          // Convert colors array to object if needed
+          var colorMapping = {};
+          if (data.colors) {
+            if (Array.isArray(data.colors)) {
+              var choiceKeys = Object.keys(data.choices);
+              choiceKeys.forEach(function(key, index) {
+                colorMapping[key] = data.colors[index] || '#3498db';
+              });
+            } else {
+              colorMapping = data.colors;
+            }
+            widget.colors = colorMapping;
+          }
+          
+          // Update choices
+          widget.choices = data.choices;
+          
+          // If grouped data is provided, update groups
+          if (data.groups) {
+            widget.groups = data.groups;
+            widget.grouped = true;
+          }
+          if (data.groupOrder) {
+            widget.groupOrder = data.groupOrder;
+          }
+          
+          // Filter out selected items that are no longer in choices
+          var hadSelections = widget.selected.length > 0;
+          widget.selected = widget.selected.filter(function(key) {
+            return widget.choices.hasOwnProperty(key);
+          });
+          
+          // If user had selections before or still has selections, they've interacted
+          if (hadSelections || widget.selected.length > 0) {
+            widget.hasInteracted = true;
+            widget.persistHasInteractedState();
+          }
+          
+          widget.renderOptions();
+          widget.updateDisplay();
+        }
+        
+        if (data.colors && !data.choices) {
+          // Update colors only if choices weren't updated
+          var colorMapping = {};
+          if (Array.isArray(data.colors)) {
+            var choiceKeys = Object.keys(widget.choices);
+            choiceKeys.forEach(function(key, index) {
+              colorMapping[key] = data.colors[index] || '#3498db';
+            });
+          } else {
+            colorMapping = data.colors;
+          }
+          widget.colors = colorMapping;
+          widget.updateDisplay();
+          widget.renderOptions();
+        }
+        
+        if (data.selected !== undefined) {
+          // Update selected value
+          var selected = data.selected;
+          if (!Array.isArray(selected)) {
+            if (selected && typeof selected === 'object') {
+              selected = Object.values(selected);
+            } else if (selected !== null && selected !== undefined && selected !== '') {
+              selected = [selected];
+            } else {
+              selected = [];
+            }
+          }
+          
+          // Map selected values to keys if needed
+          selected = selected.map(function(item) {
+            if (widget.choices.hasOwnProperty(item)) {
+              return item;
+            }
+            var foundKey = Object.keys(widget.choices).find(function(key) {
+              return widget.choices[key] === item;
+            });
+            return foundKey !== undefined ? foundKey : item;
+          });
+          
+          widget.selected = selected;
+          
+          // If there are selected items, assume user has interacted
+          if (selected.length > 0) {
+            widget.hasInteracted = true;
+            widget.persistHasInteractedState();
+          } else {
+            widget.hasInteracted = wasInteracted;
+          }
+          
+          widget.updateDisplay();
+          widget.renderOptions();
+        }
+        
+        if (data.placeholder !== undefined) {
+          widget.placeholder = data.placeholder;
+          if (widget.emptyPlaceholder) {
+            widget.emptyPlaceholder.textContent = data.placeholder;
+          }
+        }
+        
+        if (data.placeholderText !== undefined) {
+          widget.placeholderText = data.placeholderText;
+          if (widget.placeholderTextEl) {
+            widget.placeholderTextEl.textContent = data.placeholderText;
+          }
+        }
+        
+        // If user has selections, they've interacted - preserve that state
+        if (widget.selected.length > 0) {
+          widget.hasInteracted = true;
+          widget.persistHasInteractedState();
+        } else {
+          // Otherwise, preserve the previous state
+          widget.hasInteracted = wasInteracted;
+        }
       }
     },
     
