@@ -2,6 +2,44 @@
 (function() {
   'use strict';
 
+  // Helper functions
+  function normalizeSelectedToArray(selected) {
+    if (Array.isArray(selected)) {
+      return selected;
+    }
+    if (selected && typeof selected === 'object') {
+      return Object.values(selected);
+    }
+    if (selected !== null && selected !== undefined && selected !== '') {
+      return [selected];
+    }
+    return [];
+  }
+
+  function convertColorsToObject(colors, choices) {
+    if (Array.isArray(colors)) {
+      var colorMapping = {};
+      var choiceKeys = Object.keys(choices);
+      choiceKeys.forEach(function(key, index) {
+        colorMapping[key] = colors[index] || '#3498db';
+      });
+      return colorMapping;
+    }
+    return colors || {};
+  }
+
+  function mapSelectedToKeys(selected, choices) {
+    return selected.map(function(item) {
+      if (choices.hasOwnProperty(item)) {
+        return item;
+      }
+      var foundKey = Object.keys(choices).find(function(key) {
+        return choices[key] === item;
+      });
+      return foundKey !== undefined ? foundKey : item;
+    });
+  }
+
   function ColoredSelectize(container, options) {
     this.container = container;
     this.choices = options.choices || {};
@@ -17,10 +55,9 @@
     this.groups = options.groups || null;
     this.groupOrder = options.groupOrder || null;
     this.isOpen = false;
-    // Restore hasInteracted state from options if provided (set during initialization)
     this.hasInteracted = options.hasInteracted === true;
-    this.initialSelectedLength = this.selected.length; // Store initial selected count
-    this.uniqueId = 'paint_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); // Unique ID for gradients
+    this.initialSelectedLength = this.selected.length;
+    this.uniqueId = 'paint_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     
     this.init();
   }
@@ -30,42 +67,30 @@
     this.bindEvents();
     this.updateDisplay();
     this.renderOptions();
-    
-    // Apply width after DOM is ready (for dynamic widgets)
     this.applyWidthFromContainer();
     
     if (this.reorder) {
       this.makeSortable();
     }
-    console.log('Widget initialized with selected:', this.selected);
   };
   
   ColoredSelectize.prototype.applyWidthFromContainer = function() {
-    // Only apply width if wrapper doesn't have inline style
-    // If width was already set in createHTML, don't override it
-    if (this.wrapper && !this.wrapper.style.width) {
-      // Get width from container's inline style if present
-      var containerStyle = this.container.getAttribute('style') || '';
-      if (containerStyle.includes('width:')) {
-        var widthMatch = containerStyle.match(/width:\s*([^;]+)/);
-        if (widthMatch) {
-          var widthValue = widthMatch[1].trim();
-          this.wrapper.style.width = widthValue;
-          console.log('Applied width from container style:', widthValue);
-        }
-      } else {
-        // No width specified, ensure it uses 100%
-        this.wrapper.style.width = '100%';
-        console.log('Applied default width: 100%');
-      }
+    if (!this.wrapper || this.wrapper.style.width) {
+      return;
+    }
+    
+    var containerStyle = this.container.getAttribute('style') || '';
+    var widthMatch = containerStyle.match(/width:\s*([^;]+)/);
+    
+    if (widthMatch) {
+      this.wrapper.style.width = widthMatch[1].trim();
+    } else {
+      this.wrapper.style.width = '100%';
     }
   };
 
   ColoredSelectize.prototype.hexToRgb = function(hex) {
-    // Remove # if present
     hex = hex.replace('#', '');
-    
-    // Parse hex color
     var result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (result) {
       return {
@@ -74,8 +99,6 @@
         b: parseInt(result[3], 16)
       };
     }
-    
-    // Handle 3-digit hex colors
     result = /^([a-f\d])([a-f\d])([a-f\d])$/i.exec(hex);
     if (result) {
       return {
@@ -84,44 +107,22 @@
         b: parseInt(result[3] + result[3], 16)
       };
     }
-    
     return null;
   };
 
   ColoredSelectize.prototype.createHTML = function() {
-    var self = this;
-    
     var uniqueId = this.uniqueId;
-    
-    // Get width from container style if specified (handle both inline style and computed style)
     var containerStyle = this.container.getAttribute('style') || '';
-    var widthStyle = '';
-    var widthValue = null;
+    var widthMatch = containerStyle.match(/width:\s*([^;]+)/);
+    var widthStyle = widthMatch ? ' style="width: ' + widthMatch[1].trim() + ';"' : ' style="width: 100%;"';
     
-    // Try to get width from inline style first
-    if (containerStyle.includes('width:')) {
-      var widthMatch = containerStyle.match(/width:\s*([^;]+)/);
-      if (widthMatch) {
-        widthValue = widthMatch[1].trim();
+    if (widthMatch) {
+      var newStyle = containerStyle.replace(/width:\s*[^;]+;?\s*/g, '').trim();
+      if (newStyle) {
+        this.container.setAttribute('style', newStyle);
+      } else {
+        this.container.removeAttribute('style');
       }
-    }
-    
-    // Apply width to wrapper if found
-    // If width is specified, use it; otherwise default to 100% (which is already in CSS)
-    if (widthValue) {
-      widthStyle = ' style="width: ' + widthValue + ';"';
-      // Remove width from container style (it's now on the wrapper) only if it was inline
-      if (containerStyle.includes('width:')) {
-        var newStyle = containerStyle.replace(/width:\s*[^;]+;?\s*/g, '').trim();
-        if (newStyle) {
-          this.container.setAttribute('style', newStyle);
-        } else {
-          this.container.removeAttribute('style');
-        }
-      }
-    } else {
-      // No width specified, ensure it uses 100% from CSS
-      widthStyle = ' style="width: 100%;"';
     }
     
     this.container.innerHTML = 
@@ -157,7 +158,6 @@
     this.placeholderIconWrapper = this.container.querySelector('.colored-selectize-placeholder-icon-wrapper');
     this.placeholderText = this.container.querySelector('.colored-selectize-placeholder-text');
     this.emptyPlaceholder = this.container.querySelector('.colored-selectize-empty-placeholder');
-    
     this.wrapper = this.container.querySelector('.colored-selectize-wrapper');
     this.inputContainer = this.container.querySelector('.colored-selectize-input-container');
     this.selectedContainer = this.container.querySelector('.colored-selectize-selected-container');
@@ -166,30 +166,28 @@
     this.optionsList = this.container.querySelector('.colored-selectize-options-list');
   };
 
+  ColoredSelectize.prototype.handleInteraction = function() {
+    this.hasInteracted = true;
+    this.persistHasInteractedState();
+    this.updateDisplay();
+  };
+
   ColoredSelectize.prototype.bindEvents = function() {
     var self = this;
     
-    // Ensure elements exist before binding events
     if (!this.addButton || !this.inputContainer || !this.wrapper) {
-      console.error('Cannot bind events: required DOM elements not found');
       return;
     }
     
     this.addButton.addEventListener('click', function(e) {
       e.stopPropagation();
-      console.log('Add button clicked, toggling dropdown');
-      self.hasInteracted = true; // Mark interaction
-      self.persistHasInteractedState();
-      self.updateDisplay(); // Update display to hide placeholder
+      self.handleInteraction();
       self.toggleDropdown();
     });
     
     this.inputContainer.addEventListener('click', function(e) {
       e.stopPropagation();
-      console.log('Input container clicked, toggling dropdown');
-      self.hasInteracted = true; // Mark interaction
-      self.persistHasInteractedState();
-      self.updateDisplay(); // Update display to hide placeholder
+      self.handleInteraction();
       self.toggleDropdown();
     });
     
@@ -209,56 +207,33 @@
   };
 
   ColoredSelectize.prototype.openDropdown = function() {
-    console.log('Opening dropdown, isOpen:', this.isOpen);
     if (!this.wrapper || !this.addButton || !this.optionsList || !this.dropdown) {
-      console.error('Cannot open dropdown: required elements not found', {
-        wrapper: !!this.wrapper,
-        addButton: !!this.addButton,
-        optionsList: !!this.optionsList,
-        dropdown: !!this.dropdown
-      });
       return;
     }
-    this.hasInteracted = true; // Mark interaction when opening dropdown
-    this.persistHasInteractedState();
+    
+    this.handleInteraction();
     this.isOpen = true;
     this.wrapper.classList.add('open');
     this.addButton.classList.add('open');
-    console.log('Rendering options for dropdown');
     this.renderOptions();
-    this.updateDisplay(); // Update display to hide placeholder if needed
     
-    // Force display and check computed styles
-    var computedStyle = window.getComputedStyle(this.dropdown);
-    console.log('Dropdown should be open now, wrapper classes:', this.wrapper.className);
-    console.log('Dropdown computed display:', computedStyle.display);
-    console.log('Dropdown computed z-index:', computedStyle.zIndex);
-    console.log('Dropdown computed position:', computedStyle.position);
-    console.log('Wrapper computed overflow:', window.getComputedStyle(this.wrapper).overflow);
-    console.log('Container computed overflow:', window.getComputedStyle(this.container).overflow);
-    
-    // Check if parent has overflow hidden that might clip the dropdown
     var parent = this.wrapper.parentElement;
     var hasOverflowIssue = false;
     while (parent && parent !== document.body) {
       var parentOverflow = window.getComputedStyle(parent).overflow;
       if (parentOverflow === 'hidden' || parentOverflow === 'auto' || parentOverflow === 'scroll') {
-        console.warn('Parent element has overflow:', parentOverflow, parent);
         hasOverflowIssue = true;
-        break; // Found one, no need to check further
+        break;
       }
       parent = parent.parentElement;
     }
     
-    // If there's an overflow issue, always use fixed positioning to avoid clipping
     if (hasOverflowIssue) {
-      console.log('Detected overflow issue, using fixed positioning');
       this.updateFixedPosition();
       this.dropdown.setAttribute('data-use-fixed', 'true');
       
-      // Add listeners to update position on scroll/resize (with debouncing)
-      var self = this;
       if (!this._fixedPositionListeners) {
+        var self = this;
         var scrollTimeout;
         var resizeTimeout;
         
@@ -270,7 +245,7 @@
                 if (self.isOpen && self.dropdown && self.dropdown.getAttribute('data-use-fixed') === 'true') {
                   self.updateFixedPosition();
                 }
-              }, 16); // ~60fps
+              }, 16);
             }
           },
           resize: function() {
@@ -288,7 +263,6 @@
         window.addEventListener('resize', this._fixedPositionListeners.resize);
       }
     } else {
-      // No overflow issue, use normal absolute positioning
       this.dropdown.removeAttribute('data-use-fixed');
       this.dropdown.style.position = '';
       this.dropdown.style.top = '';
@@ -302,7 +276,6 @@
       return;
     }
     
-    // Debounce to prevent infinite loops
     if (this._updateFixedPositionTimeout) {
       clearTimeout(this._updateFixedPositionTimeout);
     }
@@ -313,10 +286,7 @@
         return;
       }
       
-      // position: fixed is relative to viewport, not document, so don't add scroll offsets
       var rect = self.inputContainer.getBoundingClientRect();
-      
-      // Only update if rect has valid dimensions
       if (rect.width > 0 && rect.height > 0) {
         self.dropdown.style.position = 'fixed';
         self.dropdown.style.top = rect.bottom + 'px';
@@ -324,7 +294,7 @@
         self.dropdown.style.width = rect.width + 'px';
         self.dropdown.style.right = 'auto';
         self.dropdown.style.display = 'block';
-        self.dropdown.style.zIndex = '10002'; // Ensure it's above everything
+        self.dropdown.style.zIndex = '10002';
       }
     }, 10);
   };
@@ -338,13 +308,11 @@
       this.addButton.classList.remove('open');
     }
     
-    // Clear any pending position updates
     if (this._updateFixedPositionTimeout) {
       clearTimeout(this._updateFixedPositionTimeout);
       this._updateFixedPositionTimeout = null;
     }
     
-    // Clean up any inline styles from fixed positioning fallback
     if (this.dropdown && this.dropdown.getAttribute('data-use-fixed') === 'true') {
       this.dropdown.style.position = '';
       this.dropdown.style.top = '';
@@ -355,7 +323,6 @@
       this.dropdown.removeAttribute('data-use-fixed');
     }
     
-    // Remove listeners if they exist
     if (this._fixedPositionListeners) {
       window.removeEventListener('scroll', this._fixedPositionListeners.scroll, true);
       window.removeEventListener('resize', this._fixedPositionListeners.resize);
@@ -364,45 +331,31 @@
   };
 
   ColoredSelectize.prototype.renderOptions = function() {
-    var self = this;
-    
     if (!this.optionsList) {
-      console.error('Cannot render options: optionsList not found');
       return;
     }
     
-    console.log('Rendering options, selected:', this.selected, 'choices:', Object.keys(this.choices));
     this.optionsList.innerHTML = '';
     
-    // Ensure selected is an array
     if (!Array.isArray(this.selected)) {
       this.selected = [];
     }
     
-    // Check if we've reached maxItems
-    var canAddMore = true;
-    if (this.maxItems !== null && this.maxItems !== undefined) {
-      var maxItems = parseInt(this.maxItems, 10);
-      if (!isNaN(maxItems) && this.selected.length >= maxItems) {
-        canAddMore = false;
-      }
-    }
+    var maxItems = this.maxItems !== null && this.maxItems !== undefined ? parseInt(this.maxItems, 10) : null;
+    var canAddMore = !maxItems || isNaN(maxItems) || this.selected.length < maxItems;
+    var self = this;
     
-    // Helper function to create an option element
-    var createOptionElement = function(key, value, color) {
+    function createOptionElement(key, value, color) {
       var li = document.createElement('li');
       li.className = 'colored-selectize-option';
       li.dataset.value = key;
       
-      // Disable option if maxItems reached
       if (!canAddMore) {
         li.classList.add('disabled');
       }
       
-      li.innerHTML = `
-        <span class="colored-selectize-color-preview" style="background-color: ${color}"></span>
-        <span class="colored-selectize-option-text">${key}</span>
-      `;
+      li.innerHTML = '<span class="colored-selectize-color-preview" style="background-color: ' + color + '"></span>' +
+                     '<span class="colored-selectize-option-text">' + key + '</span>';
       
       if (canAddMore) {
         li.addEventListener('click', function(e) {
@@ -412,72 +365,44 @@
       }
       
       return li;
-    };
+    }
     
-    // If grouped, render by groups
     if (this.grouped && this.groups && this.groupOrder) {
-      // Iterate through groups in order
       this.groupOrder.forEach(function(groupName) {
-        // Create group header
         var groupHeader = document.createElement('li');
         groupHeader.className = 'colored-selectize-group-header';
         groupHeader.textContent = groupName + ':';
         self.optionsList.appendChild(groupHeader);
         
-        // Get all keys that belong to this group
-        var groupKeys = [];
         Object.keys(self.groups).forEach(function(key) {
-          if (self.groups[key] === groupName) {
-            groupKeys.push(key);
-          }
-        });
-        
-        // Render options for this group
-        groupKeys.forEach(function(key) {
-          var isSelected = self.selected.includes(key);
-          
-          if (!isSelected) {
+          if (self.groups[key] === groupName && !self.selected.includes(key)) {
             var value = self.choices[key];
             var color = self.colors[key] || '#3498db';
-            var li = createOptionElement(key, value, color);
-            self.optionsList.appendChild(li);
+            self.optionsList.appendChild(createOptionElement(key, value, color));
           }
         });
       });
     } else {
-      // Non-grouped: render all options normally
-      var optionsCount = 0;
       Object.keys(this.choices).forEach(function(key) {
-        var isSelected = self.selected.includes(key);
-        
-        if (!isSelected) {
+        if (!self.selected.includes(key)) {
           var value = self.choices[key];
           var color = self.colors[key] || '#3498db';
-          var li = createOptionElement(key, value, color);
-          self.optionsList.appendChild(li);
-          optionsCount++;
+          self.optionsList.appendChild(createOptionElement(key, value, color));
         }
       });
-      console.log('Rendered', optionsCount, 'options in dropdown');
     }
   };
 
   ColoredSelectize.prototype.selectOption = function(key) {
-    console.log('Selecting option:', key);
-    this.hasInteracted = true; // Mark that user has interacted
+    this.hasInteracted = true;
     this.persistHasInteractedState();
     
-    // Check maxItems constraint
-    if (this.maxItems !== null && this.maxItems !== undefined) {
-      var maxItems = parseInt(this.maxItems, 10);
-      if (!isNaN(maxItems) && this.selected.length >= maxItems) {
-        console.log('Maximum items reached:', maxItems);
-        return; // Don't allow more selections
-      }
+    var maxItems = this.maxItems !== null && this.maxItems !== undefined ? parseInt(this.maxItems, 10) : null;
+    if (maxItems && !isNaN(maxItems) && this.selected.length >= maxItems) {
+      return;
     }
     
     if (this.multiple) {
-      // Check if option is already selected
       if (!this.selected.includes(key)) {
         this.selected.push(key);
       }
@@ -485,47 +410,35 @@
       this.selected = [key];
       this.closeDropdown();
     }
-    console.log('Selected options:', this.selected);
+    
     this.updateDisplay();
     this.renderOptions();
     this.triggerChange();
   };
 
   ColoredSelectize.prototype.updateDisplay = function() {
-    var self = this;
-    this.selectedContainer.innerHTML = '';
-    
-    // Ensure selected is an array
     if (!Array.isArray(this.selected)) {
       this.selected = [];
     }
     
+    this.selectedContainer.innerHTML = '';
+    var self = this;
+    
     this.selected.forEach(function(key) {
       var value = self.choices[key];
       var color = self.colors[key] || '#3498db';
-      
-      console.log('Updating display for:', key, 'value:', value, 'color:', color);
+      var rgb = self.hexToRgb(color);
+      var bgColor = rgb ? 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', 0.10)' : 'rgba(52, 152, 219, 0.10)';
       
       var item = document.createElement('div');
       item.className = 'colored-selectize-item';
-      item.dataset.value = key; // Add data-value for drag-and-drop
-      
-      // Convert hex color to rgba for background
-      var rgb = self.hexToRgb(color);
-      if (rgb) {
-        item.style.backgroundColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.10)`;
-      } else {
-        item.style.backgroundColor = 'rgba(52, 152, 219, 0.10)'; // fallback
-      }
-      
+      item.dataset.value = key;
+      item.style.backgroundColor = bgColor;
       item.style.borderColor = color;
       item.style.borderRadius = '5px';
-      item.style.border = `1px solid ${color}`;
-      
-      item.innerHTML = `
-        <span>${key}</span>
-        <button type="button" class="colored-selectize-remove">×</button>
-      `;
+      item.style.border = '1px solid ' + color;
+      item.innerHTML = '<span>' + key + '</span>' +
+                       '<button type="button" class="colored-selectize-remove">×</button>';
       
       item.querySelector('.colored-selectize-remove').addEventListener('click', function(e) {
         e.stopPropagation();
@@ -535,59 +448,37 @@
       self.selectedContainer.appendChild(item);
     });
     
-    // Add button after items (will be positioned at the end by CSS)
     if (this.addButton && !this.selectedContainer.contains(this.addButton)) {
       this.selectedContainer.appendChild(this.addButton);
     }
     
-    // Show/hide icon placeholder (placeholderText - when there are initial selections)
-    // Re-query elements in case DOM was recreated (for dynamic widgets)
     var placeholderIconWrapper = this.container.querySelector('.colored-selectize-placeholder-icon-wrapper');
     var placeholderTextEl = this.container.querySelector('.colored-selectize-placeholder-text');
     
     if (placeholderIconWrapper && placeholderTextEl) {
-      // Update references
       this.placeholderIconWrapper = placeholderIconWrapper;
       this.placeholderText = placeholderTextEl;
-      
-      // Show icon placeholder only if:
-      // 1. There are selected items AND
-      // 2. User hasn't interacted yet AND
-      // 3. Current selected count matches initial count
       var showIconPlaceholder = this.selected.length > 0 && 
                                 !this.hasInteracted && 
                                 this.selected.length === this.initialSelectedLength;
-      
-      if (showIconPlaceholder) {
-        placeholderIconWrapper.style.display = 'flex';
-      } else {
-        placeholderIconWrapper.style.display = 'none';
-      }
+      placeholderIconWrapper.style.display = showIconPlaceholder ? 'flex' : 'none';
     }
     
-    // Show/hide empty placeholder (placeholder - when no selections)
-    // Re-query element in case DOM was recreated (for dynamic widgets)
     var emptyPlaceholder = this.container.querySelector('.colored-selectize-empty-placeholder');
     if (emptyPlaceholder) {
       this.emptyPlaceholder = emptyPlaceholder;
-      if (this.selected.length === 0) {
-        emptyPlaceholder.style.display = 'block';
-      } else {
-        emptyPlaceholder.style.display = 'none';
-      }
+      emptyPlaceholder.style.display = this.selected.length === 0 ? 'block' : 'none';
     }
     
     this.addButton.style.display = this.selected.length < Object.keys(this.choices).length ? 'flex' : 'none';
     
-    // Re-initialize sortable if reorder is enabled
-    // But only if this.reorder is true (will be false temporarily during drag-and-drop)
     if (this.reorder) {
       this.makeSortable();
     }
   };
 
   ColoredSelectize.prototype.removeOption = function(key) {
-    this.hasInteracted = true; // Mark that user has interacted
+    this.hasInteracted = true;
     this.persistHasInteractedState();
     var index = this.selected.indexOf(key);
     if (index > -1) {
@@ -599,16 +490,14 @@
   };
 
   ColoredSelectize.prototype.getValue = function() {
-    // Map keys to their corresponding values
+    var self = this;
     var values = this.selected.map(function(key) {
-      return this.choices[key] || key;
-    }, this);
+      return self.choices[key] || key;
+    });
     return this.multiple ? values : (values[0] || null);
   };
 
   ColoredSelectize.prototype.triggerChange = function() {
-    // Trigger Shiny input change
-    console.log('Triggering change event, current value:', this.getValue());
     var event = new CustomEvent('change', {
       bubbles: true,
       cancelable: true
@@ -619,20 +508,19 @@
   ColoredSelectize.prototype.makeSortable = function() {
     var self = this;
     
-    // Clear any existing handlers first
     if (self._sortableHandlers) {
       self.removeSortable();
     }
     
     var draggedElement = null;
     
-    var handleDragStart = function(e) {
+    function handleDragStart(e) {
       draggedElement = this;
       this.style.opacity = '0.4';
       e.dataTransfer.effectAllowed = 'move';
-    };
+    }
     
-    var handleDragEnd = function(e) {
+    function handleDragEnd(e) {
       if (draggedElement) {
         draggedElement.style.opacity = '1';
       }
@@ -642,25 +530,25 @@
         item.classList.remove('dragover');
       });
       draggedElement = null;
-    };
+    }
     
-    var handleDragOver = function(e) {
+    function handleDragOver(e) {
       if (e.preventDefault) {
         e.preventDefault();
       }
       e.dataTransfer.dropEffect = 'move';
       return false;
-    };
+    }
     
-    var handleDragEnter = function(e) {
+    function handleDragEnter(e) {
       this.classList.add('dragover');
-    };
+    }
     
-    var handleDragLeave = function(e) {
+    function handleDragLeave(e) {
       this.classList.remove('dragover');
-    };
+    }
     
-    var handleDrop = function(e) {
+    function handleDrop(e) {
       if (e.stopPropagation) {
         e.stopPropagation();
       }
@@ -669,53 +557,39 @@
         return;
       }
       
-      var droppedOn = this;
       var draggedValue = draggedElement.dataset.value;
-      var droppedOnValue = droppedOn.dataset.value;
+      var droppedOnValue = this.dataset.value;
       
       if (draggedValue && droppedOnValue && draggedValue !== droppedOnValue) {
-        // Get current order (only items, not the button)
         var items = self.selectedContainer.querySelectorAll('.colored-selectize-item');
         var currentOrder = Array.from(items).map(function(child) {
           return child.dataset.value;
         });
         
-        // Find indices
         var draggedIndex = currentOrder.indexOf(draggedValue);
         var droppedIndex = currentOrder.indexOf(droppedOnValue);
         
-        // Reorder array
         var newOrder = currentOrder.slice();
         newOrder.splice(draggedIndex, 1);
         newOrder.splice(droppedIndex, 0, draggedValue);
         
-        // Update selected array
         self.selected = newOrder;
-        
-        // Temporarily disable reorder to prevent infinite loop
         var wasReorderEnabled = self.reorder;
         self.reorder = false;
-        
-        // Update display (will call makeSortable if reorder is true, but it's false now)
         self.updateDisplay();
-        
-        // Re-enable reorder
         self.reorder = wasReorderEnabled;
         
-        // Make sortable again with fresh handlers
         if (self.reorder) {
           self.makeSortable();
         }
         
-        // Trigger change
         self.triggerChange();
       }
       
       this.classList.remove('dragover');
       return false;
-    };
+    }
     
-    // Store handlers for removal later
     self._sortableHandlers = {
       start: handleDragStart,
       end: handleDragEnd,
@@ -725,7 +599,6 @@
       drop: handleDrop
     };
     
-    // Attach event handlers to all items
     var items = self.selectedContainer.querySelectorAll('.colored-selectize-item');
     items.forEach(function(item) {
       item.setAttribute('draggable', 'true');
@@ -739,24 +612,24 @@
   };
 
   ColoredSelectize.prototype.removeSortable = function() {
-    var self = this;
-    if (!self._sortableHandlers) {
+    if (!this._sortableHandlers) {
       return;
     }
     
-    var items = self.selectedContainer.querySelectorAll('.colored-selectize-item');
+    var items = this.selectedContainer.querySelectorAll('.colored-selectize-item');
+    var handlers = this._sortableHandlers;
     items.forEach(function(item) {
       item.removeAttribute('draggable');
-      item.removeEventListener('dragstart', self._sortableHandlers.start);
-      item.removeEventListener('dragend', self._sortableHandlers.end);
-      item.removeEventListener('dragover', self._sortableHandlers.over);
-      item.removeEventListener('dragenter', self._sortableHandlers.enter);
-      item.removeEventListener('dragleave', self._sortableHandlers.leave);
-      item.removeEventListener('drop', self._sortableHandlers.drop);
+      item.removeEventListener('dragstart', handlers.start);
+      item.removeEventListener('dragend', handlers.end);
+      item.removeEventListener('dragover', handlers.over);
+      item.removeEventListener('dragenter', handlers.enter);
+      item.removeEventListener('dragleave', handlers.leave);
+      item.removeEventListener('drop', handlers.drop);
       item.classList.remove('dragover');
     });
     
-    self._sortableHandlers = null;
+    this._sortableHandlers = null;
   };
   
   ColoredSelectize.prototype.persistHasInteractedState = function() {
@@ -764,17 +637,14 @@
       return;
     }
     
-    // Store in dataset as backup
     this.container.dataset.hasInteracted = 'true';
     
-    // Store in sessionStorage for persistence across widget recreations
     try {
       var widgetId = this.container.id || 'colored-selectize-default';
       var storageKey = 'colored-selectize-has-interacted-' + widgetId;
       sessionStorage.setItem(storageKey, 'true');
-      console.log('Persisted hasInteracted state to sessionStorage for widget:', widgetId);
     } catch (e) {
-      // sessionStorage might not be available, that's okay
+      // sessionStorage might not be available
     }
   };
 
@@ -787,48 +657,25 @@
     },
     
     initialize: function(el) {
-      // Prevent double initialization
-      // Check both the element property and if widget instance exists in DOM
       if (el.coloredSelectizeWidget) {
-        // Widget already exists, check if we need to update it instead of reinitializing
         var existingWidget = el.coloredSelectizeWidget;
         var newChoices = JSON.parse(el.dataset.choices || '{}');
-        var newSelected = JSON.parse(el.dataset.selected || '[]');
+        var newSelected = normalizeSelectedToArray(JSON.parse(el.dataset.selected || '[]'));
         
-        // Convert newSelected to array if needed
-        if (!Array.isArray(newSelected)) {
-          if (newSelected && typeof newSelected === 'object') {
-            newSelected = Object.values(newSelected);
-          } else if (newSelected !== null && newSelected !== undefined && newSelected !== '') {
-            newSelected = [newSelected];
-          } else {
-            newSelected = [];
-          }
-        }
-        
-        // Check if choices have actually changed
         var choicesChanged = JSON.stringify(existingWidget.choices) !== JSON.stringify(newChoices);
         var selectedChanged = JSON.stringify(existingWidget.selected) !== JSON.stringify(newSelected);
         
-        // If only selected changed (not choices), update without reinitializing
         if (!choicesChanged && selectedChanged) {
-          console.log('Widget exists, updating selected values only (avoiding reinitialization)');
           existingWidget.selected = newSelected;
           existingWidget.updateDisplay();
           existingWidget.renderOptions();
           return;
         }
         
-        // If nothing changed, don't do anything
         if (!choicesChanged && !selectedChanged) {
-          console.log('Widget already initialized with same data, skipping');
           return;
         }
         
-        // If choices changed, we need to reinitialize, but preserve hasInteracted state
-        console.log('Widget exists but choices changed, reinitializing while preserving state');
-        var wasInteracted = existingWidget.hasInteracted;
-        // Clean up old widget
         if (existingWidget.removeSortable) {
           existingWidget.removeSortable();
         }
@@ -847,51 +694,9 @@
       var groups = grouped ? JSON.parse(el.dataset.groups || '{}') : null;
       var groupOrder = grouped ? JSON.parse(el.dataset.groupOrder || '[]') : null;
       
-      console.log('Initializing with data:', {
-        choices: choices,
-        selected: selected,
-        selectedType: typeof selected,
-        selectedIsArray: Array.isArray(selected),
-        colors: colors,
-        placeholder: placeholder,
-        multiple: multiple,
-        grouped: grouped,
-        groups: groups,
-        groupOrder: groupOrder
-      });
+      selected = normalizeSelectedToArray(selected);
+      selected = mapSelectedToKeys(selected, choices);
       
-      // Ensure selected is always an array
-      if (!Array.isArray(selected)) {
-        if (selected && typeof selected === 'object') {
-          // If it's an object, convert to array of values
-          selected = Object.values(selected);
-        } else if (selected !== null && selected !== undefined && selected !== '') {
-          // If it's a single value, convert to array
-          selected = [selected];
-        } else {
-          selected = [];
-        }
-      }
-      
-      // Map selected values to keys if needed (in case user passes values instead of keys)
-      selected = selected.map(function(item) {
-        // If item is already a key in choices, return it
-        if (choices.hasOwnProperty(item)) {
-          return item;
-        }
-        // Otherwise, try to find the key that has this value
-        var foundKey = Object.keys(choices).find(function(key) {
-          return choices[key] === item;
-        });
-        // If found, return the key; otherwise return item as-is (backward compatibility)
-        return foundKey !== undefined ? foundKey : item;
-      });
-      
-      console.log('After conversion, selected:', selected);
-      
-      // Check if there's a persisted hasInteracted state from previous widget instance
-      // Use sessionStorage to persist across widget recreations
-      // IMPORTANT: Do this BEFORE creating the widget so hasInteracted is set correctly
       var widgetId = el.id || 'colored-selectize-default';
       var storageKey = 'colored-selectize-has-interacted-' + widgetId;
       var initialLengthKey = 'colored-selectize-initial-length-' + widgetId;
@@ -906,11 +711,9 @@
           storedInitialLength = parseInt(storedLength, 10);
         }
       } catch (e) {
-        // sessionStorage might not be available, fall back to dataset
         persistedHasInteracted = el.dataset.hasInteracted === 'true';
       }
       
-      // Store initial length if not stored yet
       if (storedInitialLength === null && selected.length >= 0) {
         try {
           sessionStorage.setItem(initialLengthKey, selected.length.toString());
@@ -920,34 +723,11 @@
         }
       }
       
-      // Determine if user has interacted
-      var hasInteractedValue = false;
-      if (persistedHasInteracted) {
-        hasInteractedValue = true;
-        console.log('Will restore hasInteracted state from sessionStorage for widget:', widgetId);
-      } else if (storedInitialLength !== null && selected.length !== storedInitialLength) {
-        // If selected count is different from stored initial length, user likely interacted
-        hasInteractedValue = true;
-        console.log('Detected interaction: selected count changed from initial', storedInitialLength, 'to', selected.length);
-      }
+      var hasInteractedValue = persistedHasInteracted || 
+                               (storedInitialLength !== null && selected.length !== storedInitialLength) ||
+                               (el.dataset.hasInteracted === 'true');
       
-      // Also check dataset as fallback
-      if (el.dataset.hasInteracted === 'true') {
-        hasInteractedValue = true;
-      }
-      
-      // Convert colors array to object if needed
-      var colorMapping = {};
-      if (Array.isArray(colors)) {
-        var choiceKeys = Object.keys(choices);
-        choiceKeys.forEach(function(key, index) {
-          colorMapping[key] = colors[index] || '#3498db';
-        });
-      } else {
-        colorMapping = colors;
-      }
-      
-      console.log('Color mapping:', colorMapping);
+      var colorMapping = convertColorsToObject(colors, choices);
       
       this.widget = new ColoredSelectize(el, {
         choices: choices,
@@ -962,20 +742,17 @@
         grouped: grouped,
         groups: groups,
         groupOrder: groupOrder,
-        hasInteracted: hasInteractedValue // Pass hasInteracted state to constructor
+        hasInteracted: hasInteractedValue
       });
       
-      // If hasInteracted was set, persist it immediately
       if (hasInteractedValue && !persistedHasInteracted) {
         this.widget.persistHasInteractedState();
       }
       
-      // Set placeholder text for icon placeholder
       if (this.widget.placeholderText && this.widget.placeholderText.textContent !== undefined) {
         this.widget.placeholderText.textContent = placeholderText;
       }
       
-      // Set placeholder text for empty placeholder
       if (this.widget.emptyPlaceholder) {
         this.widget.emptyPlaceholder.textContent = placeholder;
       }
@@ -984,33 +761,21 @@
     },
     
     getValue: function(el) {
-      var value = el.coloredSelectizeWidget ? el.coloredSelectizeWidget.getValue() : null;
-      console.log('Getting value:', value);
-      return value;
+      return el.coloredSelectizeWidget ? el.coloredSelectizeWidget.getValue() : null;
     },
     
     setValue: function(el, value) {
       if (el.coloredSelectizeWidget) {
         var widget = el.coloredSelectizeWidget;
-        // Preserve hasInteracted state when updating value programmatically
         var wasInteracted = widget.hasInteracted;
         
         if (value === null || value === undefined) {
           widget.selected = [];
         } else {
           var values = Array.isArray(value) ? value : [value];
-          // Map values to keys (find key for each value)
-          widget.selected = values.map(function(val) {
-            // Find the key that has this value
-            var foundKey = Object.keys(widget.choices).find(function(key) {
-              return widget.choices[key] === val;
-            });
-            // If found, return the key; otherwise assume the value itself is the key (backward compatibility)
-            return foundKey !== undefined ? foundKey : val;
-          });
+          widget.selected = mapSelectedToKeys(values, widget.choices);
         }
         
-        // Restore hasInteracted state
         widget.hasInteracted = wasInteracted;
         widget.updateDisplay();
         widget.renderOptions();
@@ -1018,173 +783,110 @@
     },
     
     receiveMessage: function(el, data) {
-      if (el.coloredSelectizeWidget) {
-        var widget = el.coloredSelectizeWidget;
-        // Preserve hasInteracted state when updating dynamically
-        var wasInteracted = widget.hasInteracted;
-        
-        if (data.choices) {
-          // Convert colors array to object if needed
-          var colorMapping = {};
-          if (data.colors) {
-            if (Array.isArray(data.colors)) {
-              var choiceKeys = Object.keys(data.choices);
-              choiceKeys.forEach(function(key, index) {
-                colorMapping[key] = data.colors[index] || '#3498db';
-              });
-            } else {
-              colorMapping = data.colors;
-            }
-            widget.colors = colorMapping;
-          }
-          
-          // Update choices
-          widget.choices = data.choices;
-          
-          // If grouped data is provided, update groups
-          if (data.groups) {
-            widget.groups = data.groups;
-            widget.grouped = true;
-          }
-          if (data.groupOrder) {
-            widget.groupOrder = data.groupOrder;
-          }
-          
-          // Filter out selected items that are no longer in choices
-          var hadSelections = widget.selected.length > 0;
-          widget.selected = widget.selected.filter(function(key) {
-            return widget.choices.hasOwnProperty(key);
-          });
-          
-          // If user had selections before or still has selections, they've interacted
-          if (hadSelections || widget.selected.length > 0) {
-            widget.hasInteracted = true;
-            widget.persistHasInteractedState();
-          }
-          
-          widget.renderOptions();
-          widget.updateDisplay();
+      if (!el.coloredSelectizeWidget) {
+        return;
+      }
+      
+      var widget = el.coloredSelectizeWidget;
+      var wasInteracted = widget.hasInteracted;
+      
+      if (data.choices) {
+        if (data.colors) {
+          widget.colors = convertColorsToObject(data.colors, data.choices);
         }
         
-        if (data.colors && !data.choices) {
-          // Update colors only if choices weren't updated
-          var colorMapping = {};
-          if (Array.isArray(data.colors)) {
-            var choiceKeys = Object.keys(widget.choices);
-            choiceKeys.forEach(function(key, index) {
-              colorMapping[key] = data.colors[index] || '#3498db';
-            });
-          } else {
-            colorMapping = data.colors;
-          }
-          widget.colors = colorMapping;
-          widget.updateDisplay();
-          widget.renderOptions();
+        widget.choices = data.choices;
+        
+        if (data.groups) {
+          widget.groups = data.groups;
+          widget.grouped = true;
+        }
+        if (data.groupOrder) {
+          widget.groupOrder = data.groupOrder;
         }
         
-        if (data.selected !== undefined) {
-          // Update selected value
-          var selected = data.selected;
-          if (!Array.isArray(selected)) {
-            if (selected && typeof selected === 'object') {
-              selected = Object.values(selected);
-            } else if (selected !== null && selected !== undefined && selected !== '') {
-              selected = [selected];
-            } else {
-              selected = [];
-            }
-          }
-          
-          // Map selected values to keys if needed
-          selected = selected.map(function(item) {
-            if (widget.choices.hasOwnProperty(item)) {
-              return item;
-            }
-            var foundKey = Object.keys(widget.choices).find(function(key) {
-              return widget.choices[key] === item;
-            });
-            return foundKey !== undefined ? foundKey : item;
-          });
-          
-          widget.selected = selected;
-          
-          // If there are selected items, assume user has interacted
-          if (selected.length > 0) {
-            widget.hasInteracted = true;
-            widget.persistHasInteractedState();
-          } else {
-            widget.hasInteracted = wasInteracted;
-          }
-          
-          widget.updateDisplay();
-          widget.renderOptions();
-        }
+        var hadSelections = widget.selected.length > 0;
+        widget.selected = widget.selected.filter(function(key) {
+          return widget.choices.hasOwnProperty(key);
+        });
         
-        if (data.placeholder !== undefined) {
-          widget.placeholder = data.placeholder;
-          if (widget.emptyPlaceholder) {
-            widget.emptyPlaceholder.textContent = data.placeholder;
-          }
-        }
-        
-        if (data.placeholderText !== undefined) {
-          widget.placeholderText = data.placeholderText;
-          if (widget.placeholderTextEl) {
-            widget.placeholderTextEl.textContent = data.placeholderText;
-          }
-        }
-        
-        // If user has selections, they've interacted - preserve that state
-        if (widget.selected.length > 0) {
+        if (hadSelections || widget.selected.length > 0) {
           widget.hasInteracted = true;
           widget.persistHasInteractedState();
-        } else {
-          // Otherwise, preserve the previous state
-          widget.hasInteracted = wasInteracted;
         }
+        
+        widget.renderOptions();
+        widget.updateDisplay();
+      }
+      
+      if (data.colors && !data.choices) {
+        widget.colors = convertColorsToObject(data.colors, widget.choices);
+        widget.updateDisplay();
+        widget.renderOptions();
+      }
+      
+      if (data.selected !== undefined) {
+        var selected = normalizeSelectedToArray(data.selected);
+        selected = mapSelectedToKeys(selected, widget.choices);
+        widget.selected = selected;
+        
+        widget.hasInteracted = selected.length > 0 ? true : wasInteracted;
+        if (selected.length > 0) {
+          widget.persistHasInteractedState();
+        }
+        
+        widget.updateDisplay();
+        widget.renderOptions();
+      }
+      
+      if (data.placeholder !== undefined) {
+        widget.placeholder = data.placeholder;
+        if (widget.emptyPlaceholder) {
+          widget.emptyPlaceholder.textContent = data.placeholder;
+        }
+      }
+      
+      if (data.placeholderText !== undefined) {
+        widget.placeholderText = data.placeholderText;
+        if (widget.placeholderTextEl) {
+          widget.placeholderTextEl.textContent = data.placeholderText;
+        }
+      }
+      
+      if (widget.selected.length > 0) {
+        widget.hasInteracted = true;
+        widget.persistHasInteractedState();
+      } else {
+        widget.hasInteracted = wasInteracted;
       }
     },
     
     subscribe: function(el, callback) {
-      console.log('Subscribing to change events');
-      
-      // Ensure widget is initialized (for dynamically created widgets)
       var self = this;
       var changeHandler = function(event) {
-        console.log('Change event received, calling callback');
         callback();
       };
       
-      // Store handler for later removal
       if (!el._coloredSelectizeChangeHandler) {
         el._coloredSelectizeChangeHandler = changeHandler;
       }
       
       if (!el.coloredSelectizeWidget) {
-        // If widget doesn't exist, initialize it (for dynamic widgets)
-        // Use requestAnimationFrame to ensure DOM is ready
+        var initWidget = function() {
+          self.initialize(el);
+          if (el.coloredSelectizeWidget && el._coloredSelectizeChangeHandler) {
+            el.addEventListener('change', el._coloredSelectizeChangeHandler);
+          }
+        };
+        
         if (window.requestAnimationFrame) {
           requestAnimationFrame(function() {
-            setTimeout(function() {
-              console.log('Initializing widget in subscribe (dynamic)');
-              self.initialize(el);
-              if (el.coloredSelectizeWidget && el._coloredSelectizeChangeHandler) {
-                el.addEventListener('change', el._coloredSelectizeChangeHandler);
-              }
-            }, 10);
+            setTimeout(initWidget, 10);
           });
         } else {
-          setTimeout(function() {
-            console.log('Initializing widget in subscribe (dynamic, fallback)');
-            self.initialize(el);
-            if (el.coloredSelectizeWidget && el._coloredSelectizeChangeHandler) {
-              el.addEventListener('change', el._coloredSelectizeChangeHandler);
-            }
-          }, 10);
+          setTimeout(initWidget, 10);
         }
       } else {
-        // Widget already exists, just add listener
-        console.log('Widget already exists, adding change listener');
         el.addEventListener('change', el._coloredSelectizeChangeHandler);
       }
     },
