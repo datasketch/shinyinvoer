@@ -26,5 +26,29 @@
   #     )
   #   }
   # }, force = TRUE)
-
+  
+  # Register input handler for sidePanelInput
+  try({ shiny::removeInputHandler("sidePanelBinding") })
+  
+  shiny::registerInputHandler("sidePanelBinding", function(x, ...) {
+    if (is.null(x)) {
+      list(isOpen = FALSE, selectedItem = NULL)
+    } else {
+      # If x is already a list, return as is
+      if (is.list(x)) {
+        list(
+          isOpen = if (!is.null(x$isOpen)) x$isOpen else FALSE,
+          selectedItem = x$selectedItem
+        )
+      } else {
+        # If x is a JSON string, parse it
+        parsed <- jsonlite::fromJSON(x)
+        list(
+          isOpen = if (!is.null(parsed$isOpen)) parsed$isOpen else FALSE,
+          selectedItem = parsed$selectedItem
+        )
+      }
+    }
+  }, force = TRUE)
+  
 }
