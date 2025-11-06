@@ -18,7 +18,14 @@ sidePanelInput(
 )
 }
 \arguments{
-\item{inputId}{The \code{input} slot that will be used to access the value.}
+\item{inputId}{The \code{input} slot that will be used to access the value.
+The widget creates two input values:
+\itemize{
+  \item{\code{input$<inputId>}}{Standard binding value (legacy)}
+  \item{\code{input$<inputId>_state}}{Explicit state notifications with
+    \code{isOpen}, \code{selectedItem}, \code{renderOnly}, and
+    \code{renderItemId} fields. Recommended for new code.}
+}}
 
 \item{menuItems}{List of menu items. Each item should have:
 \describe{
@@ -101,9 +108,17 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  observeEvent(input$side_panel, {
-    cat("Panel is:", ifelse(input$side_panel, "open", "closed"), "\n")
+  # Using explicit state input (recommended)
+  observeEvent(input$side_panel_state, {
+    state <- input$side_panel_state
+    cat("Panel is:", ifelse(state$isOpen, "open", "closed"), "\n")
+    cat("Selected item:", state$selectedItem, "\n")
   })
+  
+  # Legacy binding (still works)
+  # observeEvent(input$side_panel, {
+  #   cat("Panel is:", ifelse(input$side_panel$isOpen, "open", "closed"), "\n")
+  # })
 }
 
 shinyApp(ui, server)

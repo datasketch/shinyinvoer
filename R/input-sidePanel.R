@@ -6,6 +6,13 @@
 #' and the main content shifts accordingly when the panel is open or closed.
 #'
 #' @param inputId The \code{input} slot that will be used to access the value.
+#'   The widget creates two input values:
+#'   \itemize{
+#'     \item{\code{input$<inputId>}}{Standard binding value (legacy)}
+#'     \item{\code{input$<inputId>_state}}{Explicit state notifications with
+#'       \code{isOpen}, \code{selectedItem}, \code{renderOnly}, and
+#'       \code{renderItemId} fields. Recommended for new code.}
+#'   }
 #' @param menuItems List of menu items. Each item should have:
 #'   \describe{
 #'     \item{id}{Unique identifier for the menu item}
@@ -74,9 +81,17 @@
 #' )
 #'
 #' server <- function(input, output, session) {
-#'   observeEvent(input$side_panel, {
-#'     cat("Panel is:", ifelse(input$side_panel, "open", "closed"), "\n")
+#'   # Using explicit state input (recommended)
+#'   observeEvent(input$side_panel_state, {
+#'     state <- input$side_panel_state
+#'     cat("Panel is:", ifelse(state$isOpen, "open", "closed"), "\n")
+#'     cat("Selected item:", state$selectedItem, "\n")
 #'   })
+#'   
+#'   # Legacy binding (still works)
+#'   # observeEvent(input$side_panel, {
+#'   #   cat("Panel is:", ifelse(input$side_panel$isOpen, "open", "closed"), "\n")
+#'   # })
 #' }
 #'
 #' shinyApp(ui, server)
@@ -89,15 +104,50 @@ sidePanelInput <- function(inputId, label = NULL, menuItems = list(),
                           initialOpen = TRUE, mainContentId = "main-content",
                           containerId = NULL, buttonText = "Edit", width = NULL) {
   
-  # Validate inputs
-  if (is.null(inputId)) {
-    inputId <- paste0("side_panel_", sample.int(1e9, 1))
+  # Validate inputId - must be provided
+  if (is.null(inputId) || !is.character(inputId) || length(inputId) != 1 || nchar(inputId) == 0) {
+    stop("inputId must be a non-empty character string", call. = FALSE)
   }
   
+  # Validate position
   position <- match.arg(position)
   
+  # Validate panelWidth
+  if (!is.character(panelWidth) || length(panelWidth) != 1) {
+    stop("panelWidth must be a character string (e.g., '300px')", call. = FALSE)
+  }
+  
+  # Validate initialOpen
+  if (!is.logical(initialOpen) || length(initialOpen) != 1) {
+    stop("initialOpen must be a single logical value", call. = FALSE)
+  }
+  
+  # Validate mainContentId
+  if (!is.character(mainContentId) || length(mainContentId) != 1) {
+    stop("mainContentId must be a character string", call. = FALSE)
+  }
+  
+  # Validate containerId if provided
+  if (!is.null(containerId) && (!is.character(containerId) || length(containerId) != 1)) {
+    stop("containerId must be NULL or a character string", call. = FALSE)
+  }
+  
+  # Validate buttonText
+  if (!is.character(buttonText) || length(buttonText) != 1) {
+    stop("buttonText must be a character string", call. = FALSE)
+  }
+  
+  # Validate width if provided
+  if (!is.null(width) && (!is.character(width) || length(width) != 1)) {
+    stop("width must be NULL or a character string", call. = FALSE)
+  }
+  
   # Validate menuItems structure
-  if (!is.list(menuItems) || length(menuItems) == 0) {
+  if (!is.list(menuItems)) {
+    stop("menuItems must be a list", call. = FALSE)
+  }
+  
+  if (length(menuItems) == 0) {
     menuItems <- list(
       list(
         id = "default",
@@ -108,30 +158,62 @@ sidePanelInput <- function(inputId, label = NULL, menuItems = list(),
     )
   }
   
+  # Helper function to convert logical/character to lowercase string
+  to_lower_char <- function(x) {
+    tolower(as.character(x))
+  }
+  
   # Validate each menu item has required fields and convert body to HTML string
   menuItems <- purrr::map(menuItems, function(item) {
-    if (is.null(item$id)) item$id <- paste0("item_", sample.int(1e9, 1))
+    # Validate item is a list
+    if (!is.list(item)) {
+      stop("Each menu item must be a list", call. = FALSE)
+    }
+    
+    # Validate and set id (required)
+    if (is.null(item$id) || !is.character(item$id) || length(item$id) != 1 || nchar(item$id) == 0) {
+      stop("Each menu item must have a non-empty character 'id' field", call. = FALSE)
+    }
+    
+    # Validate and set title (required)
+    if (is.null(item$title) || !is.character(item$title) || length(item$title) != 1) {
+      stop(glue::glue("Menu item '{item$id}' must have a character 'title' field"), call. = FALSE)
+    }
+    
+    # Set defaults for optional fields
     if (is.null(item$icon)) item$icon <- ""
-    if (is.null(item$title)) item$title <- "Item"
     if (is.null(item$tooltip)) item$tooltip <- item$title
+    
+    # Validate icon if provided
+    if (!is.character(item$icon) || length(item$icon) != 1) {
+      warning(glue::glue("Menu item '{item$id}' has invalid icon, using empty string"), call. = FALSE)
+      item$icon <- ""
+    }
+    
+    # Validate tooltip if provided
+    if (!is.character(item$tooltip) || length(item$tooltip) != 1) {
+      warning(glue::glue("Menu item '{item$id}' has invalid tooltip, using title"), call. = FALSE)
+      item$tooltip <- item$title
+    }
     
     # Convert body (if provided) to HTML string
     if (!is.null(item$body)) {
-      # Use htmltools to render the body to HTML string
-      # htmltools is a dependency of shiny, so it should always be available
-      item$body_html <- as.character(htmltools::renderTags(item$body)$html)
-      # Remove body from the item (we only need body_html for JSON)
-      item$body <- NULL
+      tryCatch({
+        # Use htmltools to render the body to HTML string
+        # htmltools is a dependency of shiny, so it should always be available
+        rendered <- htmltools::renderTags(item$body)
+        item$body_html <- as.character(rendered$html)
+        # Remove body from the item (we only need body_html for JSON)
+        item$body <- NULL
+      }, error = function(e) {
+        stop(glue::glue("Error rendering body for menu item '{item$id}': {e$message}"), call. = FALSE)
+      })
     }
     
     item
   })
   
-  # Add resource path
-  addResourcePath(
-    prefix = 'libSidePanel',
-    directoryPath = system.file('lib', 'side-panel', package = 'shinyinvoer')
-  )
+  # Resource path is added in .onLoad() - no need to add it here
   
   # Create dependencies
   dependencies <- shiny::tagList(
@@ -154,15 +236,15 @@ sidePanelInput <- function(inputId, label = NULL, menuItems = list(),
     shiny::div(
       `data-shiny-input-type` = "sidePanelInput",
       id = inputId,
-      class = paste0('side-panel-widget side-panel-', position),
+      class = glue::glue('side-panel-widget side-panel-{position}'),
       `data-menu-items` = jsonlite::toJSON(menuItems, auto_unbox = TRUE, 
                                             escape = TRUE),
       `data-position` = position,
       `data-panel-width` = panelWidth,
-      `data-initial-open` = tolower(as.character(initialOpen)),
+      `data-initial-open` = to_lower_char(initialOpen),
       `data-main-content-id` = mainContentId,
-      `data-container-id` = if (!is.null(containerId)) containerId else NULL,
-      style = if (!is.null(width)) paste0("width: ", width, ";")
+      `data-container-id` = containerId,
+      style = if (!is.null(width)) glue::glue("width: {width};") else NULL
     )
   )
   
@@ -196,15 +278,23 @@ sidePanelInput <- function(inputId, label = NULL, menuItems = list(),
 updateSidePanelInput <- function(session, inputId, open = NULL,
                                 selectedItem = NULL) {
   
-  message <- list()
-  
-  if (!is.null(open)) {
-    message$open <- open
+  # Validate inputId
+  if (is.null(inputId) || !is.character(inputId) || length(inputId) != 1 || nchar(inputId) == 0) {
+    stop("inputId must be a non-empty character string", call. = FALSE)
   }
   
-  if (!is.null(selectedItem)) {
-    message$selectedItem <- selectedItem
+  # Validate open if provided
+  if (!is.null(open) && (!is.logical(open) || length(open) != 1)) {
+    stop("open must be NULL or a single logical value", call. = FALSE)
   }
+  
+  # Validate selectedItem if provided
+  if (!is.null(selectedItem) && (!is.character(selectedItem) || length(selectedItem) != 1)) {
+    stop("selectedItem must be NULL or a character string", call. = FALSE)
+  }
+  
+  # Use dropNulls to remove NULL values (consistent with other widgets)
+  message <- dropNulls(list(open = open, selectedItem = selectedItem))
   
   if (length(message) > 0) {
     session$sendInputMessage(inputId, message)

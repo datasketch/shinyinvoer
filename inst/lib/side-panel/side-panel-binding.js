@@ -20,18 +20,31 @@ $.extend(sidePanelBinding, {
     var initWidget = function() {
       var SidePanelClass = window.SidePanel || (typeof SidePanel !== 'undefined' ? SidePanel : null);
       if (SidePanelClass) {
-        var widget = new SidePanelClass(el, {
-          menuItems: parsedMenuItems,
-          position: position,
-          panelWidth: panelWidth,
-          initialOpen: initialOpen,
-          mainContentId: mainContentId,
-          containerId: containerId,
-          buttonText: buttonText
-        });
+        // Validate element before creating widget
+        if (!el || !(el instanceof Node) || el.nodeType !== Node.ELEMENT_NODE) {
+          console.error('[SidePanel] Cannot initialize: element is not a valid DOM node');
+          return;
+        }
 
-        // Guardar referencia
-        el.sidePanelWidget = widget;
+        try {
+          var widget = new SidePanelClass(el, {
+            menuItems: parsedMenuItems,
+            position: position,
+            panelWidth: panelWidth,
+            initialOpen: initialOpen,
+            mainContentId: mainContentId,
+            containerId: containerId,
+            buttonText: buttonText
+          });
+
+          // Reference is already stored in widget.init(), but ensure it's set
+          if (el && el.nodeType === Node.ELEMENT_NODE) {
+            el.sidePanelWidget = widget;
+          }
+        } catch (e) {
+          console.error('[SidePanel] Failed to initialize widget:', e);
+          return;
+        }
 
         // 🔥 Forzar binding de inputs después del render inicial
         setTimeout(function() {
@@ -85,8 +98,25 @@ $.extend(sidePanelBinding, {
   },
 
   subscribe: function(el, callback) {
-    el.addEventListener('sidePanelChange', function() {
-      callback();
+    el.addEventListener('sidePanelChange', function(event) {
+      // If renderOnly is true, send render request without changing widget state
+      if (event.detail && event.detail.renderOnly) {
+        // Send render request directly to server
+        // Use renderItemId as selectedItem temporarily so server renders correct output
+        // but widget's actual selectedItemId remains unchanged
+        if (window.Shiny && window.Shiny.setInputValue) {
+          var renderValue = {
+            isOpen: event.detail.isOpen,
+            selectedItem: event.detail.renderItemId || event.detail.selectedItem,
+            renderOnly: true,
+            renderItemId: event.detail.renderItemId
+          };
+          window.Shiny.setInputValue(el.id, renderValue, { priority: 'event' });
+        }
+      } else {
+        // Normal state change, use standard callback
+        callback();
+      }
     });
   },
 

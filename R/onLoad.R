@@ -27,7 +27,7 @@
   #   }
   # }, force = TRUE)
   
-  # Register input handler for sidePanelInput
+  # Register input handler for sidePanelInput (legacy binding)
   try({ shiny::removeInputHandler("sidePanelBinding") })
   
   shiny::registerInputHandler("sidePanelBinding", function(x, ...) {
@@ -50,5 +50,17 @@
       }
     }
   }, force = TRUE)
+  
+  # Note: input$<inputId>_state is set directly via Shiny.setInputValue
+  # and doesn't require a custom input handler since JavaScript objects
+  # are automatically converted to R lists by Shiny
+  
+  # Add resource path for side-panel (only once on package load)
+  try({
+    addResourcePath(
+      prefix = 'libSidePanel',
+      directoryPath = system.file('lib', 'side-panel', package = 'shinyinvoer')
+    )
+  }, silent = TRUE)
   
 }

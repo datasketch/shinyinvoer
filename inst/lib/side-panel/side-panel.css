@@ -479,3 +479,29 @@
   animation: slideIn 0.3s ease-out;
 }
 
+/* Hidden offscreen class for pre-rendered content (keeps in DOM for Shiny) */
+.side-panel-hidden-offscreen {
+  display: block !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Visible class for active content */
+.side-panel-visible {
+  display: block !important;
+  position: relative !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
