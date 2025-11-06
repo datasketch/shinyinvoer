@@ -72,7 +72,6 @@
 
 .side-panel-toggle-btn:hover {
   background: rgba(243, 243, 243, 0.80);
-  border-color: rgba(33, 44, 53, 0.40);
 }
 
 .side-panel-toggle-btn:active {
@@ -94,7 +93,7 @@
   background: #FFF;
   box-shadow: 4px 0 4px 0 rgba(0, 0, 0, 0.10);
   z-index: 999;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, visibility 0.3s ease, opacity 0.3s ease;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -115,20 +114,28 @@
 .side-panel-container[data-side-panel-id].side-panel-left {
   left: 0;
   transform: translateX(-100%);
+  visibility: hidden;
+  opacity: 0;
 }
 
 .side-panel-container[data-side-panel-id].side-panel-left.open {
   transform: translateX(0);
+  visibility: visible;
+  opacity: 1;
 }
 
 /* Panel position: right */
 .side-panel-container[data-side-panel-id].side-panel-right {
   right: 0;
   transform: translateX(100%);
+  visibility: hidden;
+  opacity: 0;
 }
 
 .side-panel-container[data-side-panel-id].side-panel-right.open {
   transform: translateX(0);
+  visibility: visible;
+  opacity: 1;
 }
 
 /* Sidebar menu */
