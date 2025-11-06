@@ -14,15 +14,23 @@
   align-items: center;
 }
 
+/* Ensure button container doesn't interfere with panel positioning */
+.side-panel-toggle-container {
+  position: relative;
+  z-index: 1;
+}
+
 /* Toggle button */
 .side-panel-toggle-btn {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 8px 16px;
   border: 1px solid rgba(33, 44, 53, 0.20);
-  border-radius: 6px;
-  background: rgba(243, 243, 243, 0.60);
+  border-radius: 5px;
+  background: #F3F3F3;
   color: #212c35;
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 14px;
@@ -30,6 +38,10 @@
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  aspect-ratio: 1/1;
 }
 
 .side-panel-toggle-container {
@@ -48,10 +60,13 @@
 .side-panel-toggle-text {
   display: inline-block;
   white-space: nowrap;
+  color: #000;
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 14px;
-  font-weight: 400;
-  color: #212c35;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: capitalize;
   user-select: none;
 }
 
@@ -74,8 +89,10 @@
   position: fixed;
   top: 0;
   height: 100vh;
-  background: #ffffff;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  border-radius: 5px 0 0 5px;
+  border: 1px solid rgba(33, 44, 53, 0.20);
+  background: #FFF;
+  box-shadow: 4px 0 4px 0 rgba(0, 0, 0, 0.10);
   z-index: 999;
   transition: transform 0.3s ease;
   display: flex;
@@ -117,7 +134,7 @@
 /* Sidebar menu */
 .side-panel-sidebar {
   width: 60px;
-  background: #f8f9fa;
+  background: #fff;
   border-right: 1px solid rgba(33, 44, 53, 0.10);
   display: flex;
   flex-direction: column;
@@ -133,7 +150,7 @@
 
 /* First icon aligns with header start */
 .side-panel-sidebar > .side-panel-menu-item:first-child {
-  margin-top: 0;
+  margin-top: 5px;
 }
 
 .side-panel-menu-item {
@@ -146,29 +163,39 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: #6b7280;
+  color: #212C35;
   background: transparent;
   border: none;
   padding: 0;
+  margin-top: 5px;
   z-index: 21; /* Ensure menu items are above header */
 }
 
 .side-panel-menu-item:hover {
-  background: rgba(33, 44, 53, 0.10);
-  color: #212c35;
+  background: transparent;
+  color: #212C35;
 }
 
 .side-panel-menu-item.active {
-  background: rgba(33, 44, 53, 0.15);
-  color: #212c35;
+  background: rgba(218, 28, 149, 0.1); /* #DA1C951A equivalent */
+  color: #DA1C95;
+  margin-top: 5px;
 }
 
+/* SVG styles - default (not selected) */
 .side-panel-menu-item svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   stroke-width: 2;
   fill: none;
   stroke: currentColor;
+  transition: all 0.2s ease;
+}
+
+/* SVG styles - when selected */
+.side-panel-menu-item.active svg {
+  width: 24px;
+  height: 24px;
 }
 
 /* Tooltip */
@@ -271,6 +298,32 @@
   z-index: 1;
   min-height: 0; /* Ensure flex children can shrink */
   box-sizing: border-box;
+}
+
+/* Custom scrollbar styles for panel content */
+/* WebKit browsers (Chrome, Safari, Edge) */
+.side-panel-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.side-panel-content::-webkit-scrollbar-track {
+  background: #F3F3F3; /* Track - shows how much is left to scroll */
+  border-radius: 4px;
+}
+
+.side-panel-content::-webkit-scrollbar-thumb {
+  background: #D2D2D7; /* Thumb - the draggable part */
+  border-radius: 4px;
+}
+
+.side-panel-content::-webkit-scrollbar-thumb:hover {
+  background: #C0C0C5; /* Slightly darker on hover */
+}
+
+/* Firefox */
+.side-panel-content {
+  scrollbar-width: thin;
+  scrollbar-color: #D2D2D7 #F3F3F3; /* thumb track */
 }
 
 /* Panel body (contains sidebar and content) */

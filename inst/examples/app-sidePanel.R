@@ -54,7 +54,7 @@ ui <- dsBoardPage(
         buttonText = "Edit"
       ),
       div(
-        style = "display:flex;",
+        style = "display:flex;border: 1px solid #DDDDDD;margin-top: 12px;",
         div(
           id = "loading_controls",
           style = "position: relative; min-height: 400px; height: 100%;"  # Necesario para posicionamiento absoluto del panel y altura
