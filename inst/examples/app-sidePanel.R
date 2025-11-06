@@ -33,8 +33,7 @@ ui <- dsBoardPage(
             # Contenido estático directamente en body
             body = div(
               h3("Home Content"),
-              p("This is the home section with static content."),
-              p("You can include any Shiny HTML tags here directly.")
+              uiOutput("panel_home")
             )
           ),
           list(
@@ -72,7 +71,9 @@ ui <- dsBoardPage(
           id = "graph_content",
           h4("Main Content Area"),
           p("This content will shift when the panel opens/closes."),
-          verbatimTextOutput("selected_item_display")
+          verbatimTextOutput("selected_item_display"),
+          p("inputs in panel"),
+          verbatimTextOutput("test_inputs")
         )
       )
     ),
@@ -83,8 +84,26 @@ ui <- dsBoardPage(
 # Server
 server <- function(input, output, session) {
 
-  # Render contenido del panel basado en el item seleccionado
-  # Este output se usa en el menuItem "settings" con body = uiOutput("panel_content")
+  output$panel_home <- renderUI({
+    # Obtener el item seleccionado del panel
+    selected_item <- input$side_panel$selectedItem
+
+    if (is.null(selected_item)) {
+      return()
+    }
+
+    # Render contenido según el item seleccionado
+    # Solo renderizamos cuando "settings" está seleccionado
+    if (selected_item == "home") {
+      tagList(
+        dsinputs::multiple_select("var_mul", "Select multiple options",
+                                  c("JS", "R", "RUBY", "JULIA"), selected = "JULIA")
+      )
+    } else {
+      return()
+    }
+  })
+
   output$panel_content <- renderUI({
     # Obtener el item seleccionado del panel
     selected_item <- input$side_panel$selectedItem
@@ -126,7 +145,7 @@ server <- function(input, output, session) {
                                            "Select a var",
                                            c("Z", "Y", "X"),
                                            colors = c("#35C4B9", "#FCBD0B", "#DA1C95")),
-        dsinputs::checkbox("check", label = "Yes/No", value = TRUE)
+        dsinputs::checkbox("id_check", label = "Yes/No", value = TRUE)
       )
     } else {
       return()
@@ -149,11 +168,22 @@ server <- function(input, output, session) {
       paste(
         "Panel is:", ifelse(panel_state$isOpen, "OPEN", "CLOSED"),
         "\nSelected item:", ifelse(is.null(panel_state$selectedItem), "None", panel_state$selectedItem)
+
       )
     } else {
       "Panel state not available"
     }
   })
+
+  output$test_inputs <- renderPrint({
+    list(
+      input$var_mul,
+      input$id_var,
+      input$var_cat,
+      input$id_check
+    )
+  })
+
 }
 
 # Run the application

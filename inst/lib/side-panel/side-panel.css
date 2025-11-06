@@ -307,6 +307,16 @@
   box-sizing: border-box;
 }
 
+/* Content wrapper for cached menu item content */
+.side-panel-item-content {
+  display: block;
+  width: 100%;
+}
+
+.side-panel-item-content[style*="display: none"] {
+  display: none !important;
+}
+
 /* Custom scrollbar styles for panel content */
 /* WebKit browsers (Chrome, Safari, Edge) */
 .side-panel-content::-webkit-scrollbar {

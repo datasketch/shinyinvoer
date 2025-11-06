@@ -17,6 +17,8 @@ class SidePanel {
 
     this.isOpen = this.options.initialOpen;
     this.selectedItemId = null;
+    // Cache for rendered content per menu item
+    this.contentCache = new Map();
     
     // Set CSS variable for panel width
     document.documentElement.style.setProperty('--side-panel-width', this.options.panelWidth);
@@ -230,18 +232,208 @@ class SidePanel {
   }
 
   setInitialState() {
+    // Store the initial item to select after pre-rendering
+    const initialItemId = this.menuItems.length > 0 ? this.menuItems[0].data.id : null;
+    
+    // Pre-render all menu items to ensure inputs are registered with default values
+    // This happens even if panel is closed, so inputs are available immediately
+    if (this.menuItems.length > 0) {
+      console.log('[SidePanel] Pre-rendering all menu items to register inputs...');
+      this.menuItems.forEach(({ data }) => {
+        if (data.body_html) {
+          // Pre-render each item (hidden but in DOM) so Shiny can register inputs
+          this.preRenderMenuItem(data);
+        }
+      });
+      
+      // Wait for all uiOutputs to render, then bind all inputs
+      // Pass the initial item ID to restore after rendering
+      this.waitForAllOutputsAndBind(initialItemId);
+    }
+    
     if (this.options.initialOpen) {
       this.open();
-      // Select first menu item if panel is initially open
-      if (this.menuItems.length > 0) {
-        const firstItem = this.menuItems[0];
-        console.log('[SidePanel] Initializing with first item:', firstItem.data.id);
-        this.selectMenuItem(firstItem.data.id);
-      }
     } else {
       this.close();
     }
   }
+
+  preRenderMenuItem(data) {
+    // Skip if already cached
+    if (this.contentCache.has(data.id)) return;
+  
+    try {
+      const contentWrapper = document.createElement('div');
+      contentWrapper.className = 'side-panel-item-content';
+      contentWrapper.setAttribute('data-item-id', data.id);
+  
+      // Hidden but in DOM so Shiny can process it
+      // Using display: block with opacity: 0 so Shiny processes it
+      contentWrapper.style.display = 'block';
+      contentWrapper.style.opacity = '0';
+      contentWrapper.style.position = 'absolute';
+      contentWrapper.style.pointerEvents = 'none';
+      contentWrapper.style.left = '-9999px';
+      contentWrapper.style.top = '-9999px';
+      contentWrapper.style.width = '1px';
+      contentWrapper.style.height = '1px';
+      contentWrapper.style.overflow = 'hidden';
+  
+      // Insert HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = data.body_html;
+      while (tempDiv.firstChild) contentWrapper.appendChild(tempDiv.firstChild);
+  
+      this.contentCache.set(data.id, contentWrapper);
+      this.contentElement.appendChild(contentWrapper);
+  
+      // Initial bind to register uiOutputs
+      if (window.Shiny && window.Shiny.bindAll) {
+        try {
+          window.Shiny.bindAll(contentWrapper);
+          $(contentWrapper).trigger('shiny:connected');
+        } catch (e) {
+          console.warn('[SidePanel] Initial Shiny binding failed for', data.id, e);
+        }
+      }
+  
+    } catch (e) {
+      console.error('[SidePanel] Error pre-rendering menu item:', data.id, e);
+    }
+  }
+
+  waitForAllOutputsAndBind(initialItemId = null) {
+    // First, we need to trigger the server to render all uiOutputs
+    // by temporarily "selecting" each item one by one
+    const itemsToRender = this.menuItems
+      .map(({ data }) => data)
+      .filter(item => item.body_html);
+    
+    if (itemsToRender.length === 0) {
+      // No items to render, just select initial item if provided
+      if (initialItemId) {
+        setTimeout(() => {
+          this.selectMenuItem(initialItemId);
+        }, 100);
+      }
+      return;
+    }
+
+    console.log('[SidePanel] Triggering server to render all items...');
+    
+    // Temporarily select each item to trigger server rendering
+    let currentIndex = 0;
+    const renderNextItem = () => {
+      if (currentIndex >= itemsToRender.length) {
+        // All items have been "selected", now wait for outputs to render
+        console.log('[SidePanel] All items triggered, waiting for outputs to render...');
+        this.waitForOutputsToRender(initialItemId);
+        return;
+      }
+
+      const item = itemsToRender[currentIndex];
+      console.log('[SidePanel] Triggering render for item:', item.id);
+      
+      // Temporarily set as selected (but don't show it visually)
+      this.selectedItemId = item.id;
+      
+      // Trigger change event to notify server
+      this.triggerChange();
+      
+      // Move to next item after a delay
+      currentIndex++;
+      setTimeout(renderNextItem, 300);
+    };
+
+    // Start rendering items
+    setTimeout(renderNextItem, 200);
+  }
+
+  waitForOutputsToRender(initialItemId = null) {
+    // Wait for all uiOutputs to render, then bind all inputs
+    const checkAllOutputs = (attempts = 0, maxAttempts = 40) => {
+      if (attempts >= maxAttempts) {
+        console.warn('[SidePanel] Max attempts reached waiting for all outputs');
+        // Final bind attempt
+        this.bindAllInputs();
+        // Restore initial item selection
+        if (initialItemId) {
+          setTimeout(() => {
+            this.selectMenuItem(initialItemId);
+          }, 100);
+        }
+        return;
+      }
+
+      // Check all cached content for uiOutputs
+      let allRendered = true;
+      let hasAnyOutputs = false;
+      
+      this.contentCache.forEach((contentWrapper) => {
+        const uiOutputs = contentWrapper.querySelectorAll('[id^="shiny-output-"]');
+        if (uiOutputs.length > 0) {
+          hasAnyOutputs = true;
+          uiOutputs.forEach((output) => {
+            const innerHTML = output.innerHTML.trim();
+            // Check if output has meaningful content
+            if (!innerHTML || 
+                innerHTML === '' || 
+                innerHTML === '<div></div>' || 
+                innerHTML === '<div class="shiny-bound-output"></div>') {
+              // Check if it has children
+              if (output.children.length === 0) {
+                allRendered = false;
+              }
+            }
+          });
+        }
+      });
+
+      if (allRendered || (!hasAnyOutputs && attempts > 10)) {
+        console.log('[SidePanel] All outputs rendered, binding all inputs...');
+        // All outputs are rendered, bind all inputs
+        this.bindAllInputs();
+        // Restore initial item selection after binding
+        if (initialItemId) {
+          setTimeout(() => {
+            this.selectMenuItem(initialItemId);
+          }, 200);
+        }
+      } else {
+        // Check again after a delay
+        setTimeout(() => checkAllOutputs(attempts + 1, maxAttempts), 200);
+      }
+    };
+
+    // Start checking after initial delay
+    setTimeout(() => checkAllOutputs(), 500);
+  }
+
+  bindAllInputs() {
+    // Bind all inputs in all cached content
+    if (!window.Shiny || !window.Shiny.bindAll) {
+      return;
+    }
+
+    this.contentCache.forEach((contentWrapper) => {
+      try {
+        window.Shiny.bindAll(contentWrapper);
+        $(contentWrapper).trigger('shiny:connected');
+        $(contentWrapper).trigger('shiny:visualchange');
+      } catch (e) {
+        console.warn('[SidePanel] Error binding inputs for item:', contentWrapper.getAttribute('data-item-id'), e);
+      }
+    });
+
+    // Also bind the entire content element
+    try {
+      window.Shiny.bindAll(this.contentElement);
+      $(this.contentElement).trigger('shiny:connected');
+    } catch (e) {
+      console.warn('[SidePanel] Error binding content element:', e);
+    }
+  }
+  
 
   open() {
     this.isOpen = true;
@@ -280,46 +472,93 @@ class SidePanel {
         this.selectedItemId = itemId;
         this.titleElement.textContent = data.title;
         
-        // Clear previous content
-        while (this.contentElement.firstChild) {
-          this.contentElement.removeChild(this.contentElement.firstChild);
-        }
+        // Hide all cached content first (but keep in DOM)
+        this.contentCache.forEach((cachedContent) => {
+          if (cachedContent && cachedContent.parentNode === this.contentElement) {
+            // Hide but keep in DOM to preserve input values
+            cachedContent.style.display = 'none';
+            cachedContent.style.opacity = '0';
+            cachedContent.style.pointerEvents = 'none';
+            // Don't remove from DOM, just hide it
+          }
+        });
         
-        // Render body_html if provided
-        if (data.body_html) {
-          console.log('[SidePanel] Rendering body_html for item:', data.id);
-          // Set innerHTML to the body_html content
-          this.contentElement.innerHTML = data.body_html;
+        // Check if content is already cached
+        let contentWrapper = this.contentCache.get(itemId);
+        
+        if (!contentWrapper && data.body_html) {
+          console.log('[SidePanel] Rendering new body_html for item:', data.id);
+          try {
+            // Create a wrapper div for this item's content
+            contentWrapper = document.createElement('div');
+            contentWrapper.className = 'side-panel-item-content';
+            contentWrapper.setAttribute('data-item-id', itemId);
+            
+            // Make it invisible but in DOM so Shiny can process uiOutputs
+            // Using opacity: 0 instead of visibility: hidden so Shiny processes it
+            contentWrapper.style.display = 'block';
+            contentWrapper.style.opacity = '1';
+            contentWrapper.style.position = 'relative';
+            contentWrapper.style.pointerEvents = 'auto';
+            contentWrapper.style.left = 'auto';
+            
+            // Set innerHTML to the body_html content
+            // Use a temporary container to safely parse HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = data.body_html;
+            while (tempDiv.firstChild) {
+              contentWrapper.appendChild(tempDiv.firstChild);
+            }
+            
+            // Cache the content
+            this.contentCache.set(itemId, contentWrapper);
+            
+            // Append to content element (temporarily hidden)
+            this.contentElement.appendChild(contentWrapper);
+            
+            // Re-bind Shiny outputs and inputs with proper initialization
+            this.initializeShinyContent(contentWrapper);
+          } catch (e) {
+            console.error('[SidePanel] Error rendering body_html for item:', data.id, e);
+            console.error('[SidePanel] Error details:', e.message, e.stack);
+            // If there's an error, still cache an empty wrapper to avoid retrying
+            if (!contentWrapper) {
+              contentWrapper = document.createElement('div');
+              contentWrapper.className = 'side-panel-item-content';
+              contentWrapper.setAttribute('data-item-id', itemId);
+              this.contentCache.set(itemId, contentWrapper);
+            }
+          }
+        } else if (contentWrapper) {
+          console.log('[SidePanel] Using cached content for item:', data.id);
+          // Show cached content - restore normal visibility
+          contentWrapper.style.display = 'block';
+          contentWrapper.style.opacity = '1';
+          contentWrapper.style.position = 'relative';
+          contentWrapper.style.pointerEvents = 'auto';
+          contentWrapper.style.left = 'auto';
+          contentWrapper.style.top = 'auto';
+          contentWrapper.style.width = 'auto';
+          contentWrapper.style.height = 'auto';
+          contentWrapper.style.overflow = 'visible';
           
-          // Re-bind Shiny outputs and inputs
-          if (window.Shiny) {
+          // Ensure it's in the DOM (in case it was removed somehow)
+          if (!contentWrapper.parentNode) {
+            this.contentElement.appendChild(contentWrapper);
+          }
+          
+          // Re-bind Shiny to ensure all widgets are registered
+          if (window.Shiny && window.Shiny.bindAll) {
             setTimeout(() => {
-              if (window.Shiny.bindAll) {
-                try {
-                  window.Shiny.bindAll(this.contentElement);
-                  console.log('[SidePanel] Shiny.bindAll completed');
-                } catch (e) {
-                  console.error('[SidePanel] Error binding content:', e);
-                }
+              try {
+                window.Shiny.bindAll(contentWrapper);
+                $(contentWrapper).trigger('shiny:connected');
+                // Trigger visual change to ensure Shiny recognizes the widgets
+                $(contentWrapper).trigger('shiny:visualchange');
+              } catch (e) {
+                console.error('[SidePanel] Error re-binding cached content:', e);
               }
-              
-              // Trigger shiny:connected event for outputs
-              $(this.contentElement).trigger('shiny:connected');
-              
-              // Wait for uiOutput to render if present
-              const uiOutputs = this.contentElement.querySelectorAll('[id^="shiny-output-"]');
-              if (uiOutputs.length > 0) {
-                console.log('[SidePanel] Found', uiOutputs.length, 'uiOutputs, waiting for render...');
-                setTimeout(() => {
-                  // Re-bind again after outputs render
-                  if (window.Shiny.bindAll) {
-                    window.Shiny.bindAll(this.contentElement);
-                  }
-                  $(this.contentElement).trigger('shiny:connected');
-                  $(this.contentElement).trigger('shiny:visualchange');
-                }, 300);
-              }
-            }, 100);
+            }, 50);
           }
         } else {
           console.log('[SidePanel] No body_html provided for item:', data.id);
@@ -344,6 +583,125 @@ class SidePanel {
         mainContent.classList.remove('shifted', positionClass);
       }
     }
+  }
+
+  initializeShinyContent(contentWrapper, isPreRender = false) {
+    if (!window.Shiny) {
+      return;
+    }
+
+    // Initial bind after a short delay to ensure DOM is ready
+    setTimeout(() => {
+      if (window.Shiny.bindAll) {
+        try {
+          window.Shiny.bindAll(contentWrapper);
+          console.log('[SidePanel] Initial Shiny.bindAll completed');
+        } catch (e) {
+          console.error('[SidePanel] Error binding content:', e);
+        }
+      }
+      
+      // Trigger shiny:connected event for outputs
+      $(contentWrapper).trigger('shiny:connected');
+      
+      // Check for uiOutput elements that need to render
+      const uiOutputs = contentWrapper.querySelectorAll('[id^="shiny-output-"]');
+      if (uiOutputs.length > 0) {
+        console.log('[SidePanel] Found', uiOutputs.length, 'uiOutputs, waiting for render...');
+        
+        // Function to check if uiOutputs have rendered and initialize all widgets
+        const checkAndInitialize = (attempts = 0, maxAttempts = 20) => {
+          if (attempts >= maxAttempts) {
+            console.warn('[SidePanel] Max attempts reached waiting for uiOutput render');
+            // Final bind attempt
+            if (window.Shiny.bindAll) {
+              window.Shiny.bindAll(contentWrapper);
+            }
+            $(contentWrapper).trigger('shiny:connected');
+            return;
+          }
+
+          // Check if uiOutputs have meaningful content (rendered)
+          let hasRenderedContent = false;
+          
+          uiOutputs.forEach((output) => {
+            // Check if output has meaningful content (not just empty divs)
+            const innerHTML = output.innerHTML.trim();
+            if (innerHTML && 
+                innerHTML !== '' && 
+                innerHTML !== '<div></div>' && 
+                innerHTML !== '<div class="shiny-bound-output"></div>') {
+              hasRenderedContent = true;
+            }
+            
+            // Also check for any child elements that indicate rendering
+            if (output.children.length > 0) {
+              hasRenderedContent = true;
+            } else {
+              // Check if there are any elements inside (including text nodes with content)
+              const firstChild = output.firstElementChild;
+              if (firstChild !== null) {
+                hasRenderedContent = true;
+              }
+            }
+          });
+
+          // If content is rendered or we've tried enough times, initialize
+          if (hasRenderedContent || attempts > 5) {
+            if (!isPreRender) {
+              console.log('[SidePanel] uiOutputs rendered, initializing all widgets...');
+            }
+            
+            // Make content visible now that it's rendered (only if not pre-rendering)
+            if (!isPreRender) {
+              contentWrapper.style.display = 'block';
+              contentWrapper.style.opacity = '1';
+              contentWrapper.style.position = 'relative';
+              contentWrapper.style.pointerEvents = 'auto';
+              contentWrapper.style.left = 'auto';
+            }
+            
+            // Re-bind all widgets after outputs render
+            if (window.Shiny.bindAll) {
+              window.Shiny.bindAll(contentWrapper);
+            }
+            $(contentWrapper).trigger('shiny:connected');
+            $(contentWrapper).trigger('shiny:visualchange');
+            
+            // Additional bind after a short delay to ensure all widgets are registered
+            setTimeout(() => {
+              if (window.Shiny.bindAll) {
+                window.Shiny.bindAll(contentWrapper);
+              }
+              $(contentWrapper).trigger('shiny:connected');
+            }, 150);
+          } else {
+            // Check again after a delay
+            setTimeout(() => checkAndInitialize(attempts + 1, maxAttempts), 150);
+          }
+        };
+
+        // Start checking after initial delay
+        setTimeout(() => checkAndInitialize(), 200);
+      } else {
+        // No uiOutputs, but still ensure all widgets are bound
+        // Make content visible (only if not pre-rendering)
+        if (!isPreRender) {
+          contentWrapper.style.display = 'block';
+          contentWrapper.style.opacity = '1';
+          contentWrapper.style.position = 'relative';
+          contentWrapper.style.pointerEvents = 'auto';
+          contentWrapper.style.left = 'auto';
+        }
+        
+        setTimeout(() => {
+          if (window.Shiny.bindAll) {
+            window.Shiny.bindAll(contentWrapper);
+          }
+          $(contentWrapper).trigger('shiny:connected');
+        }, 150);
+      }
+    }, 100);
   }
 
   triggerChange() {

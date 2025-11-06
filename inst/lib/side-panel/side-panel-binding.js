@@ -2,11 +2,10 @@
 var sidePanelBinding = new Shiny.InputBinding();
 
 $.extend(sidePanelBinding, {
-  
   find: function(scope) {
     return $(scope).find('.side-panel-widget');
   },
-  
+
   initialize: function(el) {
     var menuItems = el.dataset.menuItems;
     var position = el.dataset.position || 'left';
@@ -15,11 +14,9 @@ $.extend(sidePanelBinding, {
     var mainContentId = el.dataset.mainContentId || 'main-content';
     var containerId = el.dataset.containerId || null;
     var buttonText = el.dataset.buttonText || 'Edit';
-    
-    // Parse menu items from JSON
+
     var parsedMenuItems = JSON.parse(menuItems || '[]');
-    
-    // Wait for SidePanel class to be available
+
     var initWidget = function() {
       var SidePanelClass = window.SidePanel || (typeof SidePanel !== 'undefined' ? SidePanel : null);
       if (SidePanelClass) {
@@ -32,65 +29,71 @@ $.extend(sidePanelBinding, {
           containerId: containerId,
           buttonText: buttonText
         });
-        
-        // Store reference for later use
+
+        // Guardar referencia
         el.sidePanelWidget = widget;
+
+        // 🔥 Forzar binding de inputs después del render inicial
+        setTimeout(function() {
+          if (window.Shiny && window.Shiny.bindAll) {
+            try {
+              console.log('[SidePanel] Rebinding inputs after init');
+              const scope = containerId
+                ? document.getElementById(containerId)
+                : el.parentElement;
+              window.Shiny.bindAll(scope || document.body);
+              $(scope || document.body).trigger('shiny:visualchange');
+            } catch (e) {
+              console.warn('[SidePanel] Rebind failed', e);
+            }
+          }
+        }, 300);
       } else {
-        // Retry after a short delay if SidePanel is not yet loaded
         setTimeout(initWidget, 50);
       }
     };
-    
+
     initWidget();
   },
-  
+
   getValue: function(el) {
     if (el.sidePanelWidget) {
       return el.sidePanelWidget.getValue();
     }
     return { isOpen: false, selectedItem: null };
   },
-  
+
   setValue: function(el, value) {
     if (el.sidePanelWidget) {
       el.sidePanelWidget.setValue(value);
     }
   },
-  
+
   receiveMessage: function(el, data) {
     if (el.sidePanelWidget) {
       var value = {};
-      
       if (data.open !== undefined) {
         value.isOpen = data.open;
       }
-      
       if (data.selectedItem !== undefined) {
         value.selectedItem = data.selectedItem;
       }
-      
       if (Object.keys(value).length > 0) {
         el.sidePanelWidget.setValue(value);
       }
     }
   },
-  
+
   subscribe: function(el, callback) {
-    if (el.sidePanelWidget) {
-      el.addEventListener('sidePanelChange', function(event) {
-        callback();
-      });
-    }
+    el.addEventListener('sidePanelChange', function() {
+      callback();
+    });
   },
-  
+
   unsubscribe: function(el) {
-    if (el.sidePanelWidget) {
-      el.removeEventListener('sidePanelChange', function(event) {
-        // Remove event listener
-      });
-    }
+    el.removeEventListener('sidePanelChange', function() {});
   },
-  
+
   getState: function(el) {
     return this.getValue(el);
   }
@@ -98,4 +101,3 @@ $.extend(sidePanelBinding, {
 
 // Register the binding
 Shiny.inputBindings.register(sidePanelBinding);
-
