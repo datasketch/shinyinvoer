@@ -44,12 +44,21 @@ ui <- dsBoardPage(
             tooltip = "Settings",
             # Contenido dinámico desde el servidor usando uiOutput
             body = uiOutput("panel_content")
+          ),
+          list(
+            id = "data",
+            icon = "<svg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><ellipse cx='12' cy='6' rx='8' ry='2'></ellipse><path d='M4 6v12c0 1.1 3.6 2 8 2s8-.9 8-2V6'></path><path d='M4 10v8c0 1.1 3.6 2 8 2s8-.9 8-2v-8'></path></svg>",
+            title = "Data",
+            tooltip = "Data",
+            body = div(
+              uiOutput("panel_data")
+            )
           )
         ),
         containerId = "loading_controls",  # Panel aparecerá dentro de este div
         mainContentId = "graph_content",   # Contenido que se desplazará cuando el panel se abra
         position = "left",
-        panelWidth = "280px",
+        panelWidth = "300px",
         initialOpen = TRUE,
         buttonText = "Edit"
       ),
@@ -94,6 +103,30 @@ server <- function(input, output, session) {
         br(),
         p("Current selection:"),
         verbatimTextOutput("var_output")
+      )
+    } else {
+      return()
+    }
+  })
+
+
+  output$panel_data <- renderUI({
+    # Obtener el item seleccionado del panel
+    selected_item <- input$side_panel$selectedItem
+
+    if (is.null(selected_item)) {
+      return()
+    }
+
+    # Render contenido según el item seleccionado
+    # Solo renderizamos cuando "settings" está seleccionado
+    if (selected_item == "data") {
+      tagList(
+        shinyinvoer::coloredSelectizeInput("var_cat",
+                                           "Select a var",
+                                           c("Z", "Y", "X"),
+                                           colors = c("#35C4B9", "#FCBD0B", "#DA1C95")),
+        dsinputs::checkbox("check", label = "Yes/No", value = TRUE)
       )
     } else {
       return()
